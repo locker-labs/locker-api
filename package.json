@@ -5,12 +5,12 @@
 	"devDependencies": {
 		"nodemon": "^3.1.0"
 	},
-	"name": "locker-api",
+	"name": "locker",
 	"description": "",
 	"version": "1.0.0",
-	"main": "index.js",
+	"main": "app/index.js",
 	"scripts": {
-		"devStart": "nodemon server.js",
+		"devStart": "nodemon locker",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [],
