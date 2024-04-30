@@ -5,7 +5,7 @@
 	"devDependencies": {
 		"nodemon": "^3.1.0"
 	},
-	"name": "locker-backend",
+	"name": "locker-api",
 	"description": "",
 	"version": "1.0.0",
 	"main": "index.js",
