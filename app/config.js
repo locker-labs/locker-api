@@ -9,7 +9,7 @@ class Config {
         this.serverPort = parseInt(process.env.SERVER_PORT, 10) || 3000;
         
         // Database settings
-        this.db_url = process.env.DB_URL
+        this.dbUrl = process.env.DB_URL
     }
 }
 

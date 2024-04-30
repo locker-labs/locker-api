@@ -1,6 +1,7 @@
 const startServer = require('./periphery/web/server');
+const { logger } = require('./dependencies');
 
 if (require.main === module) {
-    console.log("Starting server...")
+    logger.info("Starting server.")
     startServer();
 }

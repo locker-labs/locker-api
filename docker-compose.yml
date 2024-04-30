@@ -8,7 +8,7 @@ services:
   # ****************************************************************************
   db:
     image: library/postgres:12-alpine
-    container_name: locker_database
+    container_name: locker_dev_database
     environment:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
@@ -25,7 +25,7 @@ services:
   # **************************************************************************** 
   test_db:
     image: library/postgres:12-alpine
-    container_name: locker_database
+    container_name: locker_test_database
     environment:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5444

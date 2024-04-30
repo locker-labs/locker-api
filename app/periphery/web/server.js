@@ -1,17 +1,27 @@
 const express = require('express');
+const app = express('');
+
+
 const config = require('../../config');
-const app = express();
+const getOrCreatePool = require('../db/connect');
+
 
 function setupRoutes(app) {
     app.use('/lockers', require('./endpoints/public/lockers'));
 }
 
-function setupApplication() {
+
+async function startup() {
+    await getOrCreatePool();
+}
+
+async function setupApp() {
+    await startup();
     setupRoutes(app);
 }
 
 function startServer() {
-    setupApplication();
+    setupApp();
     app.listen(config.serverPort);
 }
 
