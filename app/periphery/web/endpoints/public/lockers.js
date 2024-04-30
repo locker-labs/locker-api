@@ -5,7 +5,7 @@ router.use(express.json());
 
 
 router.get('/', (req, res) => {
-    console.log(req.query.name)
+    // console.log(req.query.name)
     res.status(200).send({ message: "Hello World." });
 })
 

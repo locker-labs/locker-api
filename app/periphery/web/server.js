@@ -1,9 +1,9 @@
 const express = require('express');
+const config = require('../../config');
 const app = express();
 
-
 function setupRoutes(app) {
-    app.use('/users', require('./endpoints/public/lockers'));
+    app.use('/lockers', require('./endpoints/public/lockers'));
 }
 
 function setupApplication() {
@@ -12,8 +12,7 @@ function setupApplication() {
 
 function startServer() {
     setupApplication();
-    console.log("About to listen on port 3000")
-    app.listen(process.env.PORT || 3000);
+    app.listen(config.serverPort);
 }
 
 module.exports = startServer;
