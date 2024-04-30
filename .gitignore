@@ -1,0 +1,53 @@
+# Environment Variable Files
+*.env
+.secrets.*
+
+# Node
+node_modules/
+npm-debug.log
+npm-debug.log.*
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# TypeScript
+*.tsbuildinfo
+dist/
+
+# Editor directories and files
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+*.csv
+
+# Operating System
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# MacOS
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Other
+config.js
+config.json
+
+# Additional configuration and key files
+*.pem
+*.key
+
+# Code Editor
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# Miscellaenous
+notes.txt

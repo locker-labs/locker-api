@@ -1,0 +1,65 @@
+# Environment Variable Files
+*.env
+.secrets.*
+
+# Node
+node_modules/
+npm-debug.log
+npm-debug.log.*
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# TypeScript
+*.tsbuildinfo
+dist/
+
+#Ignoring git and cache folders
+.git
+.cache
+.gitignore
+
+#Ignoring all the markdown and class files
+*.md
+**/*.class
+
+#Ignore Dockerfile
+Dockerfile
+docker-compose.yml
+
+#Miscellaneous - remove some of these when configuring CI/CD (ex: tests)
+README.md
+
+# Operating System
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# MacOS
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor directories and files
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+*.csv
+
+# Other
+config.js
+config.json
+
+# Code Editor
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# Miscellaenous
+notes.txt
