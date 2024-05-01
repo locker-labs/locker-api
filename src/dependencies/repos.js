@@ -1,8 +1,3 @@
-
-
-
-
-
 async function getLockerRepo() {
-    // something
+	// something
 }
