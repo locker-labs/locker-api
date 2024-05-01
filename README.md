@@ -2,14 +2,12 @@
 
 This repository contains the Locker backend API.
 
-Typescript refactor
-[] js -> ts
-[] add types
-[] update exports to es modules
+# Database Migrations
 
-Misc
-[] db didn't connect: that might be okay
-[] env.sample
+### To generate database migrations:
 
-Database Schemas: they'll use typescript
-[] use drizzle
+`npm run migration:generate`
+
+### To migrate:
+
+`npm run migrate`

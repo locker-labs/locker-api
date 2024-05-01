@@ -2,7 +2,7 @@ import express, { Express } from "express";
 
 import config from "../../config";
 import { logger } from "../../dependencies";
-import getOrCreatePool from "../db/connect";
+import getOrCreateDatabase from "../db/connect";
 import lockerRouter from "./endpoints/public/lockers";
 
 function setupRoutes(app: Express): void {
@@ -10,7 +10,7 @@ function setupRoutes(app: Express): void {
 }
 
 async function startup(): Promise<void> {
-	await getOrCreatePool();
+	await getOrCreateDatabase();
 }
 
 async function setupApp(app: Express): Promise<void> {

@@ -13,6 +13,8 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"lint:check": "eslint . --ext .js,.ts",
+		"migrate": "pnpm tsx ./drizzle/migrate.ts",
+		"migration:generate": "pnpm drizzle-kit generate:pg",
 		"prepare": "husky",
 		"start": "node dist/app/index.js",
 		"test": "jest --coverage",
@@ -30,6 +32,7 @@
 	},
 	"dependencies": {
 		"dotenv": "^16.4.5",
+		"drizzle-orm": "^0.30.10",
 		"express": "^4.19.2",
 		"morgan": "^1.10.0",
 		"pg": "^8.11.5",
@@ -47,6 +50,7 @@
 		"@typescript-eslint/parser": "^7.8.0",
 		"commitizen": "^4.3.0",
 		"cz-conventional-changelog": "^3.3.0",
+		"drizzle-kit": "^0.20.17",
 		"eslint": "^8.57.0",
 		"eslint-config-airbnb": "^19.0.4",
 		"eslint-config-prettier": "^9.1.0",
@@ -56,9 +60,11 @@
 		"husky": "^9.0.11",
 		"jest": "^29.7.0",
 		"nodemon": "^3.1.0",
+		"pnpm": "^9.0.6",
 		"prettier": "^3.2.5",
 		"ts-jest": "^29.1.2",
 		"ts-node": "^10.9.2",
+		"tsx": "^4.8.2",
 		"typescript": "^5.4.5"
 	}
 }
