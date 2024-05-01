@@ -19,7 +19,11 @@ module.exports = {
 			"@typescript-eslint/parser": [".ts"],
 		},
 	},
-	extends: ["airbnb", "plugin:@typescript-eslint/recommended", "prettier"],
+	extends: [
+		"airbnb-base",
+		"plugin:@typescript-eslint/recommended",
+		"prettier",
+	],
 	plugins: ["prettier", "@typescript-eslint", "simple-import-sort"],
 	env: {
 		es2021: true,

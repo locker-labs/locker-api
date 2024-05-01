@@ -48,5 +48,8 @@ config.json
 *.sublime-project
 *.sublime-workspace
 
+# Coverage
+coverage/
+
 # Miscellaenous
 notes.txt

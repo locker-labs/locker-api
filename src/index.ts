@@ -1,7 +1,5 @@
-const startServer = require("./periphery/web/server");
-import { logger } from "./dependencies";
+import startServer from "./periphery/web/server";
 
 if (require.main === module) {
-	logger.info("Starting server.");
 	startServer();
 }
