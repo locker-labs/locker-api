@@ -6,9 +6,6 @@ module.exports = {
 		sourceType: "module",
 	},
 	settings: {
-		react: {
-			version: "detect",
-		},
 		"import/resolver": {
 			node: {
 				extensions: [".json", ".js", ".ts", ".d.ts"],
