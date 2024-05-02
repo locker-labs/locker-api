@@ -13,6 +13,8 @@ class Config {
 
 	dbUrl: string;
 
+	clerkSecretkey: string;
+
 	constructor() {
 		// Application settings
 		this.applicationName = process.env.APPLICATION_NAME || "locker";
@@ -25,6 +27,9 @@ class Config {
 
 		// Database settings
 		this.dbUrl = process.env.DB_URL!;
+
+		// Clerk
+		this.clerkSecretkey = process.env.CLERK_SECRET_KEY!;
 	}
 }
 

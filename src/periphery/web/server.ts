@@ -1,3 +1,4 @@
+import cors from "cors";
 import express, { Express } from "express";
 
 import config from "../../config";
@@ -6,6 +7,8 @@ import getOrCreateDatabase from "../db/connect";
 import lockerRouter from "./endpoints/public/lockers";
 
 function setupRoutes(app: Express): void {
+	app.use(cors());
+
 	app.use("/lockers", lockerRouter);
 }
 

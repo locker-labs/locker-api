@@ -1,1 +1,2 @@
-export { logger, stream } from "./logger.js";
+export { type AuthenticatedRequest, authRequired } from "./clients";
+export { logger, stream } from "./logger";
