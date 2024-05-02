@@ -7,11 +7,7 @@ import getOrCreateDatabase from "../db/connect";
 import lockerRouter from "./endpoints/public/lockers";
 
 function setupRoutes(app: Express): void {
-	app.use(
-		cors({
-			origin: "http://localhost:3000", // This allows dev frontend to make requests
-		})
-	);
+	app.use(cors());
 
 	app.use("/lockers", lockerRouter);
 }
