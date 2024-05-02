@@ -17,7 +17,7 @@ lockerRouter.use(morgan("combined", { stream }));
 lockerRouter.get(
 	"/",
 	authRequired,
-	(req: AuthenticatedRequest<Request>, res: Response) => {
+	(req: AuthenticatedRequest<Request>, res: Response): void => {
 		res.status(200).send({ message: "Hello World." });
 	}
 );
