@@ -10,13 +10,18 @@ import express, {
 } from "express";
 import morgan from "morgan";
 
-import CreateLockerRequest from "../../../../core/schemas/lockers";
+import {
+	CreateLockerRequest,
+	LockerRepoAdapter,
+} from "../../../../core/schemas/lockers";
 import {
 	AuthenticatedRequest,
 	authRequired,
+	getLockersRepo,
 	logger,
 	stream,
 } from "../../../../dependencies";
+import DuplicateRecordError from "../../../db/errors";
 
 const lockerRouter = express.Router();
 lockerRouter.use(express.json());
@@ -45,10 +50,43 @@ lockerRouter.post(
 	"/create",
 	authRequired,
 	validateRequest(CreateLockerRequest),
-	(req: AuthenticatedRequest<Request>, res: Response): void => {
-		// console.log("user:", req.auth.userId, "\n\n");
-		// console.log("body:", req.body);
-		res.status(200).send({ message: "Hello World." });
+	async (
+		req: AuthenticatedRequest<Request>,
+		res: Response
+	): Promise<void> => {
+		const locker: LockerRepoAdapter = {
+			userId: req.auth.userId,
+			seed: req.body.seed,
+			provider: req.body.provider,
+			ownerAddress: req.body.ownerAddress,
+			address: req.body.address,
+			chainId: req.body.chainId,
+		};
+
+		try {
+			const lockersRepo = await getLockersRepo();
+			await lockersRepo.create(locker);
+			res.status(200).send({ message: "Locker created successfully." });
+		} catch (error) {
+			if (error instanceof DuplicateRecordError) {
+				res.status(409).send({ error: error.message });
+			}
+		}
+	}
+);
+
+lockerRouter.get(
+	"/",
+	authRequired,
+	async (
+		req: AuthenticatedRequest<Request>,
+		res: Response
+	): Promise<void> => {
+		const lockersRepo = await getLockersRepo();
+		const lockers = await lockersRepo.retrieveMany({
+			userId: req.auth.userId,
+		});
+		res.status(200).json({ data: lockers });
 	}
 );
 

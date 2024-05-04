@@ -7,13 +7,11 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 
-import users from "./users";
-
 const evmTransactions = pgTable(
 	"evm_transactions",
 	{
 		id: serial("id").primaryKey(),
-		userId: serial("user_id").references(() => users.id),
+		userId: varchar("user_id", { length: 256 }).notNull(),
 		fromAddress: varchar("from_address", { length: 256 }).notNull(),
 		toAddress: varchar("to_address", { length: 256 }).notNull(),
 		value: integer("value").notNull(),

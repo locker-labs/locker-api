@@ -1,4 +1,4 @@
 export {
 	type AuthenticatedRequest,
 	authRequired,
-} from "../periphery/clients/clerk/auth";
+} from "../periphery/clients/auth";

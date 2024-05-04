@@ -10,7 +10,7 @@ import evmTransactions from "./evmTransactions";
 
 export const tokenTransactions = pgTable("token_transactions", {
 	id: serial("id").primaryKey(),
-	evmTxId: serial("evm_tx_id").references(() => evmTransactions.id),
+	evmTxId: integer("evm_tx_id").references(() => evmTransactions.id),
 	fromAddress: varchar("from_address", { length: 256 }).notNull(),
 	toAddress: varchar("to_address", { length: 256 }).notNull(),
 	contractAddress: varchar("contract_address", { length: 256 }).notNull(),

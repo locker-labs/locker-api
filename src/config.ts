@@ -15,6 +15,14 @@ class Config {
 
 	clerkSecretkey: string;
 
+	sepolia_rpc: string;
+
+	base_sepolia_rpc: string;
+
+	arbitrum_sepolia_rpc: string;
+
+	optimism_sepolia_rpc: string;
+
 	constructor() {
 		// Application settings
 		this.applicationName = process.env.APPLICATION_NAME || "locker";
@@ -30,6 +38,15 @@ class Config {
 
 		// Clerk
 		this.clerkSecretkey = process.env.CLERK_SECRET_KEY!;
+
+		// RPCs
+		this.sepolia_rpc = process.env.SEPOLIA_RPC!;
+
+		this.base_sepolia_rpc = process.env.BASE_SEPOLIA_RPC!;
+
+		this.arbitrum_sepolia_rpc = process.env.ARBITRUM_SEPOLIA_RPC!;
+
+		this.optimism_sepolia_rpc = process.env.OPTIMISM_SEPOLIA_RPC!;
 	}
 }
 

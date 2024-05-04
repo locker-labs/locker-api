@@ -15,7 +15,7 @@ function setupRoutes(app: Express): void {
 }
 
 async function startup(): Promise<void> {
-	await getOrCreateDatabase();
+	await getOrCreateDatabase(logger);
 }
 
 async function setupApp(app: Express): Promise<void> {

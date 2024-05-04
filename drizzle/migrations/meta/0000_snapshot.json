@@ -1,5 +1,5 @@
 {
-	"id": "3e7450ba-9c04-4e83-9925-12c0e1e3b0cc",
+	"id": "c28ffb4c-2920-4897-ac63-7e491f44cf8c",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "5",
 	"dialect": "pg",
@@ -16,7 +16,7 @@
 				},
 				"user_id": {
 					"name": "user_id",
-					"type": "serial",
+					"type": "varchar(256)",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -84,17 +84,7 @@
 					"isUnique": true
 				}
 			},
-			"foreignKeys": {
-				"evm_transactions_user_id_users_id_fk": {
-					"name": "evm_transactions_user_id_users_id_fk",
-					"tableFrom": "evm_transactions",
-					"tableTo": "users",
-					"columnsFrom": ["user_id"],
-					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				}
-			},
+			"foreignKeys": {},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {}
 		},
@@ -110,7 +100,7 @@
 				},
 				"user_id": {
 					"name": "user_id",
-					"type": "serial",
+					"type": "varchar(256)",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -146,9 +136,9 @@
 				},
 				"deployment_tx_id": {
 					"name": "deployment_tx_id",
-					"type": "serial",
+					"type": "integer",
 					"primaryKey": false,
-					"notNull": true
+					"notNull": false
 				},
 				"created_at": {
 					"name": "created_at",
@@ -173,15 +163,6 @@
 				}
 			},
 			"foreignKeys": {
-				"lockers_user_id_users_id_fk": {
-					"name": "lockers_user_id_users_id_fk",
-					"tableFrom": "lockers",
-					"tableTo": "users",
-					"columnsFrom": ["user_id"],
-					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				},
 				"lockers_deployment_tx_id_evm_transactions_id_fk": {
 					"name": "lockers_deployment_tx_id_evm_transactions_id_fk",
 					"tableFrom": "lockers",
@@ -207,9 +188,9 @@
 				},
 				"evm_tx_id": {
 					"name": "evm_tx_id",
-					"type": "serial",
+					"type": "integer",
 					"primaryKey": false,
-					"notNull": true
+					"notNull": false
 				},
 				"from_address": {
 					"name": "from_address",
@@ -262,48 +243,6 @@
 					"onUpdate": "no action"
 				}
 			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {}
-		},
-		"users": {
-			"name": "users",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "serial",
-					"primaryKey": true,
-					"notNull": true
-				},
-				"email": {
-					"name": "email",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"created_at": {
-					"name": "created_at",
-					"type": "timestamp (6) with time zone",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				},
-				"updated_at": {
-					"name": "updated_at",
-					"type": "timestamp (6) with time zone",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				}
-			},
-			"indexes": {
-				"email_idx": {
-					"name": "email_idx",
-					"columns": ["email"],
-					"isUnique": true
-				}
-			},
-			"foreignKeys": {},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {}
 		}
