@@ -1,4 +1,4 @@
-import startServer from "./periphery/web/server";
+import startServer from "./infrastructure/web/server";
 
 if (require.main === module) {
 	startServer();

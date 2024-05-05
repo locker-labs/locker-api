@@ -1,6 +1,6 @@
-import ILockersRepo from "../core/interfaces/repos/lockers";
-import getOrCreateDatabase from "../periphery/db/connect";
-import LockersRepo from "../periphery/db/repos/lockers";
+import getOrCreateDatabase from "../infrastructure/db/connect";
+import LockersRepo from "../infrastructure/db/repos/lockers";
+import ILockersRepo from "../usecases/interfaces/repos/lockers";
 import { logger } from "./logger";
 
 async function getLockersRepo(): Promise<ILockersRepo> {

@@ -11,16 +11,16 @@ import express, {
 import morgan from "morgan";
 
 import {
-	CreateLockerRequest,
-	LockerRepoAdapter,
-} from "../../../../core/schemas/lockers";
-import {
 	AuthenticatedRequest,
 	authRequired,
 	getLockersRepo,
 	logger,
 	stream,
 } from "../../../../dependencies";
+import {
+	CreateLockerRequest,
+	LockerRepoAdapter,
+} from "../../../../usecases/schemas/lockers";
 import DuplicateRecordError from "../../../db/errors";
 
 const lockerRouter = express.Router();

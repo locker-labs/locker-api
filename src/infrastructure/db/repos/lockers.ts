@@ -1,8 +1,11 @@
 import { and, eq, or } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import ILockersRepo from "../../../core/interfaces/repos/lockers";
-import { LockerInDb, LockerRepoAdapter } from "../../../core/schemas/lockers";
+import ILockersRepo from "../../../usecases/interfaces/repos/lockers";
+import {
+	LockerInDb,
+	LockerRepoAdapter,
+} from "../../../usecases/schemas/lockers";
 import DuplicateRecordError from "../errors";
 import lockers from "../models/lockers";
 
