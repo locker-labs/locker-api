@@ -20,6 +20,8 @@ import {
 import {
 	CreateLockerRequest,
 	LockerRepoAdapter,
+	UpdateLockerRepoAdapter,
+	UpdateLockerRequest,
 } from "../../../../usecases/schemas/lockers";
 import DuplicateRecordError from "../../../db/errors";
 
@@ -63,14 +65,43 @@ lockerRouter.post(
 			chainId: req.body.chainId,
 		};
 
+		const lockersRepo = await getLockersRepo();
+
 		try {
-			const lockersRepo = await getLockersRepo();
-			await lockersRepo.create(locker);
-			res.status(200).send({ message: "Locker created successfully." });
+			const lockerInDb = await lockersRepo.create(locker);
+			res.status(201).send({ data: lockerInDb });
 		} catch (error) {
 			if (error instanceof DuplicateRecordError) {
 				res.status(409).send({ error: error.message });
 			}
+		}
+	}
+);
+
+lockerRouter.patch(
+	"/:lockerId",
+	authRequired,
+	validateRequest(UpdateLockerRequest),
+	async (
+		req: AuthenticatedRequest<Request>,
+		res: Response
+	): Promise<void> => {
+		const lockerUpdate: UpdateLockerRepoAdapter = {
+			ownerAddress: req.body.ownerAddress,
+			deploymentTxHash: req.body.deploymentTxHash,
+		};
+
+		const lockersRepo = await getLockersRepo();
+
+		const updatedLocker = await lockersRepo.update(
+			parseInt(req.params.lockerId, 10),
+			lockerUpdate
+		);
+
+		if (!updatedLocker) {
+			res.status(404).send({ error: "Locker not found." });
+		} else {
+			res.status(200).send({ data: updatedLocker });
 		}
 	}
 );

@@ -1,257 +1,257 @@
 {
-	"id": "c28ffb4c-2920-4897-ac63-7e491f44cf8c",
-	"prevId": "00000000-0000-0000-0000-000000000000",
-	"version": "5",
-	"dialect": "pg",
-	"tables": {
-		"evm_transactions": {
-			"name": "evm_transactions",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "serial",
-					"primaryKey": true,
-					"notNull": true
-				},
-				"user_id": {
-					"name": "user_id",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"from_address": {
-					"name": "from_address",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"to_address": {
-					"name": "to_address",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"value": {
-					"name": "value",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"tx_hash": {
-					"name": "tx_hash",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"block_hash": {
-					"name": "block_hash",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"gas_price": {
-					"name": "gas_price",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"chain_id": {
-					"name": "chain_id",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"created_at": {
-					"name": "created_at",
-					"type": "timestamp (6) with time zone",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				},
-				"updated_at": {
-					"name": "updated_at",
-					"type": "timestamp (6) with time zone",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				}
-			},
-			"indexes": {
-				"tx_hash_chain_id_idx": {
-					"name": "tx_hash_chain_id_idx",
-					"columns": ["tx_hash", "chain_id"],
-					"isUnique": true
-				}
-			},
-			"foreignKeys": {},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {}
-		},
-		"lockers": {
-			"name": "lockers",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "serial",
-					"primaryKey": true,
-					"notNull": true
-				},
-				"user_id": {
-					"name": "user_id",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"seed": {
-					"name": "seed",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"provider": {
-					"name": "provider",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"address": {
-					"name": "address",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"owner_address": {
-					"name": "owner_address",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"chain_id": {
-					"name": "chain_id",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"deployment_tx_id": {
-					"name": "deployment_tx_id",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"created_at": {
-					"name": "created_at",
-					"type": "timestamp (6) with time zone",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				},
-				"updated_at": {
-					"name": "updated_at",
-					"type": "timestamp (6) with time zone",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				}
-			},
-			"indexes": {
-				"address_chain_id_idx": {
-					"name": "address_chain_id_idx",
-					"columns": ["address", "chain_id"],
-					"isUnique": true
-				}
-			},
-			"foreignKeys": {
-				"lockers_deployment_tx_id_evm_transactions_id_fk": {
-					"name": "lockers_deployment_tx_id_evm_transactions_id_fk",
-					"tableFrom": "lockers",
-					"tableTo": "evm_transactions",
-					"columnsFrom": ["deployment_tx_id"],
-					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {}
-		},
-		"token_transactions": {
-			"name": "token_transactions",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "serial",
-					"primaryKey": true,
-					"notNull": true
-				},
-				"evm_tx_id": {
-					"name": "evm_tx_id",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"from_address": {
-					"name": "from_address",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"to_address": {
-					"name": "to_address",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"contract_address": {
-					"name": "contract_address",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"amount": {
-					"name": "amount",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"created_at": {
-					"name": "created_at",
-					"type": "timestamp (6) with time zone",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				},
-				"updated_at": {
-					"name": "updated_at",
-					"type": "timestamp (6) with time zone",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"token_transactions_evm_tx_id_evm_transactions_id_fk": {
-					"name": "token_transactions_evm_tx_id_evm_transactions_id_fk",
-					"tableFrom": "token_transactions",
-					"tableTo": "evm_transactions",
-					"columnsFrom": ["evm_tx_id"],
-					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {}
-		}
-	},
-	"enums": {},
-	"schemas": {},
-	"_meta": {
-		"columns": {},
-		"schemas": {},
-		"tables": {}
-	}
+  "id": "78e596c7-40f9-4127-9091-3b3eb560fb12",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "evm_transactions": {
+      "name": "evm_transactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "from_address": {
+          "name": "from_address",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to_address": {
+          "name": "to_address",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tx_hash": {
+          "name": "tx_hash",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "block_hash": {
+          "name": "block_hash",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gas_price": {
+          "name": "gas_price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "tx_hash_chain_id_idx": {
+          "name": "tx_hash_chain_id_idx",
+          "columns": [
+            "tx_hash",
+            "chain_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "lockers": {
+      "name": "lockers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seed": {
+          "name": "seed",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider": {
+          "name": "provider",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "owner_address": {
+          "name": "owner_address",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deployment_tx_hash": {
+          "name": "deployment_tx_hash",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "address_chain_id_idx": {
+          "name": "address_chain_id_idx",
+          "columns": [
+            "address",
+            "chain_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "token_transactions": {
+      "name": "token_transactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "evm_tx_id": {
+          "name": "evm_tx_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "from_address": {
+          "name": "from_address",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to_address": {
+          "name": "to_address",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contract_address": {
+          "name": "contract_address",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "token_transactions_evm_tx_id_evm_transactions_id_fk": {
+          "name": "token_transactions_evm_tx_id_evm_transactions_id_fk",
+          "tableFrom": "token_transactions",
+          "tableTo": "evm_transactions",
+          "columnsFrom": [
+            "evm_tx_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
 }

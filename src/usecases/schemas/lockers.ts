@@ -1,4 +1,5 @@
-import { IsString, Length } from "class-validator";
+/* eslint-disable max-classes-per-file */
+import { IsOptional, IsString, Length } from "class-validator";
 
 class CreateLockerRequest {
 	@IsString()
@@ -22,10 +23,28 @@ class CreateLockerRequest {
 	chainId!: string;
 }
 
+class UpdateLockerRequest {
+	@IsOptional()
+	@IsString()
+	@Length(42, 42) // addresses are exactly 42 characters
+	ownerAddress?: string;
+
+	@IsOptional()
+	@IsString()
+	@Length(66, 66) // evm tx hashes are exactly 66 characters
+	deploymentTxHash?: string;
+}
+
+interface UpdateLockerRepoAdapter {
+	deploymentTxHash?: string;
+	ownerAddress?: string;
+}
+
 interface LockerRepoAdapter {
 	userId: string;
 	seed: string;
 	provider: string;
+	deploymentTxHash?: string;
 	ownerAddress: string;
 	address: string;
 	chainId: number;
@@ -38,4 +57,10 @@ interface LockerInDb extends LockerRepoAdapter {
 	deploymentTxId: number;
 }
 
-export { CreateLockerRequest, type LockerInDb, type LockerRepoAdapter };
+export {
+	CreateLockerRequest,
+	type LockerInDb,
+	type LockerRepoAdapter,
+	type UpdateLockerRepoAdapter,
+	UpdateLockerRequest,
+};

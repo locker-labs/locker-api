@@ -7,8 +7,6 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 
-import evmTransactions from "./evmTransactions";
-
 const lockers = pgTable(
 	"lockers",
 	{
@@ -19,9 +17,7 @@ const lockers = pgTable(
 		address: varchar("address", { length: 256 }).notNull(),
 		ownerAddress: varchar("owner_address", { length: 256 }).notNull(),
 		chainId: integer("chain_id").notNull(),
-		deploymentTxId: integer("deployment_tx_id").references(
-			() => evmTransactions.id
-		),
+		deploymentTxHash: varchar("deployment_tx_hash"),
 		createdAt: timestamp("created_at", {
 			mode: "date",
 			precision: 6,

@@ -5,6 +5,7 @@ import ILockersRepo from "../../../usecases/interfaces/repos/lockers";
 import {
 	LockerInDb,
 	LockerRepoAdapter,
+	UpdateLockerRepoAdapter,
 } from "../../../usecases/schemas/lockers";
 import DuplicateRecordError from "../errors";
 import lockers from "../models/lockers";
@@ -35,6 +36,23 @@ export default class LockersRepo implements ILockersRepo {
 			}
 			throw new Error(e.message);
 		}
+	}
+
+	async update(
+		lockerId: number,
+		updates: UpdateLockerRepoAdapter
+	): Promise<LockerInDb | null> {
+		if (Object.keys(updates).length === 0) {
+			throw new Error("No updates provided.");
+		}
+
+		const result = await this.db
+			.update(lockers)
+			.set(updates)
+			.where(eq(lockers.id, lockerId))
+			.returning();
+
+		return result.length > 0 ? (result[0] as LockerInDb) : null;
 	}
 
 	async retrieve(options: {

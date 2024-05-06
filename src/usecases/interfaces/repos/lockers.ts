@@ -1,4 +1,8 @@
-import { LockerInDb, LockerRepoAdapter } from "../../schemas/lockers";
+import {
+	LockerInDb,
+	LockerRepoAdapter,
+	UpdateLockerRepoAdapter,
+} from "../../schemas/lockers";
 
 export default interface ILockersRepo {
 	create(locker: LockerRepoAdapter): Promise<LockerInDb>;
@@ -11,4 +15,8 @@ export default interface ILockersRepo {
 		userId?: string;
 		ownerAddress?: string;
 	}): Promise<LockerInDb[]>;
+	update(
+		lockerId: number,
+		updates: UpdateLockerRepoAdapter
+	): Promise<LockerInDb | null>;
 }
