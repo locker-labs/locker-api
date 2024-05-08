@@ -1,5 +1,7 @@
 /* eslint-disable max-classes-per-file */
-import { IsOptional, IsString, Length } from "class-validator";
+import { IsEnum, IsOptional, IsString, Length } from "class-validator";
+
+import ChainIds from "./blockchains";
 
 class CreateLockerRequest {
 	@IsString()
@@ -18,9 +20,8 @@ class CreateLockerRequest {
 	@Length(1, 64)
 	provider!: string;
 
-	@IsString()
-	@Length(1, 32)
-	chainId!: string;
+	@IsEnum(ChainIds)
+	chainId!: ChainIds;
 }
 
 class UpdateLockerRequest {
