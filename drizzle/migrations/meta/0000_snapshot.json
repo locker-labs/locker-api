@@ -1,5 +1,5 @@
 {
-	"id": "78e596c7-40f9-4127-9091-3b3eb560fb12",
+	"id": "a321a608-1553-4291-b68a-322f9fc345af",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "5",
 	"dialect": "pg",
@@ -106,7 +106,7 @@
 				},
 				"seed": {
 					"name": "seed",
-					"type": "varchar(256)",
+					"type": "integer",
 					"primaryKey": false,
 					"notNull": true
 				},

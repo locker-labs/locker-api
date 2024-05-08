@@ -12,7 +12,7 @@ const lockers = pgTable(
 	{
 		id: serial("id").primaryKey(),
 		userId: varchar("user_id", { length: 256 }).notNull(),
-		seed: varchar("seed", { length: 256 }).notNull(),
+		seed: integer("seed").notNull(),
 		provider: varchar("provider", { length: 256 }).notNull(),
 		address: varchar("address", { length: 256 }).notNull(),
 		ownerAddress: varchar("owner_address", { length: 256 }).notNull(),
