@@ -15,13 +15,17 @@ class Config {
 
 	clerkSecretkey: string;
 
-	sepolia_rpc: string;
+	sepoliaRpc: string;
 
-	base_sepolia_rpc: string;
+	baseSepoliaRpc: string;
 
-	arbitrum_sepolia_rpc: string;
+	arbitrumSepoliaRpc: string;
 
-	optimism_sepolia_rpc: string;
+	optimismSepoliaRpc: string;
+
+	moralisStreamId: string;
+
+	moralisApiKey: string;
 
 	constructor() {
 		// Application settings
@@ -40,13 +44,17 @@ class Config {
 		this.clerkSecretkey = process.env.CLERK_SECRET_KEY!;
 
 		// RPCs
-		this.sepolia_rpc = process.env.SEPOLIA_RPC!;
+		this.sepoliaRpc = process.env.SEPOLIA_RPC!;
 
-		this.base_sepolia_rpc = process.env.BASE_SEPOLIA_RPC!;
+		this.baseSepoliaRpc = process.env.BASE_SEPOLIA_RPC!;
 
-		this.arbitrum_sepolia_rpc = process.env.ARBITRUM_SEPOLIA_RPC!;
+		this.arbitrumSepoliaRpc = process.env.ARBITRUM_SEPOLIA_RPC!;
 
-		this.optimism_sepolia_rpc = process.env.OPTIMISM_SEPOLIA_RPC!;
+		this.optimismSepoliaRpc = process.env.OPTIMISM_SEPOLIA_RPC!;
+
+		this.moralisStreamId = process.env.MORALIS_STREAM_ID!;
+
+		this.moralisApiKey = process.env.MORALIS_API_KEY!;
 	}
 }
 
