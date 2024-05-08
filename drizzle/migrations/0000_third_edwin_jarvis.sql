@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS "evm_transactions" (
 CREATE TABLE IF NOT EXISTS "lockers" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" varchar(256) NOT NULL,
-	"seed" varchar(256) NOT NULL,
+	"seed" integer NOT NULL,
 	"provider" varchar(256) NOT NULL,
 	"address" varchar(256) NOT NULL,
 	"owner_address" varchar(256) NOT NULL,

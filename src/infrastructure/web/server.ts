@@ -2,20 +2,23 @@ import cors from "cors";
 import express, { Express } from "express";
 
 import config from "../../config";
-import { logger } from "../../dependencies";
+import { getIndexerClient, logger } from "../../dependencies";
 import getOrCreateDatabase from "../db/connect";
+import moralisRouter from "./endpoints/integrations/moralis";
 import healthRouter from "./endpoints/metrics/health";
 import lockerRouter from "./endpoints/public/lockers";
 
 function setupRoutes(app: Express): void {
 	app.use(cors());
 
-	app.use("/lockers", lockerRouter);
-	app.use("/health", healthRouter);
+	app.use("/public/lockers", lockerRouter);
+	app.use("/metrics/health", healthRouter);
+	app.use("/integrations/moralis", moralisRouter);
 }
 
 async function startup(): Promise<void> {
 	await getOrCreateDatabase(logger);
+	await getIndexerClient();
 }
 
 async function setupApp(app: Express): Promise<void> {

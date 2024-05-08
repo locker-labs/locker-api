@@ -13,6 +13,7 @@ import morgan from "morgan";
 import {
 	AuthenticatedRequest,
 	authRequired,
+	getIndexerClient,
 	getLockersRepo,
 	logger,
 	stream,
@@ -65,16 +66,24 @@ lockerRouter.post(
 			chainId: req.body.chainId,
 		};
 
+		// store locker in database
 		const lockersRepo = await getLockersRepo();
-
+		let lockerInDb;
 		try {
-			const lockerInDb = await lockersRepo.create(locker);
-			res.status(201).send({ data: lockerInDb });
+			lockerInDb = await lockersRepo.create(locker);
 		} catch (error) {
 			if (error instanceof DuplicateRecordError) {
 				res.status(409).send({ error: error.message });
+				return;
 			}
+			res.status(500).send({ error: "An unexpected error occurred." });
+			return;
 		}
+
+		// add locker address to indexer
+		const indexer = await getIndexerClient();
+		await indexer.watchOnChain(locker.address);
+		res.status(201).send({ data: lockerInDb });
 	}
 );
 

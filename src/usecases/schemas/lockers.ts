@@ -4,15 +4,15 @@ import { IsOptional, IsString, Length } from "class-validator";
 class CreateLockerRequest {
 	@IsString()
 	@Length(42, 42) // addresses are exactly 42 characters
-	address!: string;
+	address!: `0x${string}`;
 
 	@IsString()
 	@Length(42, 42) // addresses are exactly 42 characters
-	ownerAddress!: string;
+	ownerAddress!: `0x${string}`;
 
 	@IsString()
 	@Length(1, 32)
-	seed!: string;
+	seed!: number;
 
 	@IsString()
 	@Length(1, 64)
@@ -27,12 +27,12 @@ class UpdateLockerRequest {
 	@IsOptional()
 	@IsString()
 	@Length(42, 42) // addresses are exactly 42 characters
-	ownerAddress?: string;
+	ownerAddress?: `0x${string}`;
 
 	@IsOptional()
 	@IsString()
 	@Length(66, 66) // evm tx hashes are exactly 66 characters
-	deploymentTxHash?: string;
+	deploymentTxHash?: `0x${string}`;
 }
 
 interface UpdateLockerRepoAdapter {
@@ -42,11 +42,11 @@ interface UpdateLockerRepoAdapter {
 
 interface LockerRepoAdapter {
 	userId: string;
-	seed: string;
+	seed: number;
 	provider: string;
-	deploymentTxHash?: string;
-	ownerAddress: string;
-	address: string;
+	deploymentTxHash?: `0x${string}`;
+	ownerAddress: `0x${string}`;
+	address: `0x${string}`;
 	chainId: number;
 }
 

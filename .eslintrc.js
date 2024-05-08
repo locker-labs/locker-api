@@ -37,6 +37,10 @@ module.exports = {
 		"simple-import-sort/imports": "error",
 		"simple-import-sort/exports": "error",
 		"@typescript-eslint/no-shadow": "error",
+		"import/no-extraneous-dependencies": [
+			"error",
+			{ devDependencies: true },
+		],
 		"import/extensions": "off",
 		"no-useless-constructor": "off",
 		"no-underscore-dangle": "off",
