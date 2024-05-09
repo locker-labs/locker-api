@@ -4,4 +4,4 @@ export {
 	getIndexerClient,
 } from "./clients";
 export { logger, stream } from "./logger";
-export { getLockersRepo } from "./repos";
+export { getLockersRepo, getTokenTxsRepo } from "./repos";

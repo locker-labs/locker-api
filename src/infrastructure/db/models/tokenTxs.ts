@@ -1,4 +1,5 @@
 import {
+	bigint,
 	integer,
 	pgTable,
 	serial,
@@ -7,19 +8,19 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 
-const evmTransactions = pgTable(
-	"evm_transactions",
+import lockers from "./lockers";
+
+export const tokenTxs = pgTable(
+	"token_transactions",
 	{
 		id: serial("id").primaryKey(),
-		userId: varchar("user_id", { length: 256 }).notNull(),
+		lockerId: integer("locker_id").references(() => lockers.id),
+		chainId: integer("chain_id").notNull(),
+		txHash: varchar("tx_hash", { length: 256 }).notNull(),
 		fromAddress: varchar("from_address", { length: 256 }).notNull(),
 		toAddress: varchar("to_address", { length: 256 }).notNull(),
-		value: integer("value").notNull(),
-		txHash: varchar("tx_hash", { length: 256 }).notNull(),
-		blockHash: varchar("block_hash", { length: 256 }),
-		blockNumber: integer("value"),
-		gasPirce: integer("gas_price"),
-		chainId: integer("chain_id").notNull(),
+		contractAddress: varchar("contract_address", { length: 256 }).notNull(),
+		amount: bigint("amount", { mode: "bigint" }).notNull(),
 		createdAt: timestamp("created_at", {
 			mode: "date",
 			precision: 6,
@@ -37,11 +38,11 @@ const evmTransactions = pgTable(
 			.notNull(),
 	},
 	(table) => ({
-		txHashChainIdIdx: uniqueIndex("tx_hash_chain_id_idx").on(
+		addressChainIdIdx: uniqueIndex("tx_hash_chain_id_idx").on(
 			table.txHash,
 			table.chainId
 		),
 	})
 );
 
-export default evmTransactions;
+export default tokenTxs;

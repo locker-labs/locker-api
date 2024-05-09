@@ -43,6 +43,7 @@
 		"moralis": "^2.26.1",
 		"morgan": "^1.10.0",
 		"pg": "^8.11.5",
+		"web3": "^4.8.0",
 		"winston": "^3.13.0"
 	},
 	"devDependencies": {
@@ -56,6 +57,7 @@
 		"@types/morgan": "^1.9.9",
 		"@types/node": "^20.12.7",
 		"@types/pg": "^8.11.5",
+		"@types/web3": "^1.2.2",
 		"@typescript-eslint/eslint-plugin": "^7.8.0",
 		"@typescript-eslint/parser": "^7.8.0",
 		"commitizen": "^4.3.0",

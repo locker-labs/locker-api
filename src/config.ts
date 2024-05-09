@@ -27,6 +27,8 @@ class Config {
 
 	moralisApiKey: string;
 
+	moralisStreamSecret: string;
+
 	constructor() {
 		// Application settings
 		this.applicationName = process.env.APPLICATION_NAME || "locker";
@@ -55,6 +57,8 @@ class Config {
 		this.moralisStreamId = process.env.MORALIS_STREAM_ID!;
 
 		this.moralisApiKey = process.env.MORALIS_API_KEY!;
+
+		this.moralisStreamSecret = process.env.MORALIS_STREAM_SECRET!;
 	}
 }
 
