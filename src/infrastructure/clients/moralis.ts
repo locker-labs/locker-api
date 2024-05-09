@@ -33,6 +33,7 @@ export default class MoralisClient implements IIndexerClient {
 				signature: providedSignature,
 			});
 		} catch (e: unknown) {
+			console.log("error", e);
 			throw new InvalidSignature("The webhook signature is invalid.");
 		}
 	}

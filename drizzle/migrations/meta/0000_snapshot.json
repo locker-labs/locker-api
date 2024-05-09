@@ -1,93 +1,9 @@
 {
-	"id": "a321a608-1553-4291-b68a-322f9fc345af",
+	"id": "1161dd08-b813-4118-a94d-cf0c17f2e424",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "5",
 	"dialect": "pg",
 	"tables": {
-		"evm_transactions": {
-			"name": "evm_transactions",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "serial",
-					"primaryKey": true,
-					"notNull": true
-				},
-				"user_id": {
-					"name": "user_id",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"from_address": {
-					"name": "from_address",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"to_address": {
-					"name": "to_address",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"value": {
-					"name": "value",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"tx_hash": {
-					"name": "tx_hash",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"block_hash": {
-					"name": "block_hash",
-					"type": "varchar(256)",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"gas_price": {
-					"name": "gas_price",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"chain_id": {
-					"name": "chain_id",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"created_at": {
-					"name": "created_at",
-					"type": "timestamp (6) with time zone",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				},
-				"updated_at": {
-					"name": "updated_at",
-					"type": "timestamp (6) with time zone",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				}
-			},
-			"indexes": {
-				"tx_hash_chain_id_idx": {
-					"name": "tx_hash_chain_id_idx",
-					"columns": ["tx_hash", "chain_id"],
-					"isUnique": true
-				}
-			},
-			"foreignKeys": {},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {}
-		},
 		"lockers": {
 			"name": "lockers",
 			"schema": "",
@@ -176,11 +92,23 @@
 					"primaryKey": true,
 					"notNull": true
 				},
-				"evm_tx_id": {
-					"name": "evm_tx_id",
+				"locker_id": {
+					"name": "locker_id",
 					"type": "integer",
 					"primaryKey": false,
 					"notNull": false
+				},
+				"chain_id": {
+					"name": "chain_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"tx_hash": {
+					"name": "tx_hash",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
 				},
 				"from_address": {
 					"name": "from_address",
@@ -221,13 +149,19 @@
 					"default": "now()"
 				}
 			},
-			"indexes": {},
+			"indexes": {
+				"tx_hash_chain_id_idx": {
+					"name": "tx_hash_chain_id_idx",
+					"columns": ["tx_hash", "chain_id"],
+					"isUnique": true
+				}
+			},
 			"foreignKeys": {
-				"token_transactions_evm_tx_id_evm_transactions_id_fk": {
-					"name": "token_transactions_evm_tx_id_evm_transactions_id_fk",
+				"token_transactions_locker_id_lockers_id_fk": {
+					"name": "token_transactions_locker_id_lockers_id_fk",
 					"tableFrom": "token_transactions",
-					"tableTo": "evm_transactions",
-					"columnsFrom": ["evm_tx_id"],
+					"tableTo": "lockers",
+					"columnsFrom": ["locker_id"],
 					"columnsTo": ["id"],
 					"onDelete": "no action",
 					"onUpdate": "no action"
