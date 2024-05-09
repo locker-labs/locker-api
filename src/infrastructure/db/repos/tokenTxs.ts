@@ -1,4 +1,4 @@
-import { eq, or } from "drizzle-orm";
+import { desc, eq, or } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import ITokenTxsRepo from "../../../usecases/interfaces/repos/tokenTxs";
@@ -73,7 +73,8 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 		const results = await this.db
 			.select()
 			.from(tokenTxs)
-			.where(eq(tokenTxs.lockerId, options.lockerId));
+			.where(eq(tokenTxs.lockerId, options.lockerId))
+			.orderBy(desc(tokenTxs.createdAt));
 		return results.map((result) => result as TokenTxInDb);
 	}
 }

@@ -59,25 +59,43 @@ moralisRouter.post(
 			}
 		}
 
+		// 2. store tx data in database
 		if (req.body.txs.length > 0) {
-			// 2. store tx data in database
 			const lockersRepo = await getLockersRepo();
-			const locker = await lockersRepo.retrieve({
-				address: req.body.txs[0].toAddress,
-				chainId: parseInt(req.body.chainId, 16),
-			});
-
 			const tokenTxsRepo = await getTokenTxsRepo();
-			const tokenTx = {
-				lockerId: locker!.id,
-				contractAddress:
-					"0x0000000000000000000000000000000000000000" as `0x${string}`,
-				txHash: req.body.txs[0].hash,
-				fromAddress: req.body.txs[0].fromAddress,
-				toAddress: req.body.txs[0].toAddress,
-				amount: BigInt(req.body.txs[0].value),
-				chainId: parseInt(req.body.chainId, 16),
-			};
+			let tokenTx;
+			if (req.body.erc20Transfers.length > 0) {
+				const locker = await lockersRepo.retrieve({
+					address: req.body.erc20Transfers[0].to,
+					chainId: parseInt(req.body.chainId, 16),
+				});
+				tokenTx = {
+					lockerId: locker!.id,
+					contractAddress: req.body.erc20Transfers[0]
+						.contract as `0x${string}`,
+					txHash: req.body.erc20Transfers[0].transactionHash,
+					fromAddress: req.body.erc20Transfers[0].from,
+					toAddress: req.body.erc20Transfers[0].to,
+					amount: BigInt(req.body.erc20Transfers[0].value),
+					chainId: parseInt(req.body.chainId, 16),
+				};
+			} else {
+				// assume ETH transfer
+				const locker = await lockersRepo.retrieve({
+					address: req.body.txs[0].toAddress,
+					chainId: parseInt(req.body.chainId, 16),
+				});
+				tokenTx = {
+					lockerId: locker!.id,
+					contractAddress:
+						"0x0000000000000000000000000000000000000000" as `0x${string}`,
+					txHash: req.body.txs[0].hash,
+					fromAddress: req.body.txs[0].fromAddress,
+					toAddress: req.body.txs[0].toAddress,
+					amount: BigInt(req.body.txs[0].value),
+					chainId: parseInt(req.body.chainId, 16),
+				};
+			}
 
 			try {
 				await tokenTxsRepo.create(tokenTx);
