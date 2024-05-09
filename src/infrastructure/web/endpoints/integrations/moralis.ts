@@ -67,7 +67,6 @@ moralisRouter.post(
 			if (req.body.erc20Transfers.length > 0) {
 				const locker = await lockersRepo.retrieve({
 					address: req.body.erc20Transfers[0].to,
-					chainId: parseInt(req.body.chainId, 16),
 				});
 				tokenTx = {
 					lockerId: locker!.id,
@@ -83,7 +82,6 @@ moralisRouter.post(
 				// assume ETH transfer
 				const locker = await lockersRepo.retrieve({
 					address: req.body.txs[0].toAddress,
-					chainId: parseInt(req.body.chainId, 16),
 				});
 				tokenTx = {
 					lockerId: locker!.id,

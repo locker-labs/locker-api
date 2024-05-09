@@ -19,9 +19,6 @@ class CreateLockerRequest {
 	@IsString()
 	@Length(1, 64)
 	provider!: string;
-
-	@IsEnum(ChainIds)
-	chainId!: ChainIds;
 }
 
 class UpdateLockerRequest {
@@ -31,6 +28,10 @@ class UpdateLockerRequest {
 	ownerAddress?: `0x${string}`;
 
 	@IsOptional()
+	@IsEnum(ChainIds)
+	chainId?: ChainIds;
+
+	@IsOptional()
 	@IsString()
 	@Length(66, 66) // evm tx hashes are exactly 66 characters
 	deploymentTxHash?: `0x${string}`;
@@ -38,6 +39,7 @@ class UpdateLockerRequest {
 
 interface UpdateLockerRepoAdapter {
 	deploymentTxHash?: string;
+	chainId?: number;
 	ownerAddress?: string;
 }
 
@@ -45,21 +47,29 @@ interface LockerRepoAdapter {
 	userId: string;
 	seed: number;
 	provider: string;
-	deploymentTxHash?: `0x${string}`;
 	ownerAddress: `0x${string}`;
 	address: `0x${string}`;
+}
+
+interface DeploymentRecord {
+	id: number;
+	lockerId: number;
+	txHash: `0x${string}`;
 	chainId: number;
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 interface LockerInDb extends LockerRepoAdapter {
 	id: number;
 	createdAt: Date;
 	updatedAt: Date;
-	deploymentTxId: number;
+	deployments: DeploymentRecord[];
 }
 
 export {
 	CreateLockerRequest,
+	type DeploymentRecord,
 	type LockerInDb,
 	type LockerRepoAdapter,
 	type UpdateLockerRepoAdapter,

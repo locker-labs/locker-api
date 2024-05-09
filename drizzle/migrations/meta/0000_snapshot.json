@@ -1,9 +1,73 @@
 {
-	"id": "1c3a3f9c-4603-4dcd-9ff5-cc89b613fac2",
+	"id": "d8c25d75-5eb1-4f16-b853-a885bde34694",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "5",
 	"dialect": "pg",
 	"tables": {
+		"deployments": {
+			"name": "deployments",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"locker_id": {
+					"name": "locker_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"deployment_tx_hash": {
+					"name": "deployment_tx_hash",
+					"type": "varchar",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"chain_id": {
+					"name": "chain_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"deployment_tx_hash_chain_id_idx": {
+					"name": "deployment_tx_hash_chain_id_idx",
+					"columns": ["deployment_tx_hash", "chain_id"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"deployments_locker_id_lockers_id_fk": {
+					"name": "deployments_locker_id_lockers_id_fk",
+					"tableFrom": "deployments",
+					"tableTo": "lockers",
+					"columnsFrom": ["locker_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
 		"lockers": {
 			"name": "lockers",
 			"schema": "",
@@ -44,18 +108,6 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"chain_id": {
-					"name": "chain_id",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"deployment_tx_hash": {
-					"name": "deployment_tx_hash",
-					"type": "varchar",
-					"primaryKey": false,
-					"notNull": false
-				},
 				"created_at": {
 					"name": "created_at",
 					"type": "timestamp (6) with time zone",
@@ -71,16 +123,16 @@
 					"default": "now()"
 				}
 			},
-			"indexes": {
-				"address_chain_id_idx": {
-					"name": "address_chain_id_idx",
-					"columns": ["address", "chain_id"],
-					"isUnique": true
-				}
-			},
+			"indexes": {},
 			"foreignKeys": {},
 			"compositePrimaryKeys": {},
-			"uniqueConstraints": {}
+			"uniqueConstraints": {
+				"lockers_address_unique": {
+					"name": "lockers_address_unique",
+					"nullsNotDistinct": false,
+					"columns": ["address"]
+				}
+			}
 		},
 		"token_transactions": {
 			"name": "token_transactions",

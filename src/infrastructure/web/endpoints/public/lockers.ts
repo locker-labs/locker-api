@@ -63,7 +63,6 @@ lockerRouter.post(
 			provider: req.body.provider,
 			ownerAddress: req.body.ownerAddress,
 			address: req.body.address,
-			chainId: req.body.chainId,
 		};
 
 		// store locker in database
@@ -83,7 +82,7 @@ lockerRouter.post(
 		// add locker address to indexer
 		const indexer = await getIndexerClient();
 		await indexer.watchOnChain(locker.address);
-		res.status(201).send({ data: lockerInDb });
+		res.status(201).send({ data: { locker: lockerInDb } });
 	}
 );
 
@@ -97,20 +96,31 @@ lockerRouter.patch(
 	): Promise<void> => {
 		const lockerUpdate: UpdateLockerRepoAdapter = {
 			ownerAddress: req.body.ownerAddress,
+			chainId: req.body.chainId,
 			deploymentTxHash: req.body.deploymentTxHash,
 		};
 
 		const lockersRepo = await getLockersRepo();
 
-		const updatedLocker = await lockersRepo.update(
-			parseInt(req.params.lockerId, 10),
-			lockerUpdate
-		);
+		let updatedLocker;
+		try {
+			updatedLocker = await lockersRepo.update(
+				parseInt(req.params.lockerId, 10),
+				lockerUpdate
+			);
+		} catch (error) {
+			if (error instanceof DuplicateRecordError) {
+				res.status(409).send({ error: error.message });
+				return;
+			}
+			res.status(500).send({ error: "An unexpected error occurred." });
+			return;
+		}
 
 		if (!updatedLocker) {
 			res.status(404).send({ error: "Locker not found." });
 		} else {
-			res.status(200).send({ data: updatedLocker });
+			res.status(200).send({ data: { locker: updatedLocker } });
 		}
 	}
 );
@@ -126,7 +136,7 @@ lockerRouter.get(
 		const lockers = await lockersRepo.retrieveMany({
 			userId: req.auth.userId,
 		});
-		res.status(200).json({ data: lockers });
+		res.status(200).json({ data: { lockers } });
 	}
 );
 

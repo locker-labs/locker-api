@@ -9,7 +9,6 @@ export default interface ILockersRepo {
 	retrieve(options: {
 		address?: string;
 		id?: number;
-		chainId?: number;
 	}): Promise<LockerInDb | null>;
 	retrieveMany(options: {
 		userId?: string;
