@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS "token_transactions" (
 	"from_address" varchar(256) NOT NULL,
 	"to_address" varchar(256) NOT NULL,
 	"contract_address" varchar(256) NOT NULL,
-	"amount" integer NOT NULL,
+	"amount" bigint NOT NULL,
 	"created_at" timestamp (6) with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp (6) with time zone DEFAULT now() NOT NULL
 );

@@ -1,5 +1,5 @@
 {
-	"id": "1161dd08-b813-4118-a94d-cf0c17f2e424",
+	"id": "1c3a3f9c-4603-4dcd-9ff5-cc89b613fac2",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "5",
 	"dialect": "pg",
@@ -130,7 +130,7 @@
 				},
 				"amount": {
 					"name": "amount",
-					"type": "integer",
+					"type": "bigint",
 					"primaryKey": false,
 					"notNull": true
 				},

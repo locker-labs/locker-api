@@ -1,15 +1,22 @@
 import "dotenv/config";
 
-import express, { Request, Response } from "express";
+import { plainToClass } from "class-transformer";
+import { validate } from "class-validator";
+import express, {
+	NextFunction,
+	Request,
+	RequestHandler,
+	Response,
+} from "express";
 import morgan from "morgan";
 
 import {
 	getIndexerClient,
-	getTokenTxsRepo,
 	getLockersRepo,
+	getTokenTxsRepo,
 	stream,
 } from "../../../../dependencies";
-
+import { MoralisWebhookRequest } from "../../../../usecases/schemas/tokenTxs";
 import InvalidSignature from "../../../clients/errors";
 import DuplicateRecordError from "../../../db/errors";
 
@@ -17,11 +24,25 @@ const moralisRouter = express.Router();
 moralisRouter.use(express.json());
 moralisRouter.use(morgan("combined", { stream }));
 
+function validateRequest<T extends object>(type: {
+	new (): T;
+}): RequestHandler {
+	return async (req: Request, res: Response, next: NextFunction) => {
+		const input = plainToClass(type, req.body);
+		const errors = await validate(input);
+		if (errors.length > 0) {
+			res.status(400).json(errors);
+		} else {
+			req.body = input; // Optionally, replace the req.body with the validated object
+			next();
+		}
+	};
+}
+
 moralisRouter.post(
 	"/webhooks/transactions",
+	validateRequest(MoralisWebhookRequest),
 	async (req: Request, res: Response): Promise<void> => {
-		console.log("header:\n\n", req.headers);
-
 		// 1. verify webhook
 		const providedSignature = req.headers["x-signature"];
 		if (!providedSignature)
@@ -33,7 +54,6 @@ moralisRouter.post(
 			await indexer.verifyWebhook(providedSignature as string, req.body);
 		} catch (error) {
 			if (error instanceof InvalidSignature) {
-				console.log("we got here");
 				res.status(400).send({ error: error.message });
 				return;
 			}
@@ -44,18 +64,19 @@ moralisRouter.post(
 			const lockersRepo = await getLockersRepo();
 			const locker = await lockersRepo.retrieve({
 				address: req.body.txs[0].toAddress,
-				chainId: req.body.chainId,
+				chainId: parseInt(req.body.chainId, 16),
 			});
 
 			const tokenTxsRepo = await getTokenTxsRepo();
 			const tokenTx = {
 				lockerId: locker!.id,
-				contractAddress: req.body.txs[0].toAddress,
+				contractAddress:
+					"0x0000000000000000000000000000000000000000" as `0x${string}`,
 				txHash: req.body.txs[0].hash,
 				fromAddress: req.body.txs[0].fromAddress,
 				toAddress: req.body.txs[0].toAddress,
-				amount: parseInt(req.body.txs[0], 10),
-				chainId: req.body.chainId,
+				amount: BigInt(req.body.txs[0].value),
+				chainId: parseInt(req.body.chainId, 16),
 			};
 
 			try {
@@ -72,7 +93,6 @@ moralisRouter.post(
 			}
 		}
 
-		console.log("we got here 2");
 		res.status(200).send();
 	}
 );

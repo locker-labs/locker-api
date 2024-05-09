@@ -1,5 +1,6 @@
 import { IWebhook } from "@moralisweb3/streams-typings";
 import Moralis from "moralis";
+import web3 from "web3";
 
 import config from "../../config";
 import IIndexerClient from "../../usecases/interfaces/clients/blockchain";
@@ -27,14 +28,11 @@ export default class MoralisClient implements IIndexerClient {
 		providedSignature: string,
 		body: IWebhook
 	): Promise<void> {
-		try {
-			Moralis.Streams.verifySignature({
-				body,
-				signature: providedSignature,
-			});
-		} catch (e: unknown) {
-			console.log("error", e);
+		const generatedSignature = web3.utils.sha3(
+			JSON.stringify(body) + config.moralisStreamSecret
+		);
+
+		if (generatedSignature !== providedSignature)
 			throw new InvalidSignature("The webhook signature is invalid.");
-		}
 	}
 }

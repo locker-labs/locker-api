@@ -1,10 +1,11 @@
 import {
+	bigint,
 	integer,
 	pgTable,
 	serial,
 	timestamp,
-	varchar,
 	uniqueIndex,
+	varchar,
 } from "drizzle-orm/pg-core";
 
 import lockers from "./lockers";
@@ -19,7 +20,7 @@ export const tokenTxs = pgTable(
 		fromAddress: varchar("from_address", { length: 256 }).notNull(),
 		toAddress: varchar("to_address", { length: 256 }).notNull(),
 		contractAddress: varchar("contract_address", { length: 256 }).notNull(),
-		amount: integer("amount").notNull(),
+		amount: bigint("amount", { mode: "bigint" }).notNull(),
 		createdAt: timestamp("created_at", {
 			mode: "date",
 			precision: 6,

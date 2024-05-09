@@ -1,11 +1,11 @@
 import { eq, or } from "drizzle-orm";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
+
 import ITokenTxsRepo from "../../../usecases/interfaces/repos/tokenTxs";
 import {
 	TokenTxInDb,
 	TokenTxRepoAdapter,
 } from "../../../usecases/schemas/tokenTxs";
-
-import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import DuplicateRecordError from "../errors";
 import { tokenTxs } from "../models/tokenTxs";
 
