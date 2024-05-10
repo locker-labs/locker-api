@@ -1,0 +1,53 @@
+name: Database Migrations
+
+on:
+  pull_request:
+    types: [opened, synchronize, closed]
+    branches:
+      - main
+      - dev
+    paths:
+      - "**/*.js" # Adjust this to include files whose changes should trigger the workflow
+      - "package.json"
+      - "yarn.lock"
+
+jobs:
+  migrate_dev:
+    if: (github.base_ref == 'main' && github.event.action == 'opened') || github.event.action == 'synchronize'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18" # Use Node.js version 18
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run migrations
+        run: yarn migrate
+        env:
+          DB_URL: ${{ secrets.DB_URL_STAGING }}
+
+  migrate_main:
+    if: github.base_ref == 'prod' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18" # Use Node.js version 18
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run migrations
+        run: yarn migrate
+        env:
+          DB_URL: ${{ secrets.DB_URL_PROD }}
