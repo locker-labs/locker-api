@@ -1,5 +1,11 @@
 /* eslint-disable max-classes-per-file */
-import { IsEnum, IsOptional, IsString, Length } from "class-validator";
+import {
+	IsEnum,
+	IsNumber,
+	IsOptional,
+	IsString,
+	Length,
+} from "class-validator";
 
 import ChainIds from "./blockchains";
 
@@ -12,7 +18,7 @@ class CreateLockerRequest {
 	@Length(42, 42) // addresses are exactly 42 characters
 	ownerAddress!: `0x${string}`;
 
-	@IsString()
+	@IsNumber()
 	@Length(1, 32)
 	seed!: number;
 
