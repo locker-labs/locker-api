@@ -20,6 +20,7 @@ export const tokenTxs = pgTable(
 		fromAddress: varchar("from_address", { length: 256 }).notNull(),
 		toAddress: varchar("to_address", { length: 256 }).notNull(),
 		contractAddress: varchar("contract_address", { length: 256 }).notNull(),
+		tokenSymbol: varchar("token_symbol", { length: 256 }).notNull(),
 		amount: bigint("amount", { mode: "bigint" }).notNull(),
 		createdAt: timestamp("created_at", {
 			mode: "date",

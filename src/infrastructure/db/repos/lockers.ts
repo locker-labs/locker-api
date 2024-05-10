@@ -1,4 +1,4 @@
-import { and, eq, or } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import ILockersRepo from "../../../usecases/interfaces/repos/lockers";
@@ -24,8 +24,8 @@ export default class LockersRepo implements ILockersRepo {
 					userId: locker.userId,
 					seed: locker.seed,
 					provider: locker.provider,
-					ownerAddress: locker.ownerAddress,
-					address: locker.address,
+					ownerAddress: locker.ownerAddress.toLowerCase(),
+					address: locker.address.toLowerCase(),
 				})
 				.returning();
 
@@ -66,10 +66,13 @@ export default class LockersRepo implements ILockersRepo {
 			}
 		}
 
+		const updatesCopy = { ...updates };
+
 		if (updates.ownerAddress !== undefined) {
+			updatesCopy.ownerAddress = updatesCopy.ownerAddress!.toLowerCase();
 			await this.db
 				.update(lockers)
-				.set(updates)
+				.set(updatesCopy)
 				.where(eq(lockers.id, lockerId));
 		}
 
@@ -80,25 +83,20 @@ export default class LockersRepo implements ILockersRepo {
 		address?: string;
 		id?: number;
 	}): Promise<LockerInDb | null> {
-		const conditions = [];
-
+		let condition;
 		if (options.id) {
-			conditions.push(eq(lockers.id, options.id));
-		}
-
-		if (options.address) {
-			conditions.push(eq(lockers.address, options.address));
-		}
-
-		if (conditions.length === 0) {
+			condition = eq(lockers.id, options.id);
+		} else if (options.address) {
+			condition = eq(lockers.address, options.address);
+		} else {
 			throw new Error("No valid identifier provided.");
 		}
 
-		// Retrieve the locker record
+		// Retrieve the locker record with simplified conditional logic
 		const lockerRecord = await this.db
 			.select()
 			.from(lockers)
-			.where(or(...conditions))
+			.where(condition)
 			.limit(1)
 			.execute();
 

@@ -19,10 +19,11 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 				.insert(tokenTxs)
 				.values({
 					lockerId: tokenTx.lockerId,
-					contractAddress: tokenTx.contractAddress,
-					txHash: tokenTx.txHash,
-					fromAddress: tokenTx.fromAddress,
-					toAddress: tokenTx.toAddress,
+					contractAddress: tokenTx.contractAddress.toLowerCase(),
+					txHash: tokenTx.txHash.toLowerCase(),
+					tokenSymbol: tokenTx.tokenSymbol,
+					fromAddress: tokenTx.fromAddress.toLowerCase(),
+					toAddress: tokenTx.toAddress.toLowerCase(),
 					amount: tokenTx.amount,
 					chainId: tokenTx.chainId,
 				})

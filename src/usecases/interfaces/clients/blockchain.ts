@@ -1,6 +1,12 @@
 import { IWebhook } from "@moralisweb3/streams-typings";
 
-export default interface IIndexerClient {
+const zeroAddress = "0x0000000000000000000000000000000000000000";
+
+type Headers = { [key: string]: string | string[] | undefined };
+
+interface IIndexerClient {
 	watchOnChain(address: `0x${string}`): Promise<void>;
-	verifyWebhook(providedSignature: string, body: IWebhook): Promise<void>;
+	verifyWebhook(body: IWebhook, headers: Headers): Promise<void>;
 }
+
+export { type Headers, type IIndexerClient, zeroAddress };

@@ -6,6 +6,7 @@ import morgan from "morgan";
 import {
 	AuthenticatedRequest,
 	authRequired,
+	getLockersRepo,
 	getTokenTxsRepo,
 	logger,
 	stream,
@@ -22,6 +23,16 @@ tokenTxsRouter.get(
 		req: AuthenticatedRequest<Request>,
 		res: Response
 	): Promise<void> => {
+		const lockersRepo = await getLockersRepo();
+		const locker = await lockersRepo.retrieve({
+			id: parseInt(req.params.lockerId, 10),
+		});
+
+		if (!locker) {
+			res.status(404).send({ error: "Locker not found." });
+			return;
+		}
+
 		const tokenTxsRepo = await getTokenTxsRepo();
 		const txs = await tokenTxsRepo.retrieveMany({
 			lockerId: parseInt(req.params.lockerId, 10),

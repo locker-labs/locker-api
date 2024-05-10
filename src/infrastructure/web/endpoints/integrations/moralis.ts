@@ -1,22 +1,17 @@
 import "dotenv/config";
 
-import { plainToClass } from "class-transformer";
-import { validate } from "class-validator";
-import express, {
-	NextFunction,
-	Request,
-	RequestHandler,
-	Response,
-} from "express";
+import express, { Request, Response } from "express";
 import morgan from "morgan";
 
 import {
+	getAuthClient,
+	getEmailClient,
 	getIndexerClient,
 	getLockersRepo,
 	getTokenTxsRepo,
 	stream,
 } from "../../../../dependencies";
-import { MoralisWebhookRequest } from "../../../../usecases/schemas/tokenTxs";
+import { zeroAddress } from "../../../../usecases/interfaces/clients/blockchain";
 import InvalidSignature from "../../../clients/errors";
 import DuplicateRecordError from "../../../db/errors";
 
@@ -24,34 +19,14 @@ const moralisRouter = express.Router();
 moralisRouter.use(express.json());
 moralisRouter.use(morgan("combined", { stream }));
 
-function validateRequest<T extends object>(type: {
-	new (): T;
-}): RequestHandler {
-	return async (req: Request, res: Response, next: NextFunction) => {
-		const input = plainToClass(type, req.body);
-		const errors = await validate(input);
-		if (errors.length > 0) {
-			res.status(400).json(errors);
-		} else {
-			req.body = input; // Optionally, replace the req.body with the validated object
-			next();
-		}
-	};
-}
-
 moralisRouter.post(
 	"/webhooks/transactions",
-	validateRequest(MoralisWebhookRequest),
 	async (req: Request, res: Response): Promise<void> => {
 		// 1. verify webhook
-		const providedSignature = req.headers["x-signature"];
-		if (!providedSignature)
-			res.status(400).send({ error: "Signature not provided." });
-
 		const indexer = await getIndexerClient();
 
 		try {
-			await indexer.verifyWebhook(providedSignature as string, req.body);
+			await indexer.verifyWebhook(req.body, req.headers);
 		} catch (error) {
 			if (error instanceof InvalidSignature) {
 				res.status(400).send({ error: error.message });
@@ -64,8 +39,9 @@ moralisRouter.post(
 			const lockersRepo = await getLockersRepo();
 			const tokenTxsRepo = await getTokenTxsRepo();
 			let tokenTx;
+			let locker;
 			if (req.body.erc20Transfers.length > 0) {
-				const locker = await lockersRepo.retrieve({
+				locker = await lockersRepo.retrieve({
 					address: req.body.erc20Transfers[0].to,
 				});
 				tokenTx = {
@@ -73,6 +49,7 @@ moralisRouter.post(
 					contractAddress: req.body.erc20Transfers[0]
 						.contract as `0x${string}`,
 					txHash: req.body.erc20Transfers[0].transactionHash,
+					tokenSymbol: req.body.erc20Transfers[0].tokenSymbol,
 					fromAddress: req.body.erc20Transfers[0].from,
 					toAddress: req.body.erc20Transfers[0].to,
 					amount: BigInt(req.body.erc20Transfers[0].value),
@@ -80,14 +57,15 @@ moralisRouter.post(
 				};
 			} else {
 				// assume ETH transfer
-				const locker = await lockersRepo.retrieve({
+				locker = await lockersRepo.retrieve({
 					address: req.body.txs[0].toAddress,
 				});
+
 				tokenTx = {
 					lockerId: locker!.id,
-					contractAddress:
-						"0x0000000000000000000000000000000000000000" as `0x${string}`,
+					contractAddress: zeroAddress as `0x${string}`,
 					txHash: req.body.txs[0].hash,
+					tokenSymbol: "ETH",
 					fromAddress: req.body.txs[0].fromAddress,
 					toAddress: req.body.txs[0].toAddress,
 					amount: BigInt(req.body.txs[0].value),
@@ -107,6 +85,16 @@ moralisRouter.post(
 				});
 				return;
 			}
+
+			// 3. Send email
+			const authClient = await getAuthClient();
+			const user = await authClient.getUser(locker!.userId);
+
+			const emailClient = await getEmailClient();
+			await emailClient.send(
+				user.emailAddresses[0].emailAddress,
+				tokenTx
+			);
 		}
 
 		res.status(200).send();

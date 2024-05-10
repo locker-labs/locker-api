@@ -1,0 +1,1 @@
+ALTER TABLE "token_transactions" ADD COLUMN "token_symbol" varchar(256) NOT NULL;

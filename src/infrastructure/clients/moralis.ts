@@ -3,7 +3,10 @@ import Moralis from "moralis";
 import web3 from "web3";
 
 import config from "../../config";
-import IIndexerClient from "../../usecases/interfaces/clients/blockchain";
+import {
+	Headers,
+	IIndexerClient,
+} from "../../usecases/interfaces/clients/blockchain";
 import InvalidSignature from "./errors";
 
 export default class MoralisClient implements IIndexerClient {
@@ -24,10 +27,12 @@ export default class MoralisClient implements IIndexerClient {
 		});
 	}
 
-	async verifyWebhook(
-		providedSignature: string,
-		body: IWebhook
-	): Promise<void> {
+	async verifyWebhook(body: IWebhook, headers: Headers): Promise<void> {
+		const providedSignature = headers["x-signature"];
+		if (!providedSignature) {
+			throw new InvalidSignature("Signature not provided.");
+		}
+
 		const generatedSignature = web3.utils.sha3(
 			JSON.stringify(body) + config.moralisStreamSecret
 		);

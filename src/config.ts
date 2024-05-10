@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 class Config {
+	// Application
 	applicationName: string;
 
 	environment: string;
@@ -11,9 +12,24 @@ class Config {
 
 	serverPort: number;
 
+	// Database
 	dbUrl: string;
 
+	// Clerk
 	clerkSecretkey: string;
+
+	// Chain RPCs
+	arbitrumRpc: string;
+
+	ethereumRpc: string;
+
+	polygonRpc: string;
+
+	avalancheRpc: string;
+
+	optimismRpc: string;
+
+	baseRpc: string;
 
 	sepoliaRpc: string;
 
@@ -23,11 +39,18 @@ class Config {
 
 	optimismSepoliaRpc: string;
 
+	// Moralis
 	moralisStreamId: string;
 
 	moralisApiKey: string;
 
 	moralisStreamSecret: string;
+
+	// Locker
+	lockerBaseUrl: string;
+
+	// Resend
+	resendApiKey: string;
 
 	constructor() {
 		// Application settings
@@ -45,7 +68,19 @@ class Config {
 		// Clerk
 		this.clerkSecretkey = process.env.CLERK_SECRET_KEY!;
 
-		// RPCs
+		// Chain RPCs
+		this.arbitrumRpc = process.env.ARBITRUM_RPC!;
+
+		this.ethereumRpc = process.env.ETHEREUM_RPC!;
+
+		this.polygonRpc = process.env.POLYGON_RPC!;
+
+		this.avalancheRpc = process.env.AVALANCHE_RPC!;
+
+		this.optimismRpc = process.env.OPTIMISM_RPC!;
+
+		this.baseRpc = process.env.BASE_RPC!;
+
 		this.sepoliaRpc = process.env.SEPOLIA_RPC!;
 
 		this.baseSepoliaRpc = process.env.BASE_SEPOLIA_RPC!;
@@ -54,11 +89,18 @@ class Config {
 
 		this.optimismSepoliaRpc = process.env.OPTIMISM_SEPOLIA_RPC!;
 
+		// Moralis
 		this.moralisStreamId = process.env.MORALIS_STREAM_ID!;
 
 		this.moralisApiKey = process.env.MORALIS_API_KEY!;
 
 		this.moralisStreamSecret = process.env.MORALIS_STREAM_SECRET!;
+
+		// Locker
+		this.lockerBaseUrl = process.env.LOCKER_BASE_URL!;
+
+		// Resend
+		this.resendApiKey = process.env.RESEND_API_KEY!;
 	}
 }
 
