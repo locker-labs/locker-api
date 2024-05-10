@@ -7,7 +7,7 @@
 		"url": "git+https://github.com/chainrule-labs/locker-api.git"
 	},
 	"scripts": {
-		"build": "tsc -p tsconfig.build.json",
+		"build": "tsc -p tsconfig.json",
 		"commit": "git-cz",
 		"dev": "nodemon --exec ts-node src/index.ts",
 		"format": "prettier --write .",
