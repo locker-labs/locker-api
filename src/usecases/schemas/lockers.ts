@@ -19,7 +19,6 @@ class CreateLockerRequest {
 	ownerAddress!: `0x${string}`;
 
 	@IsNumber()
-	@Length(1, 32)
 	seed!: number;
 
 	@IsString()
