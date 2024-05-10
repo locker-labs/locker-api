@@ -87,7 +87,7 @@ export default class LockersRepo implements ILockersRepo {
 		if (options.id) {
 			condition = eq(lockers.id, options.id);
 		} else if (options.address) {
-			condition = eq(lockers.address, options.address);
+			condition = eq(lockers.address, options.address.toLowerCase());
 		} else {
 			throw new Error("No valid identifier provided.");
 		}
@@ -139,7 +139,9 @@ export default class LockersRepo implements ILockersRepo {
 		}
 
 		if (options.ownerAddress) {
-			conditions.push(eq(lockers.ownerAddress, options.ownerAddress));
+			conditions.push(
+				eq(lockers.ownerAddress, options.ownerAddress.toLowerCase())
+			);
 		}
 
 		if (conditions.length === 0) {
