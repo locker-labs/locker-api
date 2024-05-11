@@ -7,7 +7,7 @@ on:
       - main
       - prod
     paths:
-      - "**/*.ts" # Adjust this to include files whose changes should trigger the workflow
+      - "**/*.sql" # Adjust this to include files whose changes should trigger the workflow
       - "package.json"
       - "yarn.lock"
 
