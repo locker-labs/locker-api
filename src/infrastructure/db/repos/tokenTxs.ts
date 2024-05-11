@@ -1,5 +1,5 @@
 import { desc, eq, or } from "drizzle-orm";
-import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import ITokenTxsRepo from "../../../usecases/interfaces/repos/tokenTxs";
 import {
@@ -11,7 +11,7 @@ import { tokenTxs } from "../models/tokenTxs";
 
 export default class TokenTxsRepo implements ITokenTxsRepo {
 	// eslint-disable-next-line no-empty-function
-	constructor(private db: NodePgDatabase) {}
+	constructor(private db: PostgresJsDatabase) {}
 
 	async create(tokenTx: TokenTxRepoAdapter): Promise<TokenTxInDb> {
 		try {
