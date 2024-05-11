@@ -13,7 +13,7 @@
 		"module": "CommonJS",
 		"moduleResolution": "node",
 		"target": "es2020",
-		"noEmit": true,
+		// "noEmit": true,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
@@ -21,8 +21,9 @@
 		"noUnusedLocals": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
-		"strict": true
+		"strict": true,
+		"outDir": "dist"
 	},
-	"include": ["**/*.ts"],
+	"include": ["./src/**/*"],
 	"exclude": ["node_modules"]
 }
