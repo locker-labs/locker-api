@@ -35,7 +35,7 @@ moralisRouter.post(
 		}
 
 		// 2. store tx data in database
-		if (req.body.txs.length > 0) {
+		if (req.body.confirmed === true && req.body.txs.length > 0) {
 			const lockersRepo = await getLockersRepo();
 			const tokenTxsRepo = await getTokenTxsRepo();
 			let tokenTx;
