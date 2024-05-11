@@ -18,6 +18,7 @@ function setupRoutes(app: Express): void {
 	app.use("/integrations/moralis", moralisRouter);
 }
 
+// Testing migrations run
 async function startup(): Promise<void> {
 	await getOrCreateDatabase(logger);
 	await getIndexerClient();
