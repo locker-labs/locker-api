@@ -46,6 +46,33 @@ tokenTxsRouter.get(
 	}
 );
 
+tokenTxsRouter.get(
+	"/:chainId/:txHash",
+	authRequired,
+	async (
+		req: AuthenticatedRequest<Request>,
+		res: Response
+	): Promise<void> => {
+		const tokenTxsRepo = await getTokenTxsRepo();
+		const tx = await tokenTxsRepo.retrieve({
+			txHash: req.params.txHash,
+			chainId: parseInt(req.params.chainId, 10),
+		});
+
+		if (!tx) {
+			res.status(404).send({ error: "Token transaction not found." });
+			return;
+		}
+
+		const returnTx = {
+			...tx,
+			amount: tx.amount.toString(),
+		};
+
+		res.status(200).json({ data: returnTx });
+	}
+);
+
 // note: needs to be below routes
 tokenTxsRouter.use(
 	(

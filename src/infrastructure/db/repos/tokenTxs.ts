@@ -1,4 +1,4 @@
-import { desc, eq, or } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import ITokenTxsRepo from "../../../usecases/interfaces/repos/tokenTxs";
@@ -52,7 +52,7 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 
 		if (options.txHash && options.chainId !== undefined) {
 			// Ensure both address and chainId are provided
-			conditions.push(eq(tokenTxs.txHash, options.txHash));
+			conditions.push(eq(tokenTxs.txHash, options.txHash.toLowerCase()));
 			conditions.push(eq(tokenTxs.chainId, options.chainId));
 		}
 
@@ -63,7 +63,7 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 		const result = await this.db
 			.select()
 			.from(tokenTxs)
-			.where(or(...conditions))
+			.where(and(...conditions))
 			.limit(1)
 			.execute();
 
