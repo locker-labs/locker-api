@@ -11,9 +11,11 @@
 		"isolatedModules": true,
 		"lib": ["esnext"],
 		"module": "CommonJS",
+		"rootDir": ".",
 		"moduleResolution": "node",
 		"target": "es2020",
 		// "noEmit": true,
+		"noEmitOnError": true,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
@@ -22,8 +24,8 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"strict": true,
-		"outDir": "dist"
+		"outDir": "build"
 	},
-	"include": ["./src/**/*"],
+	"include": ["src/**/*"],
 	"exclude": ["node_modules"]
 }

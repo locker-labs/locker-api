@@ -10,7 +10,7 @@ import lockerRouter from "./endpoints/public/lockers";
 import tokenTxsRouter from "./endpoints/public/tokenTxs";
 
 function setupRoutes(app: Express): void {
-	app.use(cors({ origin: true, credentials: true }));
+	app.use(cors());
 
 	app.use("/public/lockers", lockerRouter);
 	app.use("/public/tokenTxs", tokenTxsRouter);
@@ -28,12 +28,14 @@ async function setupApp(app: Express): Promise<void> {
 	setupRoutes(app);
 }
 
-function startServer(): void {
+function startServer(): Express {
 	const app = express();
 	setupApp(app);
 	app.listen(config.serverPort, () => {
 		logger.info(`Server is listening on port ${config.serverPort}.`);
 	});
+
+	return app;
 }
 
 export default startServer;
