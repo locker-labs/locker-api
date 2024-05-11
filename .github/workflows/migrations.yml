@@ -5,14 +5,14 @@ on:
     types: [opened, synchronize, closed]
     branches:
       - main
-      - dev
+      - prod
     paths:
       - "**/*.js" # Adjust this to include files whose changes should trigger the workflow
       - "package.json"
       - "yarn.lock"
 
 jobs:
-  migrate_dev:
+  migrate_staging:
     if: (github.base_ref == 'main' && github.event.action == 'opened') || github.event.action == 'synchronize'
     runs-on: ubuntu-latest
     steps:
@@ -32,7 +32,7 @@ jobs:
         env:
           DB_URL: ${{ secrets.DB_URL_STAGING }}
 
-  migrate_main:
+  migrate_prod:
     if: github.base_ref == 'prod' && github.event.action == 'closed' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
