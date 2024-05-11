@@ -7,7 +7,6 @@
 		"url": "git+https://github.com/chainrule-labs/locker-api.git"
 	},
 	"scripts": {
-		"build": "tsc -p tsconfig.json",
 		"commit": "git-cz",
 		"dev": "nodemon --exec ts-node src/index.ts",
 		"format": "prettier --write .",
@@ -17,7 +16,6 @@
 		"migrate": "pnpm tsx ./drizzle/migrate.ts",
 		"migration:generate": "pnpm drizzle-kit generate:pg",
 		"prepare": "husky",
-		"start": "node dist/app/index.js",
 		"test": "jest --coverage",
 		"test:match": "jest --verbose"
 	},

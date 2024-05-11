@@ -102,15 +102,6 @@ lockerRouter.patch(
 
 		const lockersRepo = await getLockersRepo();
 
-		const locker = await lockersRepo.retrieve({
-			id: parseInt(req.params.lockerId, 10),
-		});
-
-		if (!locker) {
-			res.status(404).send({ error: "Locker not found." });
-			return;
-		}
-
 		let updatedLocker;
 		try {
 			updatedLocker = await lockersRepo.update(

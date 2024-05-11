@@ -28,12 +28,14 @@ async function setupApp(app: Express): Promise<void> {
 	setupRoutes(app);
 }
 
-function startServer(): void {
+function startServer(): Express {
 	const app = express();
 	setupApp(app);
 	app.listen(config.serverPort, () => {
 		logger.info(`Server is listening on port ${config.serverPort}.`);
 	});
+
+	return app;
 }
 
 export default startServer;
