@@ -2,12 +2,22 @@
 
 This repository contains the Locker backend API.
 
-# Database Migrations
+## Quickstart
 
-### To generate database migrations:
+```sh
+# Setup env vars
+cp .env.example .env
 
-`npm run migration:generate`
+# Install dependencies
+yarn
 
-### To migrate:
+# Run migrations
+yarn migrate
+```
 
-`npm run migrate`
+## Regenerate migrations
+
+```sh
+yarn migration:generate
+yarn migrate
+```
