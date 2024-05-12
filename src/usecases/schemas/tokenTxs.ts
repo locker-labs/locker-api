@@ -19,9 +19,4 @@ interface TokenTxInDb extends TokenTxRepoAdapter {
 	updatedAt: Date;
 }
 
-export {
-	MoralisWebhookRequest,
-	type TokenTx,
-	type TokenTxInDb,
-	type TokenTxRepoAdapter,
-};
+export { type TokenTx, type TokenTxInDb, type TokenTxRepoAdapter };
