@@ -7,6 +7,8 @@ interface TokenTxRepoAdapter {
 	tokenSymbol: string;
 	fromAddress: `0x${string}`;
 	toAddress: `0x${string}`;
+	tokenDecimals: number;
+	isConfirmed: boolean;
 	amount: bigint;
 	chainId: number;
 }

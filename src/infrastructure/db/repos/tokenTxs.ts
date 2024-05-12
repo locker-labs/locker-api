@@ -22,10 +22,18 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 					contractAddress: tokenTx.contractAddress.toLowerCase(),
 					txHash: tokenTx.txHash.toLowerCase(),
 					tokenSymbol: tokenTx.tokenSymbol,
+					tokenDecimals: tokenTx.tokenDecimals,
 					fromAddress: tokenTx.fromAddress.toLowerCase(),
 					toAddress: tokenTx.toAddress.toLowerCase(),
+					isConfirmed: tokenTx.isConfirmed,
 					amount: tokenTx.amount,
 					chainId: tokenTx.chainId,
+				})
+				.onConflictDoUpdate({
+					target: [tokenTxs.chainId, tokenTxs.txHash],
+					set: {
+						isConfirmed: tokenTx.isConfirmed,
+					},
 				})
 				.returning();
 

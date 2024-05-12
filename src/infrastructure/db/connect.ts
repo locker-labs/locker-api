@@ -10,9 +10,6 @@ function getOrCreateDatabase(
 	logger: winston.Logger
 ): PostgresJsDatabase<Record<string, never>> {
 	if (!db) {
-		// const pool = new Pool({ connectionString: config.dbUrl });
-		// db = drizzle(pool);
-
 		const client = postgres(config.dbUrl, { prepare: false });
 		db = drizzle(client);
 		logger.info("Database pool created.");
