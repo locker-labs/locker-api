@@ -1,27 +1,27 @@
 {
-  "version": "5",
-  "dialect": "pg",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "5",
-      "when": 1715284606888,
-      "tag": "0000_curved_starjammers",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1715314046698,
-      "tag": "0001_past_the_fallen",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1715525928409,
-      "tag": "0002_milky_mother_askani",
-      "breakpoints": true
-    }
-  ]
+	"version": "5",
+	"dialect": "pg",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "5",
+			"when": 1715284606888,
+			"tag": "0000_curved_starjammers",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "5",
+			"when": 1715314046698,
+			"tag": "0001_past_the_fallen",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "5",
+			"when": 1715525928409,
+			"tag": "0002_milky_mother_askani",
+			"breakpoints": true
+		}
+	]
 }

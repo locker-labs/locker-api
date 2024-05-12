@@ -35,7 +35,7 @@ export default class ResendClient implements IEmailClient {
 		const chainName = SUPPORTED_CHAINS[chainId].name;
 		const emailHTML = this.getHtml(
 			explorer,
-			to,
+			tx.toAddress,
 			amountStr,
 			chainName,
 			link,
@@ -54,7 +54,7 @@ export default class ResendClient implements IEmailClient {
 
 	getHtml(
 		explorer: string,
-		toEmail: string,
+		lockerAddress: string,
 		amountStr: string,
 		chainName: string,
 		link: string,
@@ -93,9 +93,9 @@ export default class ResendClient implements IEmailClient {
 				<p>
 					Your locker with address
 					<a
-						href="${explorer}/address/${toEmail}"
+						href="${explorer}/address/${lockerAddress}"
 						style="color: #4c4edd"
-						>${toEmail}</a
+						>${lockerAddress}</a
 					>
 					just received ${amountStr} on the ${chainName} network. ${transactionStatus}
 				</p>
