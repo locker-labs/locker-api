@@ -28,9 +28,9 @@ export default class ResendClient implements IEmailClient {
 			(tx.amount * scale) / BigInt(10) ** BigInt(tx.tokenDecimals);
 		const finalAmount = Number(scaledResult) / 100000;
 		const amountStr = `${finalAmount.toFixed(5)} ${tx.tokenSymbol}`;
-		const link = `${config.lockerBaseUrl}/tx/${tx.txHash}`;
 		const to = email;
 		const chainId = tx.chainId as ChainIds;
+		const link = `${config.lockerBaseUrl}/tx/${chainId}/${tx.txHash}`;
 		const explorer = SUPPORTED_CHAINS[chainId].blockExplorer;
 		const chainName = SUPPORTED_CHAINS[chainId].name;
 		const emailHTML = this.getHtml(
@@ -64,7 +64,7 @@ export default class ResendClient implements IEmailClient {
 			? `The transaction has been confirmed.`
 			: `The transaction is pending. We'll let you know when it's confirmed.`;
 
-		const title = isConfirmed ? "Payment Received" : "Payment is Pending";
+		const title = isConfirmed ? "Payment confirmed" : "Payment pending";
 
 		return `<div
 			style="
@@ -112,7 +112,7 @@ export default class ResendClient implements IEmailClient {
 						border-radius: 4px;
 						box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 					"
-					>Go to your Locker dashboard</a
+					>View details</a
 				>
 				<hr
 					style="
