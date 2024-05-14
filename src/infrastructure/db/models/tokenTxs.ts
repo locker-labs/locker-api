@@ -1,5 +1,6 @@
 import {
 	bigint,
+	boolean,
 	integer,
 	pgTable,
 	serial,
@@ -21,6 +22,8 @@ export const tokenTxs = pgTable(
 		toAddress: varchar("to_address", { length: 256 }).notNull(),
 		contractAddress: varchar("contract_address", { length: 256 }).notNull(),
 		tokenSymbol: varchar("token_symbol", { length: 256 }).notNull(),
+		tokenDecimals: integer("token_decimals"),
+		isConfirmed: boolean("is_confirmed").default(false),
 		amount: bigint("amount", { mode: "bigint" }).notNull(),
 		createdAt: timestamp("created_at", {
 			mode: "date",

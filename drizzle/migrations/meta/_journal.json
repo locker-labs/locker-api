@@ -15,6 +15,13 @@
 			"when": 1715314046698,
 			"tag": "0001_past_the_fallen",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "5",
+			"when": 1715525928409,
+			"tag": "0002_milky_mother_askani",
+			"breakpoints": true
 		}
 	]
 }
