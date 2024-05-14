@@ -11,7 +11,9 @@ import {
 	getTokenTxsRepo,
 	stream,
 } from "../../../../dependencies";
+import SUPPORTED_CHAINS from "../../../../dependencies/chains";
 import { zeroAddress } from "../../../../usecases/interfaces/clients/blockchain";
+import ChainIds from "../../../../usecases/schemas/blockchains";
 import InvalidSignature from "../../../clients/errors";
 import DuplicateRecordError from "../../../db/errors";
 
@@ -67,7 +69,10 @@ moralisRouter.post(
 					lockerId: locker!.id,
 					contractAddress: zeroAddress as `0x${string}`,
 					txHash: req.body.txs[0].hash,
-					tokenSymbol: "ETH",
+					tokenSymbol:
+						SUPPORTED_CHAINS[
+							parseInt(req.body.chainId, 16) as ChainIds
+						].native,
 					tokenDecimals: 18,
 					fromAddress: req.body.txs[0].fromAddress,
 					toAddress: req.body.txs[0].toAddress,
