@@ -86,7 +86,7 @@ moralisRouter.post(
 				await tokenTxsRepo.create(tokenTx);
 			} catch (error) {
 				if (error instanceof DuplicateRecordError) {
-					res.status(409).send({ error: error.message });
+					res.status(409).send({ error: (error as Error).message });
 					return;
 				}
 				res.status(500).send({

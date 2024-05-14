@@ -52,6 +52,11 @@ class Config {
 	// Resend
 	resendApiKey: string;
 
+	// Encription
+	encriptionAlgorithm: string;
+
+	encriptionKey: string;
+
 	constructor() {
 		// Application settings
 		this.applicationName = process.env.APPLICATION_NAME || "locker";
@@ -101,6 +106,10 @@ class Config {
 
 		// Resend
 		this.resendApiKey = process.env.RESEND_API_KEY!;
+
+		// Encrption
+		this.encriptionAlgorithm = process.env.ENCRYPTION_ALGORITHM!;
+		this.encriptionKey = process.env.ENCRYPTION_KEY!;
 	}
 }
 
