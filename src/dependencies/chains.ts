@@ -30,7 +30,7 @@ const SUPPORTED_CHAINS: {
 	[ChainIds.AVALANCHE]: {
 		name: "Avalanche",
 		native: "AVAX",
-		blockExplorer: "https://snowtrace.io/",
+		blockExplorer: "https://snowtrace.io",
 		rpcUrl: config.avalancheRpc,
 	},
 	[ChainIds.SEPOLIA]: {
@@ -38,6 +38,18 @@ const SUPPORTED_CHAINS: {
 		native: "ETH",
 		blockExplorer: "https://sepolia.etherscan.io",
 		rpcUrl: config.sepoliaRpc,
+	},
+	[ChainIds.POLYGON_MUMBAI]: {
+		name: "Polygon Mumbai",
+		native: "MATIC",
+		blockExplorer: "https://mumbai.polygonscan.com",
+		rpcUrl: config.polygonMumbaiRpc,
+	},
+	[ChainIds.AVALANCHE_FUJI]: {
+		name: "Avalanche Fuji",
+		native: "AVAX",
+		blockExplorer: "https://testnet.snowtrace.io/",
+		rpcUrl: config.avalancheFujiRpc,
 	},
 };
 

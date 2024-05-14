@@ -72,7 +72,9 @@ lockerRouter.post(
 			lockerInDb = await lockersRepo.create(locker);
 		} catch (error) {
 			if (error instanceof DuplicateRecordError) {
-				res.status(409).send({ error: error.message });
+				res.status(409).send({
+					error: (error as DuplicateRecordError).message,
+				});
 				return;
 			}
 			res.status(500).send({ error: "An unexpected error occurred." });
@@ -94,13 +96,23 @@ lockerRouter.patch(
 		req: AuthenticatedRequest<Request>,
 		res: Response
 	): Promise<void> => {
+		// ensure that supplied locker exists
+		const lockersRepo = await getLockersRepo();
+		const locker = await lockersRepo.retrieve({
+			id: parseInt(req.params.lockerId, 10),
+		});
+
+		if (!locker) {
+			res.status(404).send({ error: "Locker not found." });
+			return;
+		}
+
+		// update locker
 		const lockerUpdate: UpdateLockerRepoAdapter = {
 			ownerAddress: req.body.ownerAddress,
 			chainId: req.body.chainId,
 			deploymentTxHash: req.body.deploymentTxHash,
 		};
-
-		const lockersRepo = await getLockersRepo();
 
 		let updatedLocker;
 		try {
@@ -108,19 +120,15 @@ lockerRouter.patch(
 				parseInt(req.params.lockerId, 10),
 				lockerUpdate
 			);
+			res.status(200).send({ data: { locker: updatedLocker } });
 		} catch (error) {
 			if (error instanceof DuplicateRecordError) {
-				res.status(409).send({ error: error.message });
+				res.status(409).send({
+					error: (error as DuplicateRecordError).message,
+				});
 				return;
 			}
 			res.status(500).send({ error: "An unexpected error occurred." });
-			return;
-		}
-
-		if (!updatedLocker) {
-			res.status(404).send({ error: "Locker not found." });
-		} else {
-			res.status(200).send({ data: { locker: updatedLocker } });
 		}
 	}
 );

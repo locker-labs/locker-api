@@ -39,6 +39,10 @@ class Config {
 
 	optimismSepoliaRpc: string;
 
+	avalancheFujiRpc: string;
+
+	polygonMumbaiRpc: string;
+
 	// Moralis
 	moralisStreamId: string;
 
@@ -51,6 +55,11 @@ class Config {
 
 	// Resend
 	resendApiKey: string;
+
+	// Encription
+	encriptionAlgorithm: string;
+
+	encriptionKey: string;
 
 	constructor() {
 		// Application settings
@@ -89,6 +98,10 @@ class Config {
 
 		this.optimismSepoliaRpc = process.env.OPTIMISM_SEPOLIA_RPC!;
 
+		this.avalancheFujiRpc = process.env.AVALANCHE_FUJI_RPC!;
+
+		this.polygonMumbaiRpc = process.env.POLYGON_MUMBAI_RPC!;
+
 		// Moralis
 		this.moralisStreamId = process.env.MORALIS_STREAM_ID!;
 
@@ -101,6 +114,10 @@ class Config {
 
 		// Resend
 		this.resendApiKey = process.env.RESEND_API_KEY!;
+
+		// Encrption
+		this.encriptionAlgorithm = process.env.ENCRYPTION_ALGORITHM!;
+		this.encriptionKey = process.env.ENCRYPTION_KEY!;
 	}
 }
 
