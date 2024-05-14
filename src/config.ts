@@ -39,6 +39,10 @@ class Config {
 
 	optimismSepoliaRpc: string;
 
+	avalancheFujiRpc: string;
+
+	polygonMumbaiRpc: string;
+
 	// Moralis
 	moralisStreamId: string;
 
@@ -93,6 +97,10 @@ class Config {
 		this.arbitrumSepoliaRpc = process.env.ARBITRUM_SEPOLIA_RPC!;
 
 		this.optimismSepoliaRpc = process.env.OPTIMISM_SEPOLIA_RPC!;
+
+		this.avalancheFujiRpc = process.env.AVALANCHE_FUJI_RPC!;
+
+		this.polygonMumbaiRpc = process.env.POLYGON_MUMBAI_RPC!;
 
 		// Moralis
 		this.moralisStreamId = process.env.MORALIS_STREAM_ID!;
