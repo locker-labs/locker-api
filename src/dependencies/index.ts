@@ -2,6 +2,7 @@ export {
 	type AuthenticatedRequest,
 	authRequired,
 	getAuthClient,
+	getBlockChainClient,
 	getEmailClient,
 	getIndexerClient,
 } from "./clients";

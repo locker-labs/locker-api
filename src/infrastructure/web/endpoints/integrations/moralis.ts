@@ -5,6 +5,7 @@ import morgan from "morgan";
 
 import {
 	getAuthClient,
+	getBlockChainClient,
 	getEmailClient,
 	getIndexerClient,
 	getLockersRepo,
@@ -12,7 +13,7 @@ import {
 	stream,
 } from "../../../../dependencies";
 import SUPPORTED_CHAINS from "../../../../dependencies/chains";
-import { zeroAddress } from "../../../../usecases/interfaces/clients/blockchain";
+import { zeroAddress } from "../../../../usecases/interfaces/clients/indexer";
 import ChainIds from "../../../../usecases/schemas/blockchains";
 import InvalidSignature from "../../../clients/errors";
 import DuplicateRecordError from "../../../db/errors";
@@ -106,6 +107,10 @@ moralisRouter.post(
 				req.body.confirmed
 			);
 		}
+
+		// 4. Allocate funds for user
+		const blockchainClient = await getBlockChainClient();
+		await blockchainClient.sendTransaction();
 
 		res.status(200).send();
 	}
