@@ -16,6 +16,7 @@
 		"migrate": "pnpm tsx ./drizzle/migrate.ts",
 		"migration:generate": "pnpm drizzle-kit generate:pg",
 		"prepare": "husky",
+		"stream:create": "tsx scripts/gen-moralis-stream.ts",
 		"test": "jest --coverage",
 		"test:match": "jest --verbose"
 	},
