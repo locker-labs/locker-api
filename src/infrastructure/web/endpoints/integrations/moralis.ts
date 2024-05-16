@@ -34,6 +34,16 @@ moralisRouter.post(
 				res.status(400).send({ error: error.message });
 				return;
 			}
+			console.error(
+				"Got an unknown error in the webhook verification.",
+				error
+			);
+
+			res.status(500).send({
+				error: "An unexpected error occurred.",
+			});
+
+			return;
 		}
 
 		// 2. store tx data in database
