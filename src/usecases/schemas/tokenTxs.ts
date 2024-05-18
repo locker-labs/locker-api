@@ -21,4 +21,20 @@ interface TokenTxInDb extends TokenTxRepoAdapter {
 	updatedAt: Date;
 }
 
-export { type TokenTx, type TokenTxInDb, type TokenTxRepoAdapter };
+enum ETokenTxLockerDirection {
+	IN = "in",
+	OUT = "out",
+}
+
+enum ETokenTxAutomationsState {
+	NOT_STARTED = "not_started",
+	STARTED = "started",
+}
+
+export {
+	ETokenTxAutomationsState,
+	ETokenTxLockerDirection,
+	type TokenTx,
+	type TokenTxInDb,
+	type TokenTxRepoAdapter,
+};

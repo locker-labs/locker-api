@@ -36,6 +36,7 @@ module.exports = {
 		"import/no-unresolved": "error",
 		"simple-import-sort/imports": "error",
 		"simple-import-sort/exports": "error",
+		"no-shadow": "off",
 		"@typescript-eslint/no-shadow": "error",
 		"import/no-extraneous-dependencies": [
 			"error",

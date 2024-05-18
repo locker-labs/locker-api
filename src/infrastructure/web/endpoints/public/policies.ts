@@ -22,7 +22,7 @@ import {
 } from "../../../../dependencies";
 import {
 	CreatePolicyRequest,
-	PoliciyRepoAdapter,
+	PoliciyRepoAdapter as PolicyRepoAdapter,
 	UpdatePoliciesRepoAdapter,
 	UpdatePolicyRequest,
 } from "../../../../usecases/schemas/policies";
@@ -89,7 +89,7 @@ policyRouter.post(
 		const { iv, encryptedText } = encrypt(req.body.sessionKey);
 
 		// store locker in database
-		const policy: PoliciyRepoAdapter = {
+		const policy: PolicyRepoAdapter = {
 			lockerId: req.body.lockerId,
 			chainId: req.body.chainId,
 			encryptedSessionKey: encryptedText,
