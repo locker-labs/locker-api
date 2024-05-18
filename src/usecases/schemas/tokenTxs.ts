@@ -1,5 +1,15 @@
 /* eslint-disable max-classes-per-file */
 
+enum ETokenTxLockerDirection {
+	IN = "in",
+	OUT = "out",
+}
+
+enum ETokenTxAutomationsState {
+	NOT_STARTED = "not_started",
+	STARTED = "started",
+}
+
 interface TokenTxRepoAdapter {
 	lockerId: number;
 	contractAddress: `0x${string}`;
@@ -11,6 +21,7 @@ interface TokenTxRepoAdapter {
 	isConfirmed: boolean;
 	amount: bigint;
 	chainId: number;
+	lockerDirection: ETokenTxLockerDirection;
 }
 
 interface TokenTx extends TokenTxRepoAdapter {}
@@ -19,16 +30,6 @@ interface TokenTxInDb extends TokenTxRepoAdapter {
 	id: number;
 	createdAt: Date;
 	updatedAt: Date;
-}
-
-enum ETokenTxLockerDirection {
-	IN = "in",
-	OUT = "out",
-}
-
-enum ETokenTxAutomationsState {
-	NOT_STARTED = "not_started",
-	STARTED = "started",
 }
 
 export {
