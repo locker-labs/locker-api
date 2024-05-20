@@ -22,6 +22,7 @@ interface TokenTxRepoAdapter {
 	amount: bigint;
 	chainId: number;
 	lockerDirection: ETokenTxLockerDirection;
+	automationsState: ETokenTxAutomationsState;
 }
 
 interface TokenTx extends TokenTxRepoAdapter {}

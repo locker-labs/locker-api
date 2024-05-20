@@ -2,7 +2,6 @@ import "dotenv/config";
 
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
-import crypto from "crypto";
 import express, {
 	NextFunction,
 	Request,
@@ -11,7 +10,6 @@ import express, {
 } from "express";
 import morgan from "morgan";
 
-import config from "../../../../config";
 import {
 	AuthenticatedRequest,
 	authRequired,
@@ -22,10 +20,11 @@ import {
 } from "../../../../dependencies";
 import {
 	CreatePolicyRequest,
-	PoliciyRepoAdapter as PolicyRepoAdapter,
+	PolicyRepoAdapter,
 	UpdatePoliciesRepoAdapter,
 	UpdatePolicyRequest,
 } from "../../../../usecases/schemas/policies";
+import { encrypt } from "../../../clients/encryption";
 import DuplicateRecordError from "../../../db/errors";
 
 const policyRouter = express.Router();
@@ -48,21 +47,6 @@ function validateRequest<T extends object>(type: {
 			req.body = input; // Optionally, replace the req.body with the validated object
 			next();
 		}
-	};
-}
-
-function encrypt(text: string): { iv: string; encryptedText: string } {
-	const iv = crypto.randomBytes(16); // Initialization vector
-	const cipher = crypto.createCipheriv(
-		config.encriptionAlgorithm,
-		Buffer.from(config.encriptionKey, "base64"),
-		iv
-	);
-	let encrypted = cipher.update(text, "utf8", "hex");
-	encrypted += cipher.final("hex");
-	return {
-		iv: iv.toString("base64"), // Return the IV as a base64 encoded string
-		encryptedText: encrypted,
 	};
 }
 

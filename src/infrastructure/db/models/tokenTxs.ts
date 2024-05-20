@@ -21,7 +21,7 @@ export const tokenTxs = pgTable(
 		triggeredByTokenTxId: integer("triggered_by_token_tx_id"),
 		chainId: integer("chain_id").notNull(),
 		// `in` or `out` of locker
-		lockerDirection: varchar("locker_direction", { length: 32 }).notNull(),
+		lockerDirection: varchar("locker_direction", { length: 32 }),
 		// `not_started` or `started`
 		automationsState: varchar("automations_state", { length: 32 })
 			.notNull()

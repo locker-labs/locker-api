@@ -6,15 +6,18 @@ import {
 	IsObject,
 	IsOptional,
 	IsString,
-	Length,
 } from "class-validator";
 
 import ChainIds from "./blockchains";
 
-interface Automations {
-	savings: number;
-	hot_wallet: number;
-	off_ramp: number;
+export interface IAutomation {
+	type: "savings" | "forward_to" | "off_ramp";
+	// 0 - 1
+	allocation: number;
+	// Always ready if savings or forward_to
+	status: "new" | "pending" | "ready" | "failed";
+	// Required if forward_to or off_ramp
+	recipientAddress?: `0x${string}`;
 }
 
 class CreatePolicyRequest {
@@ -25,39 +28,37 @@ class CreatePolicyRequest {
 	chainId!: ChainIds;
 
 	@IsString()
-	@Length(1804, 1804)
 	sessionKey!: string;
 
 	@IsObject()
-	automations!: Automations;
+	automations!: IAutomation[];
 }
 
 class UpdatePolicyRequest {
 	@IsOptional()
 	@IsString()
-	@Length(1804, 1804)
 	sessionKey?: string;
 
 	@IsOptional()
 	@IsObject()
-	automations?: Automations;
+	automations?: IAutomation[];
 }
 
 interface UpdatePoliciesRepoAdapter {
 	encryptedSessionKey?: string;
 	encodedIv?: string;
-	automations?: Automations;
+	automations?: IAutomation[];
 }
 
-interface PoliciyRepoAdapter {
+interface PolicyRepoAdapter {
 	lockerId: number;
 	chainId: number;
 	encryptedSessionKey: string;
 	encodedIv: string;
-	automations: Automations;
+	automations: IAutomation[];
 }
 
-interface PolicyInDb extends PoliciyRepoAdapter {
+interface PolicyInDb extends PolicyRepoAdapter {
 	id: number;
 	createdAt: Date;
 	updatedAt: Date;
@@ -67,16 +68,16 @@ interface PolicyInDbWithoutSessionKey {
 	id: number;
 	lockerId: number;
 	chainId: number;
-	automations: Automations;
+	automations: IAutomation[];
 	createdAt: Date;
 	updatedAt: Date;
 }
 
 export {
 	CreatePolicyRequest,
-	type PoliciyRepoAdapter,
 	type PolicyInDb,
 	type PolicyInDbWithoutSessionKey,
+	PolicyRepoAdapter,
 	type UpdatePoliciesRepoAdapter,
 	UpdatePolicyRequest,
 };

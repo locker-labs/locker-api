@@ -43,6 +43,13 @@
       "when": 1716000532429,
       "tag": "0005_deep_namora",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1716257500179,
+      "tag": "0006_abandoned_sabra",
+      "breakpoints": true
     }
   ]
 }

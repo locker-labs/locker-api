@@ -19,6 +19,7 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 				.insert(tokenTxs)
 				.values({
 					lockerId: tokenTx.lockerId,
+					lockerDirection: tokenTx.lockerDirection,
 					contractAddress: tokenTx.contractAddress.toLowerCase(),
 					txHash: tokenTx.txHash.toLowerCase(),
 					tokenSymbol: tokenTx.tokenSymbol,
@@ -33,6 +34,7 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 					target: [tokenTxs.chainId, tokenTxs.txHash],
 					set: {
 						isConfirmed: tokenTx.isConfirmed,
+						automationsState: tokenTx.automationsState,
 					},
 				})
 				.returning();

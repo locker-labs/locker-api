@@ -3,9 +3,9 @@ import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import IPoliciesRepo from "../../../usecases/interfaces/repos/policies";
 import {
-	PoliciyRepoAdapter,
 	PolicyInDb,
 	PolicyInDbWithoutSessionKey,
+	PolicyRepoAdapter,
 	UpdatePoliciesRepoAdapter,
 } from "../../../usecases/schemas/policies";
 import DuplicateRecordError from "../errors";
@@ -16,7 +16,7 @@ export default class PoliciesRepo implements IPoliciesRepo {
 	constructor(private db: PostgresJsDatabase) {}
 
 	async create(
-		policy: PoliciyRepoAdapter
+		policy: PolicyRepoAdapter
 	): Promise<PolicyInDbWithoutSessionKey> {
 		try {
 			const result = await this.db

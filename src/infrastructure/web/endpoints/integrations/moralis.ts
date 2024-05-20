@@ -15,6 +15,11 @@ import {
 import SUPPORTED_CHAINS from "../../../../dependencies/chains";
 import { zeroAddress } from "../../../../usecases/interfaces/clients/indexer";
 import ChainIds from "../../../../usecases/schemas/blockchains";
+import {
+	ETokenTxAutomationsState,
+	ETokenTxLockerDirection,
+	TokenTxRepoAdapter,
+} from "../../../../usecases/schemas/tokenTxs";
 import InvalidSignature from "../../../clients/errors";
 import DuplicateRecordError from "../../../db/errors";
 
@@ -51,44 +56,57 @@ moralisRouter.post(
 		if (req.body.txs.length > 0) {
 			const lockersRepo = await getLockersRepo();
 			const tokenTxsRepo = await getTokenTxsRepo();
-			let tokenTx;
+			let tokenTx: TokenTxRepoAdapter;
 			let locker;
 			if (req.body.erc20Transfers.length > 0) {
+				const erc20Tx = req.body.erc20Transfers[0];
 				locker = await lockersRepo.retrieve({
-					address: req.body.erc20Transfers[0].to,
+					address: erc20Tx.to,
 				});
+				const lockerDirection =
+					erc20Tx.to.toLowerCase() === locker!.address.toLowerCase()
+						? ETokenTxLockerDirection.IN
+						: ETokenTxLockerDirection.OUT;
 				tokenTx = {
 					lockerId: locker!.id,
-					contractAddress: req.body.erc20Transfers[0]
-						.contract as `0x${string}`,
-					txHash: req.body.erc20Transfers[0].transactionHash,
-					tokenSymbol: req.body.erc20Transfers[0].tokenSymbol,
-					tokenDecimals: req.body.erc20Transfers[0].tokenDecimals,
-					fromAddress: req.body.erc20Transfers[0].from,
-					toAddress: req.body.erc20Transfers[0].to,
+					lockerDirection,
+					automationsState: ETokenTxAutomationsState.NOT_STARTED,
+					contractAddress: erc20Tx.contract as `0x${string}`,
+					txHash: erc20Tx.transactionHash,
+					tokenSymbol: erc20Tx.tokenSymbol,
+					tokenDecimals: erc20Tx.tokenDecimals,
+					fromAddress: erc20Tx.from,
+					toAddress: erc20Tx.to,
 					isConfirmed: req.body.confirmed,
-					amount: BigInt(req.body.erc20Transfers[0].value),
+					amount: BigInt(erc20Tx.value),
 					chainId: parseInt(req.body.chainId, 16),
 				};
 			} else {
+				const ethTx = req.body.txs[0];
+				const lockerDirection =
+					ethTx.to.toLowerCase() === locker!.address.toLowerCase()
+						? ETokenTxLockerDirection.IN
+						: ETokenTxLockerDirection.OUT;
 				// assume ETH transfer
 				locker = await lockersRepo.retrieve({
-					address: req.body.txs[0].toAddress,
+					address: ethTx.toAddress,
 				});
 
 				tokenTx = {
 					lockerId: locker!.id,
+					lockerDirection,
+					automationsState: ETokenTxAutomationsState.NOT_STARTED,
 					contractAddress: zeroAddress as `0x${string}`,
-					txHash: req.body.txs[0].hash,
+					txHash: ethTx.hash,
 					tokenSymbol:
 						SUPPORTED_CHAINS[
 							parseInt(req.body.chainId, 16) as ChainIds
 						].native,
 					tokenDecimals: 18,
-					fromAddress: req.body.txs[0].fromAddress,
-					toAddress: req.body.txs[0].toAddress,
+					fromAddress: ethTx.fromAddress,
+					toAddress: ethTx.toAddress,
 					isConfirmed: req.body.confirmed,
-					amount: BigInt(req.body.txs[0].value),
+					amount: BigInt(ethTx.value),
 					chainId: parseInt(req.body.chainId, 16),
 				};
 			}
@@ -118,9 +136,9 @@ moralisRouter.post(
 			);
 		}
 
-		// 4. Allocate funds for user
-		const blockchainClient = await getBlockChainClient();
-		await blockchainClient.sendTransaction();
+		// Saving the txs to the DB triggers webhooks from Supabase
+		// to our API at /endpoints/db-hooks/
+		// Those webhooks will trigger the automations.
 
 		res.status(200).send();
 	}
