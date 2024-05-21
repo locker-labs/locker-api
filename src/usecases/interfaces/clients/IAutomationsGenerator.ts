@@ -6,6 +6,7 @@ interface IAutomationsGenerator {
 	 * At the moment, all automations are themselves token transactions.
 	 * But they transfer funds from the locker elsewhere.
 	 * Returns true if maybeTrigger triggers at least one automation, false otherwise.
+	 * If true, the corresponding automations are sent on-chain and persisted to DB.
 	 */
 	generateAutomations(maybeTrigger: TokenTx): Promise<boolean>;
 }

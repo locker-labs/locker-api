@@ -24,7 +24,7 @@ import {
 	UpdatePoliciesRepoAdapter,
 	UpdatePolicyRequest,
 } from "../../../../usecases/schemas/policies";
-import { encrypt } from "../../../clients/encryption";
+import { encrypt } from "../../../utils/encryption";
 import DuplicateRecordError from "../../../db/errors";
 
 const policyRouter = express.Router();

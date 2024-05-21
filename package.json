@@ -47,6 +47,7 @@
 		"express": "^4.19.2",
 		"moralis": "^2.26.1",
 		"morgan": "^1.10.0",
+		"permissionless": "^0.1.29",
 		"pg": "^8.11.5",
 		"postgres": "^3.4.4",
 		"resend": "^3.2.0",

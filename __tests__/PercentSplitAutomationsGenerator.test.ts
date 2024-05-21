@@ -1,17 +1,36 @@
 import PercentSplitAutomationsGenerator from "../src/infrastructure/clients/PercentSplitAutomationsGenerator";
+import { LockerInDb } from "../src/usecases/schemas/lockers";
 import { IAutomation } from "../src/usecases/schemas/policies";
 import {
 	ETokenTxAutomationsState,
 	ETokenTxLockerDirection,
 	TokenTxInDb,
 } from "../src/usecases/schemas/tokenTxs";
+import TestCallDataExecutor, {
+	DEFAULT_HASH,
+} from "./utils/TestCallDataExecutor";
+import TestLockerApi from "./utils/TestLockerApi";
 import TestPolicyApi from "./utils/TestPolicyApi";
 import TestTokenTxApi from "./utils/TestTokenTxApi";
 
 const testPolicyApi = new TestPolicyApi();
 const testTokenTxApi = new TestTokenTxApi();
+const testCallDataExecutor = new TestCallDataExecutor();
+const testLockerApi = new TestLockerApi();
 
 describe("PercentSplitAutomationsGenerator", () => {
+	const locker: LockerInDb = {
+		userId: "12",
+		seed: 1,
+		provider: "test",
+		ownerAddress: "0xll2",
+		address: "0xll1",
+		id: 0,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		deployments: [],
+	};
+
 	it("should not trigger automations for transactions out from the locker", async () => {
 		const outTx: TokenTxInDb = {
 			id: 1,
@@ -32,7 +51,9 @@ describe("PercentSplitAutomationsGenerator", () => {
 		};
 		const generator = new PercentSplitAutomationsGenerator(
 			testPolicyApi,
-			testTokenTxApi
+			testTokenTxApi,
+			testLockerApi,
+			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
 		expect(didAutomate).toBe(false);
@@ -58,7 +79,9 @@ describe("PercentSplitAutomationsGenerator", () => {
 		};
 		const generator = new PercentSplitAutomationsGenerator(
 			testPolicyApi,
-			testTokenTxApi
+			testTokenTxApi,
+			testLockerApi,
+			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
 		expect(didAutomate).toBe(false);
@@ -84,7 +107,9 @@ describe("PercentSplitAutomationsGenerator", () => {
 		};
 		const generator = new PercentSplitAutomationsGenerator(
 			testPolicyApi,
-			testTokenTxApi
+			testTokenTxApi,
+			testLockerApi,
+			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
 		expect(didAutomate).toBe(false);
@@ -110,7 +135,9 @@ describe("PercentSplitAutomationsGenerator", () => {
 		};
 		const generator = new PercentSplitAutomationsGenerator(
 			testPolicyApi,
-			testTokenTxApi
+			testTokenTxApi,
+			testLockerApi,
+			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
 		expect(didAutomate).toBe(false);
@@ -136,7 +163,9 @@ describe("PercentSplitAutomationsGenerator", () => {
 		};
 		const generator = new PercentSplitAutomationsGenerator(
 			testPolicyApi,
-			testTokenTxApi
+			testTokenTxApi,
+			testLockerApi,
+			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
 		expect(didAutomate).toBe(true);
@@ -169,12 +198,24 @@ describe("PercentSplitAutomationsGenerator", () => {
 
 		const generator = new PercentSplitAutomationsGenerator(
 			testPolicyApi,
-			testTokenTxApi
+			testTokenTxApi,
+			testLockerApi,
+			testCallDataExecutor
 		);
+
+		const policy = {
+			lockerId: 123,
+			chainId: 1,
+			encryptedSessionKey: "",
+			encodedIv: "",
+			automations: [],
+		};
 
 		const spawnedAutomation = await generator.spawnAutomation(
 			outTx,
-			automation
+			automation,
+			policy,
+			locker
 		);
 		expect(spawnedAutomation).toBeNull();
 	});
@@ -204,14 +245,26 @@ describe("PercentSplitAutomationsGenerator", () => {
 			status: "new",
 		};
 
+		const policy = {
+			lockerId: 123,
+			chainId: 1,
+			encryptedSessionKey: "",
+			encodedIv: "",
+			automations: [],
+		};
+
 		const generator = new PercentSplitAutomationsGenerator(
 			testPolicyApi,
-			testTokenTxApi
+			testTokenTxApi,
+			testLockerApi,
+			testCallDataExecutor
 		);
 
 		const spawnedAutomation = await generator.spawnAutomation(
 			outTx,
-			automation
+			automation,
+			policy,
+			locker
 		);
 		expect(spawnedAutomation).toBeNull();
 	});
@@ -239,17 +292,29 @@ describe("PercentSplitAutomationsGenerator", () => {
 			type: "forward_to",
 			allocation: 0.1,
 			status: "ready",
-			recipientAddress: "0x111",
+			recipientAddress: "0xF445b07Aad98De9cc2794593B68ecD4aa5f81076",
 		};
 
 		const generator = new PercentSplitAutomationsGenerator(
 			testPolicyApi,
-			testTokenTxApi
+			testTokenTxApi,
+			testLockerApi,
+			testCallDataExecutor
 		);
+
+		const policy = {
+			lockerId: 123,
+			chainId: 1,
+			encryptedSessionKey: "",
+			encodedIv: "",
+			automations: [],
+		};
 
 		const spawnedAutomation = await generator.spawnAutomation(
 			outTx,
-			automation
+			automation,
+			policy,
+			locker
 		);
 
 		const expectedTx = {
@@ -257,12 +322,12 @@ describe("PercentSplitAutomationsGenerator", () => {
 			lockerDirection: ETokenTxLockerDirection.OUT,
 			automationsState: ETokenTxAutomationsState.STARTED,
 			contractAddress: "0x456",
-			txHash: "0x222",
+			txHash: DEFAULT_HASH,
 			tokenSymbol: "FOO",
 			// the locker itself
-			fromAddress: "0xabc",
+			fromAddress: locker.address,
 			// automation recipient
-			toAddress: "0x111",
+			toAddress: "0xF445b07Aad98De9cc2794593B68ecD4aa5f81076",
 			tokenDecimals: 18,
 			isConfirmed: false,
 			// 10% of amount received

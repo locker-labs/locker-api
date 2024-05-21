@@ -1,4 +1,4 @@
-import { decrypt, encrypt } from "../src/infrastructure/clients/encryption";
+import { decrypt, encrypt } from "../src/infrastructure/utils/encryption";
 
 describe("encryption", () => {
 	it("encrypt", async () => {

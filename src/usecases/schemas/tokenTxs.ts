@@ -23,6 +23,7 @@ interface TokenTxRepoAdapter {
 	chainId: number;
 	lockerDirection: ETokenTxLockerDirection;
 	automationsState: ETokenTxAutomationsState;
+	triggeredByTokenTxId?: number;
 }
 
 interface TokenTx extends TokenTxRepoAdapter {}
