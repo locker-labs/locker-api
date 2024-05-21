@@ -95,13 +95,13 @@ export default class PercentSplitAutomationsGenerator
 		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
 			maybeTrigger;
 		const { address: fromAddress } = locker;
-		const { recipientAddress: toAddress, allocation } = automation;
+		const { recipientAddress: toAddress, allocationFactor } = automation;
 
 		if (!toAddress) return null;
 
 		// construct web3 transaction, using session key
 		const amountOutStr = Big(amount.toString())
-			.times(allocation)
+			.times(allocationFactor)
 			.toFixed(0);
 
 		const amountOut = BigInt(amountOutStr);

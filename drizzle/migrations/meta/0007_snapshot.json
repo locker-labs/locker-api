@@ -1,6 +1,6 @@
 {
-	"id": "b64e51dd-dd71-4ee7-bdea-c3ad4d9d54cc",
-	"prevId": "69bebaf2-260e-468a-9e13-dcbb104246a5",
+	"id": "eb237b31-ecbf-4736-968d-4a6774619ad6",
+	"prevId": "b64e51dd-dd71-4ee7-bdea-c3ad4d9d54cc",
 	"version": "5",
 	"dialect": "pg",
 	"tables": {
@@ -58,11 +58,11 @@
 				"deployments_locker_id_lockers_id_fk": {
 					"name": "deployments_locker_id_lockers_id_fk",
 					"tableFrom": "deployments",
-					"tableTo": "lockers",
 					"columnsFrom": ["locker_id"],
+					"tableTo": "lockers",
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onUpdate": "no action",
+					"onDelete": "no action"
 				}
 			},
 			"compositePrimaryKeys": {},
@@ -129,8 +129,8 @@
 			"uniqueConstraints": {
 				"lockers_address_unique": {
 					"name": "lockers_address_unique",
-					"nullsNotDistinct": false,
-					"columns": ["address"]
+					"columns": ["address"],
+					"nullsNotDistinct": false
 				}
 			}
 		},
@@ -200,11 +200,11 @@
 				"policies_locker_id_lockers_id_fk": {
 					"name": "policies_locker_id_lockers_id_fk",
 					"tableFrom": "policies",
-					"tableTo": "lockers",
 					"columnsFrom": ["locker_id"],
+					"tableTo": "lockers",
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onUpdate": "no action",
+					"onDelete": "no action"
 				}
 			},
 			"compositePrimaryKeys": {},
@@ -326,11 +326,11 @@
 				"token_transactions_locker_id_lockers_id_fk": {
 					"name": "token_transactions_locker_id_lockers_id_fk",
 					"tableFrom": "token_transactions",
-					"tableTo": "lockers",
 					"columnsFrom": ["locker_id"],
+					"tableTo": "lockers",
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onUpdate": "no action",
+					"onDelete": "no action"
 				}
 			},
 			"compositePrimaryKeys": {},

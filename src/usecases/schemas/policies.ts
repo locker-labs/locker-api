@@ -1,6 +1,7 @@
 /* eslint-disable max-classes-per-file */
 
 import {
+	IsArray,
 	IsEnum,
 	IsNumber,
 	IsObject,
@@ -10,13 +11,47 @@ import {
 
 import ChainIds from "./blockchains";
 
+enum EAutomationType {
+	SAVINGS = "savings",
+	FORWARD_TO = "forward_to",
+	OFF_RAMP = "off_ramp",
+}
+
+enum EAutomationStatus {
+	NEW = "new",
+	PENDING = "pending",
+	READY = "ready",
+	FAILED = "failed",
+}
+
 export interface IAutomation {
-	type: "savings" | "forward_to" | "off_ramp";
+	type: EAutomationType;
+
 	// 0 - 1
-	allocation: number;
+	allocationFactor: number;
+
 	// Always ready if savings or forward_to
-	status: "new" | "pending" | "ready" | "failed";
+	status: EAutomationStatus;
+
 	// Required if forward_to or off_ramp
+	recipientAddress?: `0x${string}`;
+}
+
+class AutomationRequest implements IAutomation {
+	@IsEnum(EAutomationType)
+	type!: EAutomationType;
+
+	// 0 - 1
+	@IsNumber()
+	allocationFactor!: number;
+
+	// Always ready if savings or forward_to
+	@IsEnum(EAutomationStatus)
+	status!: EAutomationStatus;
+
+	// Required if forward_to or off_ramp
+	@IsString()
+	@IsOptional()
 	recipientAddress?: `0x${string}`;
 }
 
@@ -30,8 +65,9 @@ class CreatePolicyRequest {
 	@IsString()
 	sessionKey!: string;
 
-	@IsObject()
-	automations!: IAutomation[];
+	// @Type(() => AutomationRequest)
+	@IsArray()
+	automations!: AutomationRequest[];
 }
 
 class UpdatePolicyRequest {
@@ -77,7 +113,7 @@ export {
 	CreatePolicyRequest,
 	type PolicyInDb,
 	type PolicyInDbWithoutSessionKey,
-	PolicyRepoAdapter,
+	type PolicyRepoAdapter,
 	type UpdatePoliciesRepoAdapter,
 	UpdatePolicyRequest,
 };

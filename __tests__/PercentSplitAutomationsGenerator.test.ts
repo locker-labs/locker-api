@@ -192,7 +192,7 @@ describe("PercentSplitAutomationsGenerator", () => {
 
 		const automation: IAutomation = {
 			type: "savings",
-			allocation: 0.1,
+			allocationFactor: 0.1,
 			status: "ready",
 		};
 
@@ -241,7 +241,7 @@ describe("PercentSplitAutomationsGenerator", () => {
 
 		const automation: IAutomation = {
 			type: "forward_to",
-			allocation: 0.1,
+			allocationFactor: 0.1,
 			status: "new",
 		};
 
@@ -290,7 +290,7 @@ describe("PercentSplitAutomationsGenerator", () => {
 
 		const automation: IAutomation = {
 			type: "forward_to",
-			allocation: 0.1,
+			allocationFactor: 0.1,
 			status: "ready",
 			recipientAddress: "0xF445b07Aad98De9cc2794593B68ecD4aa5f81076",
 		};

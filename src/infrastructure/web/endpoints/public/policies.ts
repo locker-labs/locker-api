@@ -24,8 +24,8 @@ import {
 	UpdatePoliciesRepoAdapter,
 	UpdatePolicyRequest,
 } from "../../../../usecases/schemas/policies";
-import { encrypt } from "../../../utils/encryption";
 import DuplicateRecordError from "../../../db/errors";
+import { encrypt } from "../../../utils/encryption";
 
 const policyRouter = express.Router();
 policyRouter.use(express.json());
@@ -58,6 +58,8 @@ policyRouter.post(
 		req: AuthenticatedRequest<Request>,
 		res: Response
 	): Promise<void> => {
+		console.log("create policy");
+		console.log(req.body);
 		// Ensure that Locker exists
 		const lockersRepo = await getLockersRepo();
 		const locker = await lockersRepo.retrieve({
