@@ -43,6 +43,28 @@ class Config {
 
 	polygonMumbaiRpc: string;
 
+	// ZeroDev RPCs
+
+	arbitrumZerodevProjectId: string;
+
+	avalancheZerodevProjectId: string;
+
+	baseZerodevProjectId: string;
+
+	optimismZerodevProjectId: string;
+
+	polygonZerodevProjectId: string;
+
+	arbitrumSepoliaZerodevProjectId: string;
+
+	avalancheFujiZerodevProjectId: string;
+
+	baseSepoliaZerodevProjectId: string;
+
+	optimismSepoliaZerodevProjectId: string;
+
+	sepoliaZerodevProjectId: string;
+
 	// Moralis
 	moralisStreamId: string;
 
@@ -101,6 +123,26 @@ class Config {
 		this.avalancheFujiRpc = process.env.AVALANCHE_FUJI_RPC!;
 
 		this.polygonMumbaiRpc = process.env.POLYGON_MUMBAI_RPC!;
+
+		// ZeroDev RPCs
+		this.arbitrumZerodevProjectId =
+			process.env.ARBITRUM_ZERODEV_PROJECT_ID!;
+		this.avalancheZerodevProjectId =
+			process.env.AVALANCHE_ZERODEV_PROJECT_ID!;
+		this.baseZerodevProjectId = process.env.BASE_ZERODEV_PROJECT_ID!;
+		this.optimismZerodevProjectId =
+			process.env.OPTIMISM_ZERODEV_PROJECT_ID!;
+		this.polygonZerodevProjectId = process.env.POLYGON_ZERODEV_PROJECT_ID!;
+
+		this.arbitrumSepoliaZerodevProjectId =
+			process.env.ARBITRUM_SEPOLIA_ZERODEV_PROJECT_ID!;
+		this.avalancheFujiZerodevProjectId =
+			process.env.AVALANCHE_FUJI_ZERODEV_PROJECT_ID!;
+		this.baseSepoliaZerodevProjectId =
+			process.env.BASE_SEPOLIA_ZERODEV_PROJECT_ID!;
+		this.optimismSepoliaZerodevProjectId =
+			process.env.OPTIMISM_SEPOLIA_ZERODEV_PROJECT_ID!;
+		this.sepoliaZerodevProjectId = process.env.SEPOLIA_ZERODEV_PROJECT_ID!;
 
 		// Moralis
 		this.moralisStreamId = process.env.MORALIS_STREAM_ID!;

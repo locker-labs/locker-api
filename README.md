@@ -29,3 +29,11 @@ yarn migrate
 1. Set `LOCKER_BASE_URL` in `.env`.
 1. Update `chains`, `description`, and `tag` in `gen-moralis-stream.ts`.
 1. Run `yarn stream:create`.
+
+## Adding new chains
+
+1. Make sure it's supported on Beam: https://docs.beam.ansiblelabs.xyz/v2.0/docs/individuals
+1. Create ZeroDev project through dashboard.zerodev.app
+1. Add ZeroDev project ID to .env
+1. Add project ID to src/config.ts
+1. Add to SUPPORTED_CHAINS src/dependencies/chains.ts

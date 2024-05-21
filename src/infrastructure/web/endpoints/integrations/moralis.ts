@@ -12,7 +12,7 @@ import {
 	getTokenTxsRepo,
 	stream,
 } from "../../../../dependencies";
-import SUPPORTED_CHAINS from "../../../../dependencies/chains";
+import FULLY_SUPPORTED_CHAINS from "../../../../dependencies/chains";
 import { zeroAddress } from "../../../../usecases/interfaces/clients/indexer";
 import ChainIds from "../../../../usecases/schemas/blockchains";
 import {
@@ -99,7 +99,7 @@ moralisRouter.post(
 					contractAddress: zeroAddress as `0x${string}`,
 					txHash: ethTx.hash,
 					tokenSymbol:
-						SUPPORTED_CHAINS[
+						FULLY_SUPPORTED_CHAINS[
 							parseInt(req.body.chainId, 16) as ChainIds
 						].native,
 					tokenDecimals: 18,
