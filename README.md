@@ -32,7 +32,7 @@ yarn migration:generate
 yarn migrate
 ```
 
-To generate an empty migration: `npx drizzle-kit generate:pg --custom`
+To generate an empty migration: `yarn migration:blank`
 
 ### Adding new chains
 

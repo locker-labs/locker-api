@@ -80,11 +80,24 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 		return result.length > 0 ? (result[0] as TokenTxInDb) : null;
 	}
 
-	async retrieveMany(options: { lockerId: number }): Promise<TokenTxInDb[]> {
+	async retrieveMany(options: {
+		lockerId: number;
+		chainId?: number;
+	}): Promise<TokenTxInDb[]> {
+		const conditions = [];
+
+		// Same locker, required
+		conditions.push(eq(tokenTxs.lockerId, options.lockerId));
+
+		// Same chain, optional
+		if (options.chainId) {
+			conditions.push(eq(tokenTxs.chainId, options.chainId));
+		}
+
 		const results = await this.db
 			.select()
 			.from(tokenTxs)
-			.where(eq(tokenTxs.lockerId, options.lockerId))
+			.where(and(...conditions))
 			.orderBy(desc(tokenTxs.createdAt));
 		return results.map((result) => result as TokenTxInDb);
 	}

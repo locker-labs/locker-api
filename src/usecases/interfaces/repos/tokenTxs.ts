@@ -7,5 +7,8 @@ export default interface ITokenTxsRepo {
 		txHash?: string;
 		chainId?: number;
 	}): Promise<TokenTxInDb | null>;
-	retrieveMany(options: { lockerId: number }): Promise<TokenTxInDb[]>;
+	retrieveMany(options: {
+		lockerId: number;
+		chainId?: number;
+	}): Promise<TokenTxInDb[]>;
 }

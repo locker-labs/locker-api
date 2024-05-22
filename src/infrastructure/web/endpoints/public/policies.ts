@@ -80,7 +80,7 @@ policyRouter.post(
 			chainId: req.body.chainId,
 			encryptedSessionKey: encryptedText,
 			encodedIv: iv,
-			automations: req.body.automations,
+			automations: JSON.parse(req.body.automations),
 		};
 
 		const policiesRepo = await getPoliciesRepo();

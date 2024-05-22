@@ -3,6 +3,7 @@ import express, { Express } from "express";
 
 import config from "../../config";
 import { logger } from "../../dependencies";
+import policiesDbHookRouter from "./endpoints/db-hooks/policies";
 import tokentxsDbHookRouter from "./endpoints/db-hooks/tokentxs";
 // import { getIndexerClient, logger } from "../../dependencies";
 // import getOrCreateDatabase from "../db/connect";
@@ -21,6 +22,7 @@ function setupRoutes(app: Express): void {
 	app.use("/metrics/health", healthRouter);
 	app.use("/integrations/moralis", moralisRouter);
 	app.use("/db-hooks/tokentxs", tokentxsDbHookRouter);
+	app.use("/db-hooks/policies", policiesDbHookRouter);
 }
 
 // async function startup(): Promise<void> {

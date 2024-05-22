@@ -15,6 +15,7 @@
 		"lint:fix": "npx eslint . --ext .js,.ts --fix",
 		"migrate": "pnpm tsx ./drizzle/migrate.ts",
 		"migration:generate": "pnpm drizzle-kit generate:pg",
+		"migration:blank": "drizzle-kit generate:pg --custom",
 		"prepare": "husky",
 		"stream:create": "tsx scripts/gen-moralis-stream.ts",
 		"test": "jest --coverage",

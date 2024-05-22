@@ -9,24 +9,31 @@ import {
 	getTokenTxsRepo,
 	stream,
 } from "../../../../dependencies";
-import { TokenTxInDb } from "../../../../usecases/schemas/tokenTxs";
+import { PolicyInDb } from "../../../../usecases/schemas/policies";
 import PercentSplitAutomationsGenerator from "../../../clients/PercentSplitAutomationsGenerator";
 import ZerodevPolicyCallDataExecutor from "../../../clients/ZerodevPolicyCallDataExecutor";
 import checkApiKey from "./check-api-key";
 
-const tokentxsDbHookRouter = express.Router();
-tokentxsDbHookRouter.use(express.json());
-tokentxsDbHookRouter.use(morgan("combined", { stream }));
+const policiesDbHookRouter = express.Router();
+policiesDbHookRouter.use(express.json());
+policiesDbHookRouter.use(morgan("combined", { stream }));
 
-tokentxsDbHookRouter.post(
+policiesDbHookRouter.post(
 	"/update",
 	checkApiKey,
 	async (req: Request, res: Response): Promise<void> => {
 		try {
-			console.log("/db-hooks/tokentxs/update");
-
+			console.log("/db-hooks/policies/update");
 			console.log(req.body);
-			const tx = req.body.json().record as TokenTxInDb;
+			const policy = req.body.json().record as PolicyInDb;
+
+			const { encryptedSessionKey, encodedIv, chainId, lockerId } =
+				policy;
+
+			if (!encryptedSessionKey || !encodedIv) {
+				res.status(200).send({ message: "ok" });
+				return;
+			}
 
 			const policiesApi = await getPoliciesRepo();
 			const tokenTxsApi = await getTokenTxsRepo();
@@ -40,7 +47,14 @@ tokentxsDbHookRouter.post(
 				callDataExecutor
 			);
 
-			await automationsGenerator.generateAutomations(tx);
+			// Find all transactions from same chain as first
+			const txs = await tokenTxsApi.retrieveMany({ chainId, lockerId });
+			const txAutomationPromises = txs.map((tx) => {
+				console.log("Generating automations for tx", tx.txHash);
+				return automationsGenerator.generateAutomations(tx);
+			});
+
+			await Promise.all(txAutomationPromises);
 		} catch (e) {
 			console.error(
 				"Something went wrong while processing the request",
@@ -52,4 +66,4 @@ tokentxsDbHookRouter.post(
 	}
 );
 
-export default tokentxsDbHookRouter;
+export default policiesDbHookRouter;
