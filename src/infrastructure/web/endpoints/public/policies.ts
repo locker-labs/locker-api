@@ -80,7 +80,7 @@ policyRouter.post(
 			chainId: req.body.chainId,
 			encryptedSessionKey: encryptedText,
 			encodedIv: iv,
-			automations: JSON.parse(req.body.automations),
+			automations: req.body.automations,
 		};
 
 		const policiesRepo = await getPoliciesRepo();
@@ -95,6 +95,7 @@ policyRouter.post(
 				return;
 			}
 
+			console.error(error);
 			res.status(500).send({ error: "An unexpected error occurred." });
 		}
 	}
@@ -145,6 +146,8 @@ policyRouter.patch(
 				res.status(409).send({ error: error.message });
 				return;
 			}
+
+			console.error(error);
 			res.status(500).send({ error: "An unexpected error occurred." });
 		}
 	}

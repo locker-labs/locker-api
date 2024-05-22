@@ -5,7 +5,6 @@ import {
 	createZeroDevPaymasterClient,
 } from "@zerodev/sdk";
 import { KernelEncodeCallDataArgs } from "@zerodev/sdk/types";
-import { decrypt } from "dotenv";
 import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { createPublicClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
@@ -13,6 +12,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import FULLY_SUPPORTED_CHAINS from "../../dependencies/chains";
 import ICallDataExecutor from "../../usecases/interfaces/clients/ICallDataExecutor";
 import { PolicyRepoAdapter } from "../../usecases/schemas/policies";
+import { decrypt } from "../utils/encryption";
 import { chainId2ViemChain } from "../utils/viem";
 
 export default class ZerodevPolicyCallDataExecutor

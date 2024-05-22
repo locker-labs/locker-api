@@ -1,12 +1,15 @@
 import crypto from "crypto";
 
-import config from "../../config";
+import config, { Config } from "../../config";
 
-export function encrypt(text: string): { iv: string; encryptedText: string } {
+export function encrypt(
+	text: string,
+	configuration: Config = config
+): { iv: string; encryptedText: string } {
 	const iv = crypto.randomBytes(16); // Initialization vector
 	const cipher = crypto.createCipheriv(
-		config.encriptionAlgorithm,
-		Buffer.from(config.encriptionKey, "base64"),
+		configuration.encriptionAlgorithm,
+		Buffer.from(configuration.encriptionKey, "base64"),
 		iv
 	);
 	let encrypted = cipher.update(text, "utf8", "hex");
@@ -17,10 +20,14 @@ export function encrypt(text: string): { iv: string; encryptedText: string } {
 	};
 }
 
-export function decrypt(encryptedText: string, iv: string): string {
+export function decrypt(
+	encryptedText: string,
+	iv: string,
+	configuration: Config = config
+): string {
 	const decipher = crypto.createDecipheriv(
-		config.encriptionAlgorithm,
-		Buffer.from(config.encriptionKey, "base64"),
+		configuration.encriptionAlgorithm,
+		Buffer.from(configuration.encriptionKey, "base64"),
 		Buffer.from(iv, "base64")
 	);
 	let decrypted = decipher.update(encryptedText, "hex", "utf8");

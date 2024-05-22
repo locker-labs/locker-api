@@ -180,13 +180,15 @@ export default class PercentSplitAutomationsGenerator
 				default:
 					return null;
 			}
-		} catch (e) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (e: any) {
 			console.warn(
-				"Something went wrong trying to spawn an automation",
-				maybeTrigger,
-				automation,
-				e
+				"Something went wrong trying to spawn an automation"
+				// maybeTrigger,
+				// automation,
+				// e
 			);
+			console.warn(e.message);
 			return null;
 		}
 	}
@@ -208,10 +210,13 @@ export default class PercentSplitAutomationsGenerator
 			true
 		);
 
+		console.log("got policy");
+
 		// If no existing policy, automations can't be run
 		if (!policy) return [];
 
 		const locker = await this.lockersApi.retrieve({ id: lockerId });
+		console.log("got locker");
 		// Should never happen, but just in case
 		if (!locker) return [];
 
@@ -248,6 +253,7 @@ export default class PercentSplitAutomationsGenerator
 		const shouldGenerate =
 			await this.shouldGenerateAutomations(maybeTrigger);
 
+		console.log("shouldGenerate", shouldGenerate);
 		if (!shouldGenerate) return false;
 
 		// set automationState to started

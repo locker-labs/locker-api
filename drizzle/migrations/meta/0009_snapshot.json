@@ -1,6 +1,6 @@
 {
-	"id": "c2a47d71-e1e0-4f40-b37e-b85369260f8f",
-	"prevId": "eb237b31-ecbf-4736-968d-4a6774619ad6",
+	"id": "9134777c-1fab-4b7d-b694-90091d832099",
+	"prevId": "c2a47d71-e1e0-4f40-b37e-b85369260f8f",
 	"version": "5",
 	"dialect": "pg",
 	"tables": {
@@ -58,11 +58,11 @@
 				"deployments_locker_id_lockers_id_fk": {
 					"name": "deployments_locker_id_lockers_id_fk",
 					"tableFrom": "deployments",
-					"columnsFrom": ["locker_id"],
 					"tableTo": "lockers",
+					"columnsFrom": ["locker_id"],
 					"columnsTo": ["id"],
-					"onUpdate": "no action",
-					"onDelete": "no action"
+					"onDelete": "no action",
+					"onUpdate": "no action"
 				}
 			},
 			"compositePrimaryKeys": {},
@@ -129,8 +129,8 @@
 			"uniqueConstraints": {
 				"lockers_address_unique": {
 					"name": "lockers_address_unique",
-					"columns": ["address"],
-					"nullsNotDistinct": false
+					"nullsNotDistinct": false,
+					"columns": ["address"]
 				}
 			}
 		},
@@ -170,7 +170,7 @@
 				},
 				"automations": {
 					"name": "automations",
-					"type": "json",
+					"type": "jsonb",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -200,11 +200,11 @@
 				"policies_locker_id_lockers_id_fk": {
 					"name": "policies_locker_id_lockers_id_fk",
 					"tableFrom": "policies",
-					"columnsFrom": ["locker_id"],
 					"tableTo": "lockers",
+					"columnsFrom": ["locker_id"],
 					"columnsTo": ["id"],
-					"onUpdate": "no action",
-					"onDelete": "no action"
+					"onDelete": "no action",
+					"onUpdate": "no action"
 				}
 			},
 			"compositePrimaryKeys": {},
@@ -326,11 +326,11 @@
 				"token_transactions_locker_id_lockers_id_fk": {
 					"name": "token_transactions_locker_id_lockers_id_fk",
 					"tableFrom": "token_transactions",
-					"columnsFrom": ["locker_id"],
 					"tableTo": "lockers",
+					"columnsFrom": ["locker_id"],
 					"columnsTo": ["id"],
-					"onUpdate": "no action",
-					"onDelete": "no action"
+					"onDelete": "no action",
+					"onUpdate": "no action"
 				}
 			},
 			"compositePrimaryKeys": {},

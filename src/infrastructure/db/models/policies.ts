@@ -1,6 +1,6 @@
 import {
 	integer,
-	json,
+	jsonb,
 	pgTable,
 	serial,
 	timestamp,
@@ -20,7 +20,7 @@ const policies = pgTable(
 			length: 8192,
 		}).notNull(),
 		encodedIv: varchar("encoded_iv", { length: 256 }).notNull(),
-		automations: json("automations").notNull(),
+		automations: jsonb("automations").notNull(),
 		createdAt: timestamp("created_at", {
 			mode: "date",
 			precision: 6,

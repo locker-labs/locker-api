@@ -9,7 +9,6 @@ import {
 	getTokenTxsRepo,
 	stream,
 } from "../../../../dependencies";
-import { PolicyInDb } from "../../../../usecases/schemas/policies";
 import PercentSplitAutomationsGenerator from "../../../clients/PercentSplitAutomationsGenerator";
 import ZerodevPolicyCallDataExecutor from "../../../clients/ZerodevPolicyCallDataExecutor";
 import checkApiKey from "./check-api-key";
@@ -24,13 +23,20 @@ policiesDbHookRouter.post(
 	async (req: Request, res: Response): Promise<void> => {
 		try {
 			console.log("/db-hooks/policies/update");
-			console.log(req.body);
-			const policy = req.body.json().record as PolicyInDb;
+			const policy = req.body.record;
 
-			const { encryptedSessionKey, encodedIv, chainId, lockerId } =
-				policy;
+			const {
+				encrypted_session_key: encryptedSessionKey,
+				encoded_iv: encodedIv,
+				chain_id: chainId,
+				locker_id: lockerId,
+			} = policy;
+
+			console.log("policy");
+			console.log(encodedIv);
 
 			if (!encryptedSessionKey || !encodedIv) {
+				console.log("no encryptedSessionKey or encodedIv");
 				res.status(200).send({ message: "ok" });
 				return;
 			}

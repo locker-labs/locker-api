@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-class Config {
+export class Config {
 	// Application
 	applicationName: string;
 
