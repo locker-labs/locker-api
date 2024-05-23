@@ -6,7 +6,7 @@ import config from "../../config";
 import {
 	Headers,
 	IIndexerClient,
-} from "../../usecases/interfaces/clients/blockchain";
+} from "../../usecases/interfaces/clients/indexer";
 import InvalidSignature from "./errors";
 
 export default class MoralisClient implements IIndexerClient {

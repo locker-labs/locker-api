@@ -1,11 +1,12 @@
 import {
-	PoliciyRepoAdapter,
+	PolicyInDb,
 	PolicyInDbWithoutSessionKey,
+	PolicyRepoAdapter,
 	UpdatePoliciesRepoAdapter,
 } from "../../schemas/policies";
 
-export default interface ILockersRepo {
-	create(policy: PoliciyRepoAdapter): Promise<PolicyInDbWithoutSessionKey>;
+export default interface IPoliciesRepo {
+	create(policy: PolicyRepoAdapter): Promise<PolicyInDbWithoutSessionKey>;
 	retrieve(
 		options: {
 			id?: number;
@@ -13,7 +14,7 @@ export default interface ILockersRepo {
 			chainId?: number;
 		},
 		withSessionKey: boolean
-	): Promise<PolicyInDbWithoutSessionKey | null>;
+	): Promise<PolicyInDbWithoutSessionKey | PolicyInDb | null>;
 	retrieveMany(lockerId: number): Promise<PolicyInDbWithoutSessionKey[]>;
 	update(
 		options: {

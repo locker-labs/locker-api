@@ -1,6 +1,6 @@
 import {
 	integer,
-	json,
+	jsonb,
 	pgTable,
 	serial,
 	timestamp,
@@ -17,10 +17,10 @@ const policies = pgTable(
 		lockerId: integer("locker_id").references(() => lockers.id),
 		chainId: integer("chain_id").notNull(),
 		encryptedSessionKey: varchar("encrypted_session_key", {
-			length: 4096,
+			length: 8192,
 		}).notNull(),
 		encodedIv: varchar("encoded_iv", { length: 256 }).notNull(),
-		automations: json("automations").notNull(),
+		automations: jsonb("automations").notNull(),
 		createdAt: timestamp("created_at", {
 			mode: "date",
 			precision: 6,

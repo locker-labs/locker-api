@@ -1,0 +1,1 @@
+ALTER TABLE "policies" ALTER COLUMN "encrypted_session_key" SET DATA TYPE varchar(8192);--> statement-breakpoint

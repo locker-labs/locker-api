@@ -1,11 +1,11 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, Param, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import IPoliciesRepo from "../../../usecases/interfaces/repos/policies";
 import {
-	PoliciyRepoAdapter,
 	PolicyInDb,
 	PolicyInDbWithoutSessionKey,
+	PolicyRepoAdapter,
 	UpdatePoliciesRepoAdapter,
 } from "../../../usecases/schemas/policies";
 import DuplicateRecordError from "../errors";
@@ -16,8 +16,10 @@ export default class PoliciesRepo implements IPoliciesRepo {
 	constructor(private db: PostgresJsDatabase) {}
 
 	async create(
-		policy: PoliciyRepoAdapter
+		policy: PolicyRepoAdapter
 	): Promise<PolicyInDbWithoutSessionKey> {
+		console.log("creating with");
+		console.log(policy.automations);
 		try {
 			const result = await this.db
 				.insert(policies)
@@ -26,7 +28,9 @@ export default class PoliciesRepo implements IPoliciesRepo {
 					chainId: policy.chainId,
 					encryptedSessionKey: policy.encryptedSessionKey,
 					encodedIv: policy.encodedIv,
-					automations: policy.automations,
+					// Possibly a more concise solution, this is the best back I could find.
+					// https://github.com/drizzle-team/drizzle-orm/issues/724
+					automations: sql`${new Param(JSON.parse(JSON.stringify(policy.automations)))}`,
 				})
 				.returning();
 

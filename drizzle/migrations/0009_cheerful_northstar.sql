@@ -1,0 +1,1 @@
+ALTER TABLE "policies" ALTER COLUMN "automations" SET DATA TYPE jsonb;

@@ -77,6 +77,8 @@ lockerRouter.post(
 				});
 				return;
 			}
+
+			console.error(error);
 			res.status(500).send({ error: "An unexpected error occurred." });
 			return;
 		}
@@ -128,6 +130,8 @@ lockerRouter.patch(
 				});
 				return;
 			}
+
+			console.error(error);
 			res.status(500).send({ error: "An unexpected error occurred." });
 		}
 	}

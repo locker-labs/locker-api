@@ -2,7 +2,6 @@ import "dotenv/config";
 
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
-import crypto from "crypto";
 import express, {
 	NextFunction,
 	Request,
@@ -11,7 +10,6 @@ import express, {
 } from "express";
 import morgan from "morgan";
 
-import config from "../../../../config";
 import {
 	AuthenticatedRequest,
 	authRequired,
@@ -22,11 +20,12 @@ import {
 } from "../../../../dependencies";
 import {
 	CreatePolicyRequest,
-	PoliciyRepoAdapter,
+	PolicyRepoAdapter,
 	UpdatePoliciesRepoAdapter,
 	UpdatePolicyRequest,
 } from "../../../../usecases/schemas/policies";
 import DuplicateRecordError from "../../../db/errors";
+import { encrypt } from "../../../utils/encryption";
 
 const policyRouter = express.Router();
 policyRouter.use(express.json());
@@ -51,21 +50,6 @@ function validateRequest<T extends object>(type: {
 	};
 }
 
-function encrypt(text: string): { iv: string; encryptedText: string } {
-	const iv = crypto.randomBytes(16); // Initialization vector
-	const cipher = crypto.createCipheriv(
-		config.encriptionAlgorithm,
-		Buffer.from(config.encriptionKey, "base64"),
-		iv
-	);
-	let encrypted = cipher.update(text, "utf8", "hex");
-	encrypted += cipher.final("hex");
-	return {
-		iv: iv.toString("base64"), // Return the IV as a base64 encoded string
-		encryptedText: encrypted,
-	};
-}
-
 policyRouter.post(
 	"/create",
 	authRequired,
@@ -74,6 +58,8 @@ policyRouter.post(
 		req: AuthenticatedRequest<Request>,
 		res: Response
 	): Promise<void> => {
+		console.log("create policy");
+		console.log(req.body);
 		// Ensure that Locker exists
 		const lockersRepo = await getLockersRepo();
 		const locker = await lockersRepo.retrieve({
@@ -89,7 +75,7 @@ policyRouter.post(
 		const { iv, encryptedText } = encrypt(req.body.sessionKey);
 
 		// store locker in database
-		const policy: PoliciyRepoAdapter = {
+		const policy: PolicyRepoAdapter = {
 			lockerId: req.body.lockerId,
 			chainId: req.body.chainId,
 			encryptedSessionKey: encryptedText,
@@ -109,6 +95,7 @@ policyRouter.post(
 				return;
 			}
 
+			console.error(error);
 			res.status(500).send({ error: "An unexpected error occurred." });
 		}
 	}
@@ -159,6 +146,8 @@ policyRouter.patch(
 				res.status(409).send({ error: error.message });
 				return;
 			}
+
+			console.error(error);
 			res.status(500).send({ error: "An unexpected error occurred." });
 		}
 	}
