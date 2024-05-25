@@ -9,9 +9,10 @@ import {
 	getIndexerClient,
 	getLockersRepo,
 	getTokenTxsRepo,
+	logger,
 	stream,
 } from "../../../../dependencies";
-import FULLY_SUPPORTED_CHAINS from "../../../../dependencies/chains";
+import SUPPORTED_CHAINS from "../../../../dependencies/chains";
 import { zeroAddress } from "../../../../usecases/interfaces/clients/indexer";
 import ChainIds from "../../../../usecases/schemas/blockchains";
 import {
@@ -29,8 +30,6 @@ moralisRouter.use(morgan("combined", { stream }));
 moralisRouter.post(
 	"/webhooks/transactions",
 	async (req: Request, res: Response): Promise<void> => {
-		console.log("/integrations/moralis/webhooks/transactions");
-		console.log(req.body);
 		// 1. verify webhook
 		const indexer = await getIndexerClient();
 
@@ -41,10 +40,6 @@ moralisRouter.post(
 				res.status(400).send({ error: error.message });
 				return;
 			}
-			console.error(
-				"Got an unknown error in the webhook verification.",
-				error
-			);
 
 			res.status(500).send({
 				error: "An unexpected error occurred.",
@@ -103,7 +98,7 @@ moralisRouter.post(
 						contractAddress: zeroAddress as `0x${string}`,
 						txHash: ethTx.hash,
 						tokenSymbol:
-							FULLY_SUPPORTED_CHAINS[
+							SUPPORTED_CHAINS[
 								parseInt(req.body.chainId, 16) as ChainIds
 							].native,
 						tokenDecimals: 18,
@@ -143,7 +138,7 @@ moralisRouter.post(
 			}
 		} catch (error) {
 			// Swallow exceptions to prevent unexpected retry behavior from Moralis
-			console.error(
+			logger.error(
 				"Unable to process message from moralis",
 				req.body,
 				error

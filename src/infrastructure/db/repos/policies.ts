@@ -18,8 +18,6 @@ export default class PoliciesRepo implements IPoliciesRepo {
 	async create(
 		policy: PolicyRepoAdapter
 	): Promise<PolicyInDbWithoutSessionKey> {
-		console.log("creating with");
-		console.log(policy.automations);
 		try {
 			const result = await this.db
 				.insert(policies)

@@ -1,14 +1,27 @@
+import {
+	arbitrum,
+	arbitrumSepolia,
+	avalanche,
+	avalancheFuji,
+	base,
+	baseSepolia,
+	Chain,
+	optimism,
+	optimismSepolia,
+	polygon,
+	sepolia,
+} from "viem/chains";
+
 import config from "../config";
 import ChainIds from "../usecases/schemas/blockchains";
 
 const ZERODEV_API_BASE = "https://rpc.zerodev.app/api/v2";
-
 const getBundlerRpcUrl = (projectId: string) =>
 	`${ZERODEV_API_BASE}/bundler/${projectId}`;
 const getPaymasterRpcUrl = (projectId: string) =>
 	`${ZERODEV_API_BASE}/paymaster/${projectId}`;
 
-const FULLY_SUPPORTED_CHAINS: {
+const SUPPORTED_CHAINS: {
 	[chainId: string]: {
 		name: string;
 		native: string;
@@ -16,6 +29,7 @@ const FULLY_SUPPORTED_CHAINS: {
 		rpcUrl: string;
 		bundlerRpcUrl: string;
 		paymasterRpcUrl: string;
+		viemChain: Chain;
 	};
 } = {
 	// Mainnets
@@ -26,6 +40,7 @@ const FULLY_SUPPORTED_CHAINS: {
 		rpcUrl: config.arbitrumRpc,
 		bundlerRpcUrl: getBundlerRpcUrl(config.arbitrumZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.arbitrumZerodevProjectId),
+		viemChain: arbitrum,
 	},
 	[ChainIds.AVALANCHE]: {
 		name: "Avalanche",
@@ -34,6 +49,7 @@ const FULLY_SUPPORTED_CHAINS: {
 		rpcUrl: config.avalancheRpc,
 		bundlerRpcUrl: getBundlerRpcUrl(config.arbitrumZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.arbitrumZerodevProjectId),
+		viemChain: avalanche,
 	},
 	[ChainIds.BASE]: {
 		name: "Avalanche",
@@ -42,6 +58,7 @@ const FULLY_SUPPORTED_CHAINS: {
 		rpcUrl: config.avalancheRpc,
 		bundlerRpcUrl: getBundlerRpcUrl(config.avalancheZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.avalancheZerodevProjectId),
+		viemChain: base,
 	},
 	[ChainIds.OPTIMISM]: {
 		name: "Optimism",
@@ -50,6 +67,7 @@ const FULLY_SUPPORTED_CHAINS: {
 		rpcUrl: config.optimismRpc,
 		bundlerRpcUrl: getBundlerRpcUrl(config.optimismZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.optimismZerodevProjectId),
+		viemChain: optimism,
 	},
 	[ChainIds.POLYGON]: {
 		name: "Polygon",
@@ -58,6 +76,7 @@ const FULLY_SUPPORTED_CHAINS: {
 		rpcUrl: config.polygonRpc,
 		bundlerRpcUrl: getBundlerRpcUrl(config.polygonZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.polygonZerodevProjectId),
+		viemChain: polygon,
 	},
 
 	// Testnets
@@ -70,6 +89,7 @@ const FULLY_SUPPORTED_CHAINS: {
 		paymasterRpcUrl: getPaymasterRpcUrl(
 			config.arbitrumSepoliaZerodevProjectId
 		),
+		viemChain: arbitrumSepolia,
 	},
 	[ChainIds.AVALANCHE_FUJI]: {
 		name: "Avalanche Fuji",
@@ -80,6 +100,7 @@ const FULLY_SUPPORTED_CHAINS: {
 		paymasterRpcUrl: getPaymasterRpcUrl(
 			config.avalancheFujiZerodevProjectId
 		),
+		viemChain: avalancheFuji,
 	},
 	[ChainIds.BASE_SEPOLIA]: {
 		name: "Base Sepolia",
@@ -88,6 +109,7 @@ const FULLY_SUPPORTED_CHAINS: {
 		rpcUrl: config.baseSepoliaRpc,
 		bundlerRpcUrl: getBundlerRpcUrl(config.baseSepoliaZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.baseSepoliaZerodevProjectId),
+		viemChain: baseSepolia,
 	},
 	[ChainIds.OPTIMISM_SEPOLIA]: {
 		name: "Optimism Sepolia",
@@ -98,6 +120,7 @@ const FULLY_SUPPORTED_CHAINS: {
 		paymasterRpcUrl: getPaymasterRpcUrl(
 			config.optimismSepoliaZerodevProjectId
 		),
+		viemChain: optimismSepolia,
 	},
 	[ChainIds.SEPOLIA]: {
 		name: "Sepolia",
@@ -106,14 +129,8 @@ const FULLY_SUPPORTED_CHAINS: {
 		rpcUrl: config.sepoliaRpc,
 		bundlerRpcUrl: getBundlerRpcUrl(config.sepoliaZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.sepoliaZerodevProjectId),
+		viemChain: sepolia,
 	},
-
-	// [ChainIds.POLYGON_MUMBAI]: {
-	// 	name: "Polygon Mumbai",
-	// 	native: "MATIC",
-	// 	blockExplorer: "https://mumbai.polygonscan.com",
-	// 	rpcUrl: config.polygonMumbaiRpc,
-	// },
 };
 
-export default FULLY_SUPPORTED_CHAINS;
+export default SUPPORTED_CHAINS;

@@ -4,7 +4,6 @@ import {
 	IsArray,
 	IsEnum,
 	IsNumber,
-	IsObject,
 	IsOptional,
 	IsString,
 } from "class-validator";
@@ -28,7 +27,7 @@ export interface IAutomation {
 	type: EAutomationType;
 
 	// 0 - 1
-	allocationFactor: number;
+	allocation: number;
 
 	// Always ready if savings or forward_to
 	status: EAutomationStatus;
@@ -43,7 +42,7 @@ class AutomationRequest implements IAutomation {
 
 	// 0 - 1
 	@IsNumber()
-	allocationFactor!: number;
+	allocation!: number;
 
 	// Always ready if savings or forward_to
 	@IsEnum(EAutomationStatus)
@@ -65,7 +64,6 @@ class CreatePolicyRequest {
 	@IsString()
 	sessionKey!: string;
 
-	// @Type(() => AutomationRequest)
 	@IsArray()
 	automations!: AutomationRequest[];
 }
@@ -76,7 +74,7 @@ class UpdatePolicyRequest {
 	sessionKey?: string;
 
 	@IsOptional()
-	@IsObject()
+	@IsArray()
 	automations?: IAutomation[];
 }
 

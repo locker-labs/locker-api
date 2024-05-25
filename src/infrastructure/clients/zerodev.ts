@@ -9,15 +9,12 @@ import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { createPublicClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-import FULLY_SUPPORTED_CHAINS from "../../dependencies/chains";
-import ICallDataExecutor from "../../usecases/interfaces/clients/ICallDataExecutor";
+import SUPPORTED_CHAINS from "../../dependencies/chains";
+import IExecutorClient from "../../usecases/interfaces/clients/executor";
 import { PolicyRepoAdapter } from "../../usecases/schemas/policies";
-import { decrypt } from "../utils/encryption";
-import { chainId2ViemChain } from "../utils/viem";
+import { decrypt } from "../../usecases/services/encryption";
 
-export default class ZerodevPolicyCallDataExecutor
-	implements ICallDataExecutor
-{
+export default class ZerodevClient implements IExecutorClient {
 	async execCallDataWithPolicy({
 		policy,
 		callDataArgs,
@@ -35,8 +32,7 @@ export default class ZerodevPolicyCallDataExecutor
 		const sessionKeySigner = await toECDSASigner({
 			signer: sessionKeyRawAccount,
 		});
-		const { bundlerRpcUrl, paymasterRpcUrl } =
-			FULLY_SUPPORTED_CHAINS[chainId];
+		const { bundlerRpcUrl, paymasterRpcUrl } = SUPPORTED_CHAINS[chainId];
 		const publicClient = createPublicClient({
 			transport: http(bundlerRpcUrl),
 		});
@@ -52,7 +48,7 @@ export default class ZerodevPolicyCallDataExecutor
 			serializedSessionKey,
 			sessionKeySigner
 		);
-		const chain = chainId2ViemChain(chainId);
+		const chain = SUPPORTED_CHAINS[chainId].viemChain;
 
 		// Construct user op and paymaster
 		const kernelPaymaster = createZeroDevPaymasterClient({

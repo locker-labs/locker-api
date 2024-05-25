@@ -1,4 +1,4 @@
-import { decrypt, encrypt } from "../src/infrastructure/utils/encryption";
+import { decrypt, encrypt } from "../../../src/infrastructure/utils/encryption";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config: any = {

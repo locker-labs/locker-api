@@ -7,10 +7,11 @@ import {
 	getLockersRepo,
 	getPoliciesRepo,
 	getTokenTxsRepo,
+	logger,
 	stream,
 } from "../../../../dependencies";
-import PercentSplitAutomationsGenerator from "../../../clients/PercentSplitAutomationsGenerator";
-import ZerodevPolicyCallDataExecutor from "../../../clients/ZerodevPolicyCallDataExecutor";
+import AutomationService from "../../../../usecases/services/automation";
+import ZerodevClient from "../../../clients/zerodev";
 import checkApiKey from "./check-api-key";
 
 const policiesDbHookRouter = express.Router();
@@ -22,7 +23,6 @@ policiesDbHookRouter.post(
 	checkApiKey,
 	async (req: Request, res: Response): Promise<void> => {
 		try {
-			console.log("/db-hooks/policies/update");
 			const policy = req.body.record;
 
 			const {
@@ -32,11 +32,7 @@ policiesDbHookRouter.post(
 				locker_id: lockerId,
 			} = policy;
 
-			console.log("policy");
-			console.log(encodedIv);
-
 			if (!encryptedSessionKey || !encodedIv) {
-				console.log("no encryptedSessionKey or encodedIv");
 				res.status(200).send({ message: "ok" });
 				return;
 			}
@@ -44,9 +40,9 @@ policiesDbHookRouter.post(
 			const policiesApi = await getPoliciesRepo();
 			const tokenTxsApi = await getTokenTxsRepo();
 			const lockersApi = await getLockersRepo();
-			const callDataExecutor = new ZerodevPolicyCallDataExecutor();
+			const callDataExecutor = new ZerodevClient();
 
-			const automationsGenerator = new PercentSplitAutomationsGenerator(
+			const automationsGenerator = new AutomationService(
 				policiesApi,
 				tokenTxsApi,
 				lockersApi,
@@ -55,14 +51,13 @@ policiesDbHookRouter.post(
 
 			// Find all transactions from same chain as first
 			const txs = await tokenTxsApi.retrieveMany({ chainId, lockerId });
-			const txAutomationPromises = txs.map((tx) => {
-				console.log("Generating automations for tx", tx.txHash);
-				return automationsGenerator.generateAutomations(tx);
-			});
+			const txAutomationPromises = txs.map((tx) =>
+				automationsGenerator.generateAutomations(tx)
+			);
 
 			await Promise.all(txAutomationPromises);
 		} catch (e) {
-			console.error(
+			logger.error(
 				"Something went wrong while processing the request",
 				e
 			);

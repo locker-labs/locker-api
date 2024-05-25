@@ -2,41 +2,40 @@ import { CallType } from "@zerodev/sdk/types";
 import Big from "big.js";
 import { encodeFunctionData } from "viem";
 
-import IAutomationsGenerator from "../../usecases/interfaces/clients/IAutomationsGenerator";
-import ICallDataExecutor from "../../usecases/interfaces/clients/ICallDataExecutor";
-import ILockersRepo from "../../usecases/interfaces/repos/lockers";
-import IPoliciesRepo from "../../usecases/interfaces/repos/policies";
-import ITokenTxsRepo from "../../usecases/interfaces/repos/tokenTxs";
-import { LockerInDb } from "../../usecases/schemas/lockers";
+import { ERC20_TRANSFER_ABI } from "../../dependencies";
+import { logger } from "../../dependencies/logger";
+import IExecutorClient from "../interfaces/clients/executor";
+import ILockersRepo from "../interfaces/repos/lockers";
+import IPoliciesRepo from "../interfaces/repos/policies";
+import ITokenTxsRepo from "../interfaces/repos/tokenTxs";
+import IAutomationService from "../interfaces/services/automation";
+import { LockerInDb } from "../schemas/lockers";
 import {
 	IAutomation,
 	PolicyInDb,
 	PolicyRepoAdapter,
-} from "../../usecases/schemas/policies";
+} from "../schemas/policies";
 import {
 	ETokenTxAutomationsState,
 	ETokenTxLockerDirection,
 	TokenTxInDb,
 	TokenTxRepoAdapter,
-} from "../../usecases/schemas/tokenTxs";
-import { ERC20_TRANSFER_ABI } from "../utils/viem";
+} from "../schemas/tokenTxs";
 
-export default class PercentSplitAutomationsGenerator
-	implements IAutomationsGenerator
-{
+export default class AutomationService implements IAutomationService {
 	policiesApi: IPoliciesRepo;
 
 	tokenTxsApi: ITokenTxsRepo;
 
 	lockersApi: ILockersRepo;
 
-	callDataExecutor: ICallDataExecutor;
+	callDataExecutor: IExecutorClient;
 
 	constructor(
 		policiesApi: IPoliciesRepo,
 		tokenTxsApi: ITokenTxsRepo,
 		lockersApi: ILockersRepo,
-		callDataExecutor: ICallDataExecutor
+		callDataExecutor: IExecutorClient
 	) {
 		this.policiesApi = policiesApi;
 		this.tokenTxsApi = tokenTxsApi;
@@ -95,13 +94,13 @@ export default class PercentSplitAutomationsGenerator
 		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
 			maybeTrigger;
 		const { address: fromAddress } = locker;
-		const { recipientAddress: toAddress, allocationFactor } = automation;
+		const { recipientAddress: toAddress, allocation } = automation;
 
 		if (!toAddress) return null;
 
 		// construct web3 transaction, using session key
 		const amountOutStr = Big(amount.toString())
-			.times(allocationFactor)
+			.times(allocation)
 			.toFixed(0);
 
 		const amountOut = BigInt(amountOutStr);
@@ -182,13 +181,10 @@ export default class PercentSplitAutomationsGenerator
 			}
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (e: any) {
-			console.warn(
-				"Something went wrong trying to spawn an automation"
-				// maybeTrigger,
-				// automation,
-				// e
+			logger.error(
+				`Failed to spawn automation for ${maybeTrigger.id}`,
+				e
 			);
-			console.warn(e.message);
 			return null;
 		}
 	}
@@ -210,13 +206,10 @@ export default class PercentSplitAutomationsGenerator
 			true
 		);
 
-		console.log("got policy");
-
 		// If no existing policy, automations can't be run
 		if (!policy) return [];
 
 		const locker = await this.lockersApi.retrieve({ id: lockerId });
-		console.log("got locker");
 		// Should never happen, but just in case
 		if (!locker) return [];
 
@@ -253,7 +246,6 @@ export default class PercentSplitAutomationsGenerator
 		const shouldGenerate =
 			await this.shouldGenerateAutomations(maybeTrigger);
 
-		console.log("shouldGenerate", shouldGenerate);
 		if (!shouldGenerate) return false;
 
 		// set automationState to started

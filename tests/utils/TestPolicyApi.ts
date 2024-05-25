@@ -23,24 +23,24 @@ export default class TestPolicyApi implements IPoliciesRepo {
 		const automations: IAutomation[] = [
 			{
 				type: "savings",
-				allocationFactor: 0.1,
+				allocation: 0.1,
 				status: "ready",
 			},
 			{
 				type: "forward_to",
-				allocationFactor: 0.2,
+				allocation: 0.2,
 				status: "ready",
 				recipientAddress: "0x123",
 			},
 			{
 				type: "off_ramp",
-				allocationFactor: 0.3,
+				allocation: 0.3,
 				status: "ready",
 				recipientAddress: "0x456",
 			},
 			{
 				type: "off_ramp",
-				allocationFactor: 0.5,
+				allocation: 0.5,
 				status: "new",
 				recipientAddress: "0x789",
 			},

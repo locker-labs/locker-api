@@ -1,6 +1,6 @@
 import { TokenTx } from "../../schemas/tokenTxs";
 
-interface IAutomationsGenerator {
+interface IAutomationService {
 	/**
 	 * Processes a token transaction and creates the necessary automations (hot wallet passthrough, offramp, etc).
 	 * At the moment, all automations are themselves token transactions.
@@ -11,4 +11,4 @@ interface IAutomationsGenerator {
 	generateAutomations(maybeTrigger: TokenTx): Promise<boolean>;
 }
 
-export default IAutomationsGenerator;
+export default IAutomationService;

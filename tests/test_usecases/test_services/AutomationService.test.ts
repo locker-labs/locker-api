@@ -1,24 +1,24 @@
-import PercentSplitAutomationsGenerator from "../src/infrastructure/clients/PercentSplitAutomationsGenerator";
-import { LockerInDb } from "../src/usecases/schemas/lockers";
-import { IAutomation } from "../src/usecases/schemas/policies";
+import { LockerInDb } from "../../../src/usecases/schemas/lockers";
+import { IAutomation } from "../../../src/usecases/schemas/policies";
 import {
 	ETokenTxAutomationsState,
 	ETokenTxLockerDirection,
 	TokenTxInDb,
-} from "../src/usecases/schemas/tokenTxs";
+} from "../../../src/usecases/schemas/tokenTxs";
+import AutomationService from "../../../src/usecases/services/automation";
 import TestCallDataExecutor, {
 	DEFAULT_HASH,
-} from "./utils/TestCallDataExecutor";
-import TestLockerApi from "./utils/TestLockerApi";
-import TestPolicyApi from "./utils/TestPolicyApi";
-import TestTokenTxApi from "./utils/TestTokenTxApi";
+} from "../../utils/TestCallDataExecutor";
+import TestLockerApi from "../../utils/TestLockerApi";
+import TestPolicyApi from "../../utils/TestPolicyApi";
+import TestTokenTxApi from "../../utils/TestTokenTxApi";
 
 const testPolicyApi = new TestPolicyApi();
 const testTokenTxApi = new TestTokenTxApi();
 const testCallDataExecutor = new TestCallDataExecutor();
 const testLockerApi = new TestLockerApi();
 
-describe("PercentSplitAutomationsGenerator", () => {
+describe("AutomationService", () => {
 	const locker: LockerInDb = {
 		userId: "12",
 		seed: 1,
@@ -49,7 +49,7 @@ describe("PercentSplitAutomationsGenerator", () => {
 			amount: BigInt(1000),
 			chainId: 1,
 		};
-		const generator = new PercentSplitAutomationsGenerator(
+		const generator = new AutomationService(
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
@@ -77,7 +77,7 @@ describe("PercentSplitAutomationsGenerator", () => {
 			amount: BigInt(1000),
 			chainId: 1,
 		};
-		const generator = new PercentSplitAutomationsGenerator(
+		const generator = new AutomationService(
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
@@ -105,7 +105,7 @@ describe("PercentSplitAutomationsGenerator", () => {
 			amount: BigInt(1000),
 			chainId: 1,
 		};
-		const generator = new PercentSplitAutomationsGenerator(
+		const generator = new AutomationService(
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
@@ -133,7 +133,7 @@ describe("PercentSplitAutomationsGenerator", () => {
 			amount: BigInt(1000),
 			chainId: 1,
 		};
-		const generator = new PercentSplitAutomationsGenerator(
+		const generator = new AutomationService(
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
@@ -161,7 +161,7 @@ describe("PercentSplitAutomationsGenerator", () => {
 			amount: BigInt(1000),
 			chainId: 1,
 		};
-		const generator = new PercentSplitAutomationsGenerator(
+		const generator = new AutomationService(
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
@@ -192,11 +192,11 @@ describe("PercentSplitAutomationsGenerator", () => {
 
 		const automation: IAutomation = {
 			type: "savings",
-			allocationFactor: 0.1,
+			allocation: 0.1,
 			status: "ready",
 		};
 
-		const generator = new PercentSplitAutomationsGenerator(
+		const generator = new AutomationService(
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
@@ -241,7 +241,7 @@ describe("PercentSplitAutomationsGenerator", () => {
 
 		const automation: IAutomation = {
 			type: "forward_to",
-			allocationFactor: 0.1,
+			allocation: 0.1,
 			status: "new",
 		};
 
@@ -253,7 +253,7 @@ describe("PercentSplitAutomationsGenerator", () => {
 			automations: [],
 		};
 
-		const generator = new PercentSplitAutomationsGenerator(
+		const generator = new AutomationService(
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
@@ -290,12 +290,12 @@ describe("PercentSplitAutomationsGenerator", () => {
 
 		const automation: IAutomation = {
 			type: "forward_to",
-			allocationFactor: 0.1,
+			allocation: 0.1,
 			status: "ready",
 			recipientAddress: "0xF445b07Aad98De9cc2794593B68ecD4aa5f81076",
 		};
 
-		const generator = new PercentSplitAutomationsGenerator(
+		const generator = new AutomationService(
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
