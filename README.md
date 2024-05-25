@@ -11,7 +11,6 @@ cp .env.example .env
 # Install dependencies
 yarn
 
-
 # Run migrations
 yarn migrate
 ```
