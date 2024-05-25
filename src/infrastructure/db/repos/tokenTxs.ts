@@ -3,6 +3,7 @@ import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import ITokenTxsRepo from "../../../usecases/interfaces/repos/tokenTxs";
 import {
+	ETokenTxLockerDirection,
 	TokenTxInDb,
 	TokenTxRepoAdapter,
 } from "../../../usecases/schemas/tokenTxs";
@@ -35,6 +36,7 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 					set: {
 						isConfirmed: tokenTx.isConfirmed,
 						automationsState: tokenTx.automationsState,
+						txHash: tokenTx.txHash,
 					},
 				})
 				.returning();
@@ -83,6 +85,7 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 	async retrieveMany(options: {
 		lockerId: number;
 		chainId?: number;
+		lockerDirection?: ETokenTxLockerDirection;
 	}): Promise<TokenTxInDb[]> {
 		const conditions = [];
 
@@ -92,6 +95,13 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 		// Same chain, optional
 		if (options.chainId) {
 			conditions.push(eq(tokenTxs.chainId, options.chainId));
+		}
+
+		// Direction, optional
+		if (options.lockerDirection) {
+			conditions.push(
+				eq(tokenTxs.lockerDirection, options.lockerDirection)
+			);
 		}
 
 		const results = await this.db

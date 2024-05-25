@@ -1,4 +1,8 @@
-import { TokenTxInDb, TokenTxRepoAdapter } from "../../schemas/tokenTxs";
+import {
+	ETokenTxLockerDirection,
+	TokenTxInDb,
+	TokenTxRepoAdapter,
+} from "../../schemas/tokenTxs";
 
 export default interface ITokenTxsRepo {
 	create(locker: TokenTxRepoAdapter): Promise<TokenTxInDb>;
@@ -10,5 +14,6 @@ export default interface ITokenTxsRepo {
 	retrieveMany(options: {
 		lockerId: number;
 		chainId?: number;
+		lockerDirection?: ETokenTxLockerDirection;
 	}): Promise<TokenTxInDb[]>;
 }
