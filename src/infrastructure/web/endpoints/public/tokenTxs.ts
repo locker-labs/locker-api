@@ -6,11 +6,13 @@ import morgan from "morgan";
 import {
 	AuthenticatedRequest,
 	authRequired,
+	getIndexerClient,
 	getLockersRepo,
 	getTokenTxsRepo,
 	logger,
 	stream,
 } from "../../../../dependencies";
+import { ETokenTxLockerDirection } from "../../../../usecases/schemas/tokenTxs";
 
 const tokenTxsRouter = express.Router();
 tokenTxsRouter.use(express.json());
@@ -43,6 +45,41 @@ tokenTxsRouter.get(
 			amount: tx.amount.toString(),
 		}));
 		res.status(200).json({ data: returnTxs });
+	}
+);
+
+tokenTxsRouter.get(
+	"/:lockerId/balances",
+	authRequired,
+	async (
+		req: AuthenticatedRequest<Request>,
+		res: Response
+	): Promise<void> => {
+		const lockersRepo = await getLockersRepo();
+		const locker = await lockersRepo.retrieve({
+			id: parseInt(req.params.lockerId, 10),
+		});
+
+		if (!locker) {
+			res.status(404).send({ error: "Locker not found." });
+			return;
+		}
+
+		const { address: lockerAddress } = locker;
+
+		const tokenTxsRepo = await getTokenTxsRepo();
+		const txs = await tokenTxsRepo.retrieveMany({
+			lockerId: parseInt(req.params.lockerId, 10),
+			lockerDirection: ETokenTxLockerDirection.IN,
+		});
+
+		const indexerClient = await getIndexerClient();
+
+		const data = await indexerClient.getLockerTokenBalances({
+			lockerAddress,
+			txs,
+		});
+		res.status(200).json({ data });
 	}
 );
 
