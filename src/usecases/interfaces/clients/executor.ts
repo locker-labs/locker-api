@@ -2,7 +2,7 @@ import { KernelEncodeCallDataArgs } from "@zerodev/sdk/types";
 
 import { PolicyRepoAdapter } from "../../schemas/policies";
 
-interface ICallDataExecutor {
+interface IExecutorClient {
 	execCallDataWithPolicy({
 		policy,
 		callDataArgs,
@@ -12,4 +12,4 @@ interface ICallDataExecutor {
 	}): Promise<string>;
 }
 
-export default ICallDataExecutor;
+export default IExecutorClient;

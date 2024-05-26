@@ -3,7 +3,7 @@ import {
 	authRequired,
 } from "../infrastructure/clients/clerk";
 import { ClerkAuthClient } from "../infrastructure/clients/clerk";
-import MoralisIndexerClient from "../infrastructure/clients/MoralisIndexerClient";
+import MoralisClient from "../infrastructure/clients/moralis";
 import ResendClient from "../infrastructure/clients/resend";
 import { IAuthClient } from "../usecases/interfaces/clients/auth";
 import IEmailClient from "../usecases/interfaces/clients/email";
@@ -13,7 +13,7 @@ import { IIndexerClient } from "../usecases/interfaces/clients/indexer";
 let indexerClient: IIndexerClient | undefined;
 async function getIndexerClient(): Promise<IIndexerClient> {
 	if (!indexerClient) {
-		indexerClient = new MoralisIndexerClient();
+		indexerClient = new MoralisClient();
 	}
 	return indexerClient;
 }

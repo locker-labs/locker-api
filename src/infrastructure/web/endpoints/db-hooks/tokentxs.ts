@@ -7,11 +7,12 @@ import {
 	getLockersRepo,
 	getPoliciesRepo,
 	getTokenTxsRepo,
+	logger,
 	stream,
 } from "../../../../dependencies";
 import { TokenTxInDb } from "../../../../usecases/schemas/tokenTxs";
-import PercentSplitAutomationsGenerator from "../../../clients/PercentSplitAutomationsGenerator";
-import ZerodevPolicyCallDataExecutor from "../../../clients/ZerodevPolicyCallDataExecutor";
+import AutomationService from "../../../../usecases/services/automation";
+import ZerodevClient from "../../../clients/zerodev";
 import checkApiKey from "./check-api-key";
 
 const tokentxsDbHookRouter = express.Router();
@@ -23,16 +24,14 @@ tokentxsDbHookRouter.post(
 	checkApiKey,
 	async (req: Request, res: Response): Promise<void> => {
 		try {
-			console.log("/db-hooks/tokentxs/update");
-			console.log(req.body);
 			const rawTx = req.body.record;
 
 			const policiesApi = await getPoliciesRepo();
 			const tokenTxsApi = await getTokenTxsRepo();
 			const lockersApi = await getLockersRepo();
-			const callDataExecutor = new ZerodevPolicyCallDataExecutor();
+			const callDataExecutor = new ZerodevClient();
 
-			const automationsGenerator = new PercentSplitAutomationsGenerator(
+			const automationsGenerator = new AutomationService(
 				policiesApi,
 				tokenTxsApi,
 				lockersApi,
@@ -79,7 +78,7 @@ tokentxsDbHookRouter.post(
 
 			await automationsGenerator.generateAutomations(tx);
 		} catch (e) {
-			console.error(
+			logger.error(
 				"Something went wrong while processing the request",
 				e
 			);

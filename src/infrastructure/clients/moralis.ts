@@ -4,6 +4,7 @@ import { zeroAddress } from "viem";
 import web3 from "web3";
 
 import config from "../../config";
+import { logger } from "../../dependencies/logger";
 import {
 	Headers,
 	IIndexerClient,
@@ -12,7 +13,7 @@ import { ILockerTokenBalance } from "../../usecases/schemas/lockers";
 import { TokenTxInDb } from "../../usecases/schemas/tokenTxs";
 import InvalidSignature from "./errors";
 
-export default class MoralisIndexerClient implements IIndexerClient {
+export default class MoralisClient implements IIndexerClient {
 	constructor() {
 		this.startClient();
 	}
@@ -61,10 +62,9 @@ export default class MoralisIndexerClient implements IIndexerClient {
 				} as ILockerTokenBalance;
 			});
 
-			console.log(balances);
 			return balances;
 		} catch (e) {
-			console.error(e);
+			logger.error(e);
 		}
 
 		return [];
@@ -91,10 +91,9 @@ export default class MoralisIndexerClient implements IIndexerClient {
 				balance,
 			} as ILockerTokenBalance;
 
-			console.log(lockerTokenBalance);
 			return [lockerTokenBalance];
 		} catch (e) {
-			console.error(e);
+			logger.error(e);
 		}
 
 		return [];
@@ -109,7 +108,7 @@ export default class MoralisIndexerClient implements IIndexerClient {
 	}): Promise<ILockerTokenBalance[]> {
 		// Get chainId-tokenAddress combinations
 		const erc20TxsGroupedByChainAndToken =
-			MoralisIndexerClient.groupTxsByChainAndToken(
+			MoralisClient.groupTxsByChainAndToken(
 				txs.filter((tx) => tx.contractAddress !== zeroAddress)
 			);
 
@@ -127,7 +126,7 @@ export default class MoralisIndexerClient implements IIndexerClient {
 		});
 
 		const ethTxsGroupedByChainAndToken =
-			MoralisIndexerClient.groupTxsByChainAndToken(
+			MoralisClient.groupTxsByChainAndToken(
 				txs.filter((tx) => tx.contractAddress === zeroAddress)
 			);
 

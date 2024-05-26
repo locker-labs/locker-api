@@ -77,13 +77,11 @@ const ERC20TransferEventABI = [
 ];
 
 const createStream = async () => {
-	console.log("Creating Moralis stream...");
 	const host = process.env.LOCKER_BASE_URL;
 
 	// Omit leading slash
 	const txUpdatePath = `integrations/moralis/webhooks/transactions`;
 	const webhookUrl = `${host}/${txUpdatePath}`;
-	console.log("WebhookUrl: ", webhookUrl);
 
 	const topic = "Transfer(address,address,uint256)";
 
@@ -98,8 +96,6 @@ const createStream = async () => {
 		topic0: [topic],
 	});
 
-	console.log(JSON.stringify(response.toJSON(), null, 2));
-	console.log("Stream successfully created");
 	return response.toJSON().id;
 };
 

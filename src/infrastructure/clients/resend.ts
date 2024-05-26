@@ -2,7 +2,7 @@ import { Resend } from "resend";
 import winston from "winston";
 
 import config from "../../config";
-import FULLY_SUPPORTED_CHAINS from "../../dependencies/chains";
+import SUPPORTED_CHAINS from "../../dependencies/chains";
 import { logger } from "../../dependencies/logger";
 import IEmailClient from "../../usecases/interfaces/clients/email";
 import ChainIds from "../../usecases/schemas/blockchains";
@@ -31,8 +31,8 @@ export default class ResendClient implements IEmailClient {
 		const to = email;
 		const chainId = tx.chainId as ChainIds;
 		const link = `${config.lockerBaseUrl}/tx/${chainId}/${tx.txHash}`;
-		const explorer = FULLY_SUPPORTED_CHAINS[chainId].blockExplorer;
-		const chainName = FULLY_SUPPORTED_CHAINS[chainId].name;
+		const explorer = SUPPORTED_CHAINS[chainId].blockExplorer;
+		const chainName = SUPPORTED_CHAINS[chainId].name;
 		const emailHTML = this.getHtml(
 			explorer,
 			tx.toAddress,

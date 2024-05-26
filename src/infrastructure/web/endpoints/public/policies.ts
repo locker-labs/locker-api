@@ -24,8 +24,8 @@ import {
 	UpdatePoliciesRepoAdapter,
 	UpdatePolicyRequest,
 } from "../../../../usecases/schemas/policies";
+import { encrypt } from "../../../../usecases/services/encryption";
 import DuplicateRecordError from "../../../db/errors";
-import { encrypt } from "../../../utils/encryption";
 
 const policyRouter = express.Router();
 policyRouter.use(express.json());
@@ -58,8 +58,6 @@ policyRouter.post(
 		req: AuthenticatedRequest<Request>,
 		res: Response
 	): Promise<void> => {
-		console.log("create policy");
-		console.log(req.body);
 		// Ensure that Locker exists
 		const lockersRepo = await getLockersRepo();
 		const locker = await lockersRepo.retrieve({
@@ -94,8 +92,6 @@ policyRouter.post(
 				res.status(409).send({ error: error.message });
 				return;
 			}
-
-			console.error(error);
 			res.status(500).send({ error: "An unexpected error occurred." });
 		}
 	}
@@ -146,8 +142,6 @@ policyRouter.patch(
 				res.status(409).send({ error: error.message });
 				return;
 			}
-
-			console.error(error);
 			res.status(500).send({ error: "An unexpected error occurred." });
 		}
 	}

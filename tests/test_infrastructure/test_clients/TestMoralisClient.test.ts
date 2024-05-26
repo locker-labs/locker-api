@@ -1,17 +1,17 @@
 import { zeroAddress } from "viem";
 
-import MoralisIndexerClient from "../src/infrastructure/clients/MoralisIndexerClient";
-import { ILockerTokenBalance } from "../src/usecases/schemas/lockers";
+import MoralisClient from "../../../src/infrastructure/clients/moralis";
+import { ILockerTokenBalance } from "../../../src/usecases/schemas/lockers";
 import {
 	ETokenTxAutomationsState,
 	ETokenTxLockerDirection,
 	TokenTxInDb,
-} from "../src/usecases/schemas/tokenTxs";
+} from "../../../src/usecases/schemas/tokenTxs";
 
-describe("MoralisIndexerClient", () => {
+describe("MoralisClient", () => {
 	it.skip("groupTxsByChainAndToken", async () => {
 		const lockerAddress = "0xAF115955b028c145cE3A7367B25A274723C5104B";
-		const moralisClient = new MoralisIndexerClient();
+		const moralisClient = new MoralisClient();
 
 		const txs: TokenTxInDb[] = [
 			{
