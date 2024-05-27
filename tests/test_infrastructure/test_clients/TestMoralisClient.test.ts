@@ -9,6 +9,15 @@ import {
 } from "../../../src/usecases/schemas/tokenTxs";
 
 describe("MoralisClient", () => {
+	it.skip("getLockerTokenBalances", async () => {
+		const moralisClient = new MoralisClient();
+		const balances = await moralisClient.getLockerTokenBalances({
+			lockerAddress: "0x3abb17dd306cba6d4ccad0bbd880d0cbd0a2cdaa",
+		});
+
+		expect(balances).toMatchObject([]);
+	});
+
 	it.skip("groupTxsByChainAndToken", async () => {
 		const lockerAddress = "0xAF115955b028c145cE3A7367B25A274723C5104B";
 		const moralisClient = new MoralisClient();

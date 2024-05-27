@@ -12,7 +12,6 @@ import {
 	logger,
 	stream,
 } from "../../../../dependencies";
-import { ETokenTxLockerDirection } from "../../../../usecases/schemas/tokenTxs";
 
 const tokenTxsRouter = express.Router();
 tokenTxsRouter.use(express.json());
@@ -67,17 +66,10 @@ tokenTxsRouter.get(
 
 		const { address: lockerAddress } = locker;
 
-		const tokenTxsRepo = await getTokenTxsRepo();
-		const txs = await tokenTxsRepo.retrieveMany({
-			lockerId: parseInt(req.params.lockerId, 10),
-			lockerDirection: ETokenTxLockerDirection.IN,
-		});
-
 		const indexerClient = await getIndexerClient();
 
 		const data = await indexerClient.getLockerTokenBalances({
 			lockerAddress,
-			txs,
 		});
 		res.status(200).json({ data });
 	}

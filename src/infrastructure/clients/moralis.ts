@@ -1,6 +1,6 @@
 import { IWebhook } from "@moralisweb3/streams-typings";
 import Moralis from "moralis";
-import { zeroAddress } from "viem";
+import { numberToHex, zeroAddress } from "viem";
 import web3 from "web3";
 
 import config from "../../config";
@@ -9,40 +9,34 @@ import {
 	Headers,
 	IIndexerClient,
 } from "../../usecases/interfaces/clients/indexer";
+import ChainIds from "../../usecases/schemas/blockchains";
 import { ILockerTokenBalance } from "../../usecases/schemas/lockers";
-import { TokenTxInDb } from "../../usecases/schemas/tokenTxs";
 import InvalidSignature from "./errors";
+
+const chainIds: number[] = [
+	ChainIds.ARBITRUM,
+	ChainIds.AVALANCHE,
+	ChainIds.BASE,
+	ChainIds.OPTIMISM,
+	ChainIds.POLYGON,
+];
 
 export default class MoralisClient implements IIndexerClient {
 	constructor() {
 		this.startClient();
 	}
 
-	public static groupTxsByChainAndToken(txs: TokenTxInDb[]): {
-		[chainId: number]: TokenTxInDb[];
-	} {
-		const groupedTxs: { [chainId: string]: TokenTxInDb[] } = {};
-
-		txs.forEach((tx) => {
-			if (!groupedTxs[tx.chainId]) groupedTxs[tx.chainId] = [];
-			groupedTxs[tx.chainId].push(tx);
-		});
-
-		return groupedTxs;
-	}
-
 	async moralisGetErc20BalanceByWallet(
 		lockerAddress: `0x${string}`,
-		chainId: number,
-		txs: TokenTxInDb[]
+		chainId: number
 	): Promise<ILockerTokenBalance[]> {
 		try {
-			const tokenAddresses = txs.map((tx) => tx.contractAddress);
+			const chainIdHex = numberToHex(chainId);
 			const moralisBalances =
 				await Moralis.EvmApi.token.getWalletTokenBalances({
-					chain: "0x1",
-					tokenAddresses,
+					chain: chainIdHex,
 					address: lockerAddress,
+					excludeSpam: true,
 				});
 
 			const balances = moralisBalances.toJSON().map((moralisBalance) => {
@@ -75,9 +69,10 @@ export default class MoralisClient implements IIndexerClient {
 		chainId: number
 	): Promise<ILockerTokenBalance[]> {
 		try {
+			const chainIdHex = numberToHex(chainId);
 			const moralisBalance =
 				await Moralis.EvmApi.balance.getNativeBalance({
-					chain: "0x1",
+					chain: chainIdHex,
 					address: lockerAddress,
 				});
 
@@ -101,52 +96,28 @@ export default class MoralisClient implements IIndexerClient {
 
 	async getLockerTokenBalances({
 		lockerAddress,
-		txs,
 	}: {
 		lockerAddress: `0x${string}`;
-		txs: TokenTxInDb[];
 	}): Promise<ILockerTokenBalance[]> {
-		// Get chainId-tokenAddress combinations
-		const erc20TxsGroupedByChainAndToken =
-			MoralisClient.groupTxsByChainAndToken(
-				txs.filter((tx) => tx.contractAddress !== zeroAddress)
-			);
+		// For every chainId, get balance of all tokens
+		// https://docs.moralis.io/web3-data-api/evm/reference/wallet-api/get-token-balances-by-wallet
+		const erc20TokenBalancePromises = chainIds.map(async (chainId) =>
+			this.moralisGetErc20BalanceByWallet(lockerAddress, chainId)
+		);
 
 		// For every chainId, get balance of all tokens
 		// https://docs.moralis.io/web3-data-api/evm/reference/wallet-api/get-token-balances-by-wallet
-		const erc20TokenBalancePromises = Object.keys(
-			erc20TxsGroupedByChainAndToken
-		).map(async (_chainId) => {
-			const chainId = Number(_chainId);
-			return this.moralisGetErc20BalanceByWallet(
-				lockerAddress,
-				Number(chainId),
-				erc20TxsGroupedByChainAndToken[chainId]
-			);
-		});
-
-		const ethTxsGroupedByChainAndToken =
-			MoralisClient.groupTxsByChainAndToken(
-				txs.filter((tx) => tx.contractAddress === zeroAddress)
-			);
-
-		// For every chainId, get balance of all tokens
-		// https://docs.moralis.io/web3-data-api/evm/reference/wallet-api/get-token-balances-by-wallet
-		const ethTokenBalancePromises = Object.keys(
-			ethTxsGroupedByChainAndToken
-		).map(async (_chainId) => {
-			const chainId = Number(_chainId);
-			return this.moralisGetEthBalanceByWallet(
-				lockerAddress,
-				Number(chainId)
-			);
-		});
+		const ethTokenBalancePromises = chainIds.map(async (chainId) =>
+			this.moralisGetEthBalanceByWallet(lockerAddress, chainId)
+		);
 
 		// adapt response to final format
 		const groupedBalances = await Promise.all(
 			erc20TokenBalancePromises.concat(ethTokenBalancePromises)
 		);
-		return groupedBalances.flat();
+		return groupedBalances
+			.flat()
+			.filter((balance) => Number(balance.balance) > 0);
 	}
 
 	async startClient(): Promise<void> {
