@@ -54,3 +54,6 @@ coverage/
 # Miscellaenous
 notes.txt
 .vercel
+
+# Other build systems
+yarn.lock

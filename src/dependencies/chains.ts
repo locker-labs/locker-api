@@ -30,6 +30,7 @@ const SUPPORTED_CHAINS: {
 		bundlerRpcUrl: string;
 		paymasterRpcUrl: string;
 		viemChain: Chain;
+		zerodevProjectId: string;
 	};
 } = {
 	// Mainnets
@@ -38,6 +39,7 @@ const SUPPORTED_CHAINS: {
 		native: "ETH",
 		blockExplorer: "https://arbiscan.io",
 		rpcUrl: config.arbitrumRpc,
+		zerodevProjectId: config.arbitrumZerodevProjectId,
 		bundlerRpcUrl: getBundlerRpcUrl(config.arbitrumZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.arbitrumZerodevProjectId),
 		viemChain: arbitrum,
@@ -47,17 +49,19 @@ const SUPPORTED_CHAINS: {
 		native: "AVAX",
 		blockExplorer: "https://snowtrace.io",
 		rpcUrl: config.avalancheRpc,
-		bundlerRpcUrl: getBundlerRpcUrl(config.arbitrumZerodevProjectId),
-		paymasterRpcUrl: getPaymasterRpcUrl(config.arbitrumZerodevProjectId),
+		zerodevProjectId: config.avalancheZerodevProjectId,
+		bundlerRpcUrl: getBundlerRpcUrl(config.avalancheZerodevProjectId),
+		paymasterRpcUrl: getPaymasterRpcUrl(config.avalancheZerodevProjectId),
 		viemChain: avalanche,
 	},
 	[ChainIds.BASE]: {
-		name: "Avalanche",
-		native: "AVAX",
-		blockExplorer: "https://snowtrace.io",
-		rpcUrl: config.avalancheRpc,
-		bundlerRpcUrl: getBundlerRpcUrl(config.avalancheZerodevProjectId),
-		paymasterRpcUrl: getPaymasterRpcUrl(config.avalancheZerodevProjectId),
+		name: "Base",
+		native: "ETH",
+		blockExplorer: "https://basescan.org/",
+		rpcUrl: config.baseRpc,
+		zerodevProjectId: config.baseZerodevProjectId,
+		bundlerRpcUrl: getBundlerRpcUrl(config.baseZerodevProjectId),
+		paymasterRpcUrl: getPaymasterRpcUrl(config.baseZerodevProjectId),
 		viemChain: base,
 	},
 	[ChainIds.OPTIMISM]: {
@@ -65,6 +69,7 @@ const SUPPORTED_CHAINS: {
 		native: "ETH",
 		blockExplorer: "https://optimistic.etherscan.io",
 		rpcUrl: config.optimismRpc,
+		zerodevProjectId: config.optimismZerodevProjectId,
 		bundlerRpcUrl: getBundlerRpcUrl(config.optimismZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.optimismZerodevProjectId),
 		viemChain: optimism,
@@ -74,6 +79,7 @@ const SUPPORTED_CHAINS: {
 		native: "MATIC",
 		blockExplorer: "https://polygonscan.com",
 		rpcUrl: config.polygonRpc,
+		zerodevProjectId: config.polygonZerodevProjectId,
 		bundlerRpcUrl: getBundlerRpcUrl(config.polygonZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.polygonZerodevProjectId),
 		viemChain: polygon,
@@ -85,6 +91,7 @@ const SUPPORTED_CHAINS: {
 		native: "ARB",
 		blockExplorer: "https://sepolia-explorer.arbitrum.io",
 		rpcUrl: config.arbitrumSepoliaRpc,
+		zerodevProjectId: config.arbitrumSepoliaZerodevProjectId,
 		bundlerRpcUrl: getBundlerRpcUrl(config.arbitrumSepoliaZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(
 			config.arbitrumSepoliaZerodevProjectId
@@ -96,6 +103,7 @@ const SUPPORTED_CHAINS: {
 		native: "AVAX",
 		blockExplorer: "https://testnet.snowtrace.io",
 		rpcUrl: config.avalancheFujiRpc,
+		zerodevProjectId: config.avalancheFujiZerodevProjectId,
 		bundlerRpcUrl: getBundlerRpcUrl(config.avalancheFujiZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(
 			config.avalancheFujiZerodevProjectId
@@ -107,6 +115,7 @@ const SUPPORTED_CHAINS: {
 		native: "ETH",
 		blockExplorer: "https://base-sepolia.blockscout.com",
 		rpcUrl: config.baseSepoliaRpc,
+		zerodevProjectId: config.baseSepoliaZerodevProjectId,
 		bundlerRpcUrl: getBundlerRpcUrl(config.baseSepoliaZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.baseSepoliaZerodevProjectId),
 		viemChain: baseSepolia,
@@ -116,6 +125,7 @@ const SUPPORTED_CHAINS: {
 		native: "ETH",
 		blockExplorer: "https://sepolia-optimism.etherscan.io",
 		rpcUrl: config.optimismSepoliaRpc,
+		zerodevProjectId: config.optimismSepoliaZerodevProjectId,
 		bundlerRpcUrl: getBundlerRpcUrl(config.optimismSepoliaZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(
 			config.optimismSepoliaZerodevProjectId
@@ -127,6 +137,7 @@ const SUPPORTED_CHAINS: {
 		native: "ETH",
 		blockExplorer: "https://sepolia.etherscan.io",
 		rpcUrl: config.sepoliaRpc,
+		zerodevProjectId: config.sepoliaZerodevProjectId,
 		bundlerRpcUrl: getBundlerRpcUrl(config.sepoliaZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.sepoliaZerodevProjectId),
 		viemChain: sepolia,

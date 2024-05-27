@@ -15,6 +15,34 @@ import { PolicyRepoAdapter } from "../../usecases/schemas/policies";
 import { decrypt } from "../../usecases/services/encryption";
 
 export default class ZerodevClient implements IExecutorClient {
+	async enablePaymaster({
+		chainId,
+		addressToSponsor,
+	}: {
+		chainId: number;
+		addressToSponsor: `0x${string}`;
+	}): Promise<void> {
+		const projectId = SUPPORTED_CHAINS[chainId].zerodevProjectId;
+		const url = `https://prod-api.zerodev.app/projects/${projectId}/policies`;
+		const headers = {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+			"X-API-KEY": process.env.ZERODEV_API_KEY!,
+		};
+
+		const data = {
+			strategy: "pay_for_user",
+			policyGroup: "wallet",
+			addresses: [addressToSponsor],
+		};
+
+		await fetch(url, {
+			method: "POST",
+			headers,
+			body: JSON.stringify(data),
+		}).then((response) => response.json());
+	}
+
 	async execCallDataWithPolicy({
 		policy,
 		callDataArgs,
