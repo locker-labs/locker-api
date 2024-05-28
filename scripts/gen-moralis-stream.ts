@@ -13,12 +13,12 @@ const chains = [
 	"0xaa36a7",
 
 	// arbitrum sepolia - 421614
-	"0x66eee",
+	// "0x66eee",
 	// arbitrum one - 42161
 	"0xa4b1",
 
 	// avalanche fuji - 43113
-	"0xa869",
+	// "0xa869",
 	// avalanche mainnet - 43114
 	"0xa86a",
 
@@ -38,12 +38,12 @@ const chains = [
 	// "0x64",
 
 	// optimism sepolia - 11155420
-	"0xaa37dc",
+	// "0xaa37dc",
 	// optimism mainnet - 10
 	"0xa",
 
 	// polygon amoy - 80002
-	"0x13882",
+	// "0x13882",
 	// polygon mainnet - 137
 	"0x89",
 ];
