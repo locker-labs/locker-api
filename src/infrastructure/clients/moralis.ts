@@ -16,14 +16,6 @@ import InvalidSignature from "./errors";
 const chainIds: number[] = Object.keys(SUPPORTED_CHAINS).map((key) =>
 	Number(key)
 );
-// const chainIds: number[] = [
-// 	ChainIds.ARBITRUM,
-// 	ChainIds.AVALANCHE,
-// 	ChainIds.BASE,
-// 	ChainIds.OPTIMISM,
-// 	ChainIds.POLYGON,
-// 	ChainIds.SEPOLIA,
-// ];
 
 export default class MoralisClient implements IIndexerClient {
 	constructor() {
@@ -83,7 +75,7 @@ export default class MoralisClient implements IIndexerClient {
 			const { balance } = moralisBalance.toJSON();
 
 			const lockerTokenBalance = {
-				symbol: "ETH",
+				symbol: SUPPORTED_CHAINS[chainId].native,
 				address: zeroAddress,
 				decimals: 18,
 				chainId,
