@@ -18,6 +18,7 @@ import {
 	logger,
 	stream,
 } from "../../../../dependencies";
+import { getExecutorClient } from "../../../../dependencies/clients";
 import {
 	CreatePolicyRequest,
 	PolicyRepoAdapter,
@@ -60,6 +61,7 @@ policyRouter.post(
 	): Promise<void> => {
 		// Ensure that Locker exists
 		const lockersRepo = await getLockersRepo();
+		const { lockerId, chainId, sessionKey, automations } = req.body;
 		const locker = await lockersRepo.retrieve({
 			id: req.body.lockerId,
 		});
@@ -70,20 +72,29 @@ policyRouter.post(
 		}
 
 		// encrypt the session key
-		const { iv, encryptedText } = encrypt(req.body.sessionKey);
+		const { iv, encryptedText } = encrypt(sessionKey);
 
 		// store locker in database
 		const policy: PolicyRepoAdapter = {
-			lockerId: req.body.lockerId,
-			chainId: req.body.chainId,
+			lockerId,
+			chainId,
 			encryptedSessionKey: encryptedText,
 			encodedIv: iv,
-			automations: req.body.automations,
+			automations,
 		};
 
 		const policiesRepo = await getPoliciesRepo();
 		try {
+			// Persist policy to DB
 			const createdPolicy = await policiesRepo.create(policy);
+
+			// Tell Zerodev paymaster that Locker will pay gas for transactions from this locker
+			const executor = getExecutorClient();
+			await executor.enablePaymaster({
+				addressToSponsor: locker.address,
+				chainId,
+			});
+
 			res.status(201).send({
 				data: { policy: createdPolicy },
 			});
