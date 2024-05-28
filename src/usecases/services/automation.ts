@@ -90,6 +90,8 @@ export default class AutomationService implements IAutomationService {
 		policy: PolicyRepoAdapter,
 		locker: LockerInDb
 	): Promise<TokenTxInDb | null> {
+		console.log("Spawning on-chain tx");
+		console.log(automation);
 		const { lockerId } = policy;
 		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
 			maybeTrigger;

@@ -75,6 +75,9 @@ export class Config {
 	// Locker
 	lockerBaseUrl: string;
 
+	// Locker agent private key
+	lockerAgentPrivateKey: `0x${string}`;
+
 	// Resend
 	resendApiKey: string;
 
@@ -153,6 +156,8 @@ export class Config {
 
 		// Locker
 		this.lockerBaseUrl = process.env.LOCKER_BASE_URL!;
+		this.lockerAgentPrivateKey = process.env
+			.LOCKER_AGENT_PRIVATE_KEY! as `0x${string}`;
 
 		// Resend
 		this.resendApiKey = process.env.RESEND_API_KEY!;
