@@ -1,13 +1,10 @@
 import {
 	arbitrum,
-	arbitrumSepolia,
 	avalanche,
-	avalancheFuji,
 	base,
 	baseSepolia,
 	Chain,
 	optimism,
-	optimismSepolia,
 	polygon,
 	sepolia,
 } from "viem/chains";
@@ -21,6 +18,7 @@ const getBundlerRpcUrl = (projectId: string) =>
 const getPaymasterRpcUrl = (projectId: string) =>
 	`${ZERODEV_API_BASE}/paymaster/${projectId}`;
 
+// https://docs.moralis.io/supported-chains
 const SUPPORTED_CHAINS: {
 	[chainId: string]: {
 		name: string;
@@ -86,30 +84,6 @@ const SUPPORTED_CHAINS: {
 	},
 
 	// Testnets
-	[ChainIds.ARBITRUM_SEPOLIA]: {
-		name: "Arbitrum Sepolia",
-		native: "ARB",
-		blockExplorer: "https://sepolia-explorer.arbitrum.io",
-		rpcUrl: config.arbitrumSepoliaRpc,
-		zerodevProjectId: config.arbitrumSepoliaZerodevProjectId,
-		bundlerRpcUrl: getBundlerRpcUrl(config.arbitrumSepoliaZerodevProjectId),
-		paymasterRpcUrl: getPaymasterRpcUrl(
-			config.arbitrumSepoliaZerodevProjectId
-		),
-		viemChain: arbitrumSepolia,
-	},
-	[ChainIds.AVALANCHE_FUJI]: {
-		name: "Avalanche Fuji",
-		native: "AVAX",
-		blockExplorer: "https://testnet.snowtrace.io",
-		rpcUrl: config.avalancheFujiRpc,
-		zerodevProjectId: config.avalancheFujiZerodevProjectId,
-		bundlerRpcUrl: getBundlerRpcUrl(config.avalancheFujiZerodevProjectId),
-		paymasterRpcUrl: getPaymasterRpcUrl(
-			config.avalancheFujiZerodevProjectId
-		),
-		viemChain: avalancheFuji,
-	},
 	[ChainIds.BASE_SEPOLIA]: {
 		name: "Base Sepolia",
 		native: "ETH",
@@ -119,18 +93,6 @@ const SUPPORTED_CHAINS: {
 		bundlerRpcUrl: getBundlerRpcUrl(config.baseSepoliaZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.baseSepoliaZerodevProjectId),
 		viemChain: baseSepolia,
-	},
-	[ChainIds.OPTIMISM_SEPOLIA]: {
-		name: "Optimism Sepolia",
-		native: "ETH",
-		blockExplorer: "https://sepolia-optimism.etherscan.io",
-		rpcUrl: config.optimismSepoliaRpc,
-		zerodevProjectId: config.optimismSepoliaZerodevProjectId,
-		bundlerRpcUrl: getBundlerRpcUrl(config.optimismSepoliaZerodevProjectId),
-		paymasterRpcUrl: getPaymasterRpcUrl(
-			config.optimismSepoliaZerodevProjectId
-		),
-		viemChain: optimismSepolia,
 	},
 	[ChainIds.SEPOLIA]: {
 		name: "Sepolia",

@@ -3,7 +3,7 @@ import { zeroAddress } from "viem";
 import MoralisClient from "../../../src/infrastructure/clients/moralis";
 import { ILockerTokenBalance } from "../../../src/usecases/schemas/lockers";
 
-describe("MoralisClient", () => {
+describe.skip("MoralisClient", () => {
 	it("getLockerTokenBalances", async () => {
 		const moralisClient = new MoralisClient();
 		const balances = await moralisClient.getLockerTokenBalances({

@@ -4,23 +4,26 @@ import { numberToHex, zeroAddress } from "viem";
 import web3 from "web3";
 
 import config from "../../config";
+import SUPPORTED_CHAINS from "../../dependencies/chains";
 import { logger } from "../../dependencies/logger";
 import {
 	Headers,
 	IIndexerClient,
 } from "../../usecases/interfaces/clients/indexer";
-import ChainIds from "../../usecases/schemas/blockchains";
 import { ILockerTokenBalance } from "../../usecases/schemas/lockers";
 import InvalidSignature from "./errors";
 
-// const chainIds: number[] = Object.keys(ChainIds).map((key) => Number(key));
-const chainIds: number[] = [
-	ChainIds.ARBITRUM,
-	ChainIds.AVALANCHE,
-	ChainIds.BASE,
-	ChainIds.OPTIMISM,
-	ChainIds.POLYGON,
-];
+const chainIds: number[] = Object.keys(SUPPORTED_CHAINS).map((key) =>
+	Number(key)
+);
+// const chainIds: number[] = [
+// 	ChainIds.ARBITRUM,
+// 	ChainIds.AVALANCHE,
+// 	ChainIds.BASE,
+// 	ChainIds.OPTIMISM,
+// 	ChainIds.POLYGON,
+// 	ChainIds.SEPOLIA,
+// ];
 
 export default class MoralisClient implements IIndexerClient {
 	constructor() {
