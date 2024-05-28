@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-class Config {
+export class Config {
 	// Application
 	applicationName: string;
 
@@ -39,6 +39,32 @@ class Config {
 
 	optimismSepoliaRpc: string;
 
+	avalancheFujiRpc: string;
+
+	polygonMumbaiRpc: string;
+
+	// ZeroDev RPCs
+
+	arbitrumZerodevProjectId: string;
+
+	avalancheZerodevProjectId: string;
+
+	baseZerodevProjectId: string;
+
+	optimismZerodevProjectId: string;
+
+	polygonZerodevProjectId: string;
+
+	arbitrumSepoliaZerodevProjectId: string;
+
+	avalancheFujiZerodevProjectId: string;
+
+	baseSepoliaZerodevProjectId: string;
+
+	optimismSepoliaZerodevProjectId: string;
+
+	sepoliaZerodevProjectId: string;
+
 	// Moralis
 	moralisStreamId: string;
 
@@ -49,8 +75,16 @@ class Config {
 	// Locker
 	lockerBaseUrl: string;
 
+	// Locker agent private key
+	lockerAgentPrivateKey: `0x${string}`;
+
 	// Resend
 	resendApiKey: string;
+
+	// Encription
+	encriptionAlgorithm: string;
+
+	encriptionKey: string;
 
 	constructor() {
 		// Application settings
@@ -89,6 +123,30 @@ class Config {
 
 		this.optimismSepoliaRpc = process.env.OPTIMISM_SEPOLIA_RPC!;
 
+		this.avalancheFujiRpc = process.env.AVALANCHE_FUJI_RPC!;
+
+		this.polygonMumbaiRpc = process.env.POLYGON_MUMBAI_RPC!;
+
+		// ZeroDev RPCs
+		this.arbitrumZerodevProjectId =
+			process.env.ARBITRUM_ZERODEV_PROJECT_ID!;
+		this.avalancheZerodevProjectId =
+			process.env.AVALANCHE_ZERODEV_PROJECT_ID!;
+		this.baseZerodevProjectId = process.env.BASE_ZERODEV_PROJECT_ID!;
+		this.optimismZerodevProjectId =
+			process.env.OPTIMISM_ZERODEV_PROJECT_ID!;
+		this.polygonZerodevProjectId = process.env.POLYGON_ZERODEV_PROJECT_ID!;
+
+		this.arbitrumSepoliaZerodevProjectId =
+			process.env.ARBITRUM_SEPOLIA_ZERODEV_PROJECT_ID!;
+		this.avalancheFujiZerodevProjectId =
+			process.env.AVALANCHE_FUJI_ZERODEV_PROJECT_ID!;
+		this.baseSepoliaZerodevProjectId =
+			process.env.BASE_SEPOLIA_ZERODEV_PROJECT_ID!;
+		this.optimismSepoliaZerodevProjectId =
+			process.env.OPTIMISM_SEPOLIA_ZERODEV_PROJECT_ID!;
+		this.sepoliaZerodevProjectId = process.env.SEPOLIA_ZERODEV_PROJECT_ID!;
+
 		// Moralis
 		this.moralisStreamId = process.env.MORALIS_STREAM_ID!;
 
@@ -98,9 +156,15 @@ class Config {
 
 		// Locker
 		this.lockerBaseUrl = process.env.LOCKER_BASE_URL!;
+		this.lockerAgentPrivateKey = process.env
+			.LOCKER_AGENT_PRIVATE_KEY! as `0x${string}`;
 
 		// Resend
 		this.resendApiKey = process.env.RESEND_API_KEY!;
+
+		// Encrption
+		this.encriptionAlgorithm = process.env.ENCRYPTION_ALGORITHM!;
+		this.encriptionKey = process.env.ENCRYPTION_KEY!;
 	}
 }
 

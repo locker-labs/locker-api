@@ -72,9 +72,18 @@ interface LockerInDb extends LockerRepoAdapter {
 	deployments: DeploymentRecord[];
 }
 
+interface ILockerTokenBalance {
+	symbol: string;
+	address: `0x${string}`;
+	decimals: number;
+	chainId: number;
+	balance: string;
+}
+
 export {
 	CreateLockerRequest,
 	type DeploymentRecord,
+	type ILockerTokenBalance,
 	type LockerInDb,
 	type LockerRepoAdapter,
 	type UpdateLockerRepoAdapter,

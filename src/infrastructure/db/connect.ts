@@ -1,17 +1,17 @@
-import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { drizzle, PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import winston from "winston";
 
 import config from "../../config";
 
-let db: NodePgDatabase<Record<string, never>> | undefined;
+let db: PostgresJsDatabase<Record<string, never>> | undefined;
 
 function getOrCreateDatabase(
 	logger: winston.Logger
-): NodePgDatabase<Record<string, never>> {
+): PostgresJsDatabase<Record<string, never>> {
 	if (!db) {
-		const pool = new Pool({ connectionString: config.dbUrl });
-		db = drizzle(pool);
+		const client = postgres(config.dbUrl, { prepare: false });
+		db = drizzle(client);
 		logger.info("Database pool created.");
 	}
 	return db;

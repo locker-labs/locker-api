@@ -8,3 +8,5 @@
 .env.example
 .env.test
 dist
+drizzle/migrations/
+tests/

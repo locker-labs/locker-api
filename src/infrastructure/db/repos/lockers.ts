@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import ILockersRepo from "../../../usecases/interfaces/repos/lockers";
 import {
@@ -14,7 +14,7 @@ import lockers from "../models/lockers";
 
 export default class LockersRepo implements ILockersRepo {
 	// eslint-disable-next-line no-empty-function
-	constructor(private db: NodePgDatabase) {}
+	constructor(private db: PostgresJsDatabase) {}
 
 	async create(locker: LockerRepoAdapter): Promise<LockerInDb> {
 		try {
