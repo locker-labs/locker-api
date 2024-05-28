@@ -23,7 +23,9 @@ policiesDbHookRouter.post(
 	checkApiKey,
 	async (req: Request, res: Response): Promise<void> => {
 		try {
+			console.log("policy updated");
 			const policy = req.body.record;
+			console.log(req.body.record);
 
 			const {
 				encrypted_session_key: encryptedSessionKey,

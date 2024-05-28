@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 const checkApiKey = (req: Request, res: Response, next: NextFunction) => {
 	// reading the headers
 	const token = req.headers["api-key"];
-	if (!token) {
+	if (token !== process.env.LOCKER_API_KEY) {
 		res.status(200).send({ message: "ok" });
 	}
 	next();

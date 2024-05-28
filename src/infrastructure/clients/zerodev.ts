@@ -9,6 +9,7 @@ import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { createPublicClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
+import config from "../../config";
 import SUPPORTED_CHAINS from "../../dependencies/chains";
 import IExecutorClient from "../../usecases/interfaces/clients/executor";
 import { PolicyRepoAdapter } from "../../usecases/schemas/policies";
@@ -55,7 +56,7 @@ export default class ZerodevClient implements IExecutorClient {
 
 		// Create signer from locker agent
 		const sessionKeyRawAccount = privateKeyToAccount(
-			process.env.LOCKER_AGENT_PRIVATE_KEY! as `0x${string}`
+			config.lockerAgentPrivateKey
 		);
 		const sessionKeySigner = await toECDSASigner({
 			signer: sessionKeyRawAccount,

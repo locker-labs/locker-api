@@ -24,7 +24,9 @@ tokentxsDbHookRouter.post(
 	checkApiKey,
 	async (req: Request, res: Response): Promise<void> => {
 		try {
+			console.log("token updated");
 			const rawTx = req.body.record;
+			console.log(req.body.record);
 
 			const policiesApi = await getPoliciesRepo();
 			const tokenTxsApi = await getTokenTxsRepo();
