@@ -13,6 +13,7 @@ import ChainIds from "../../usecases/schemas/blockchains";
 import { ILockerTokenBalance } from "../../usecases/schemas/lockers";
 import InvalidSignature from "./errors";
 
+// const chainIds: number[] = Object.keys(ChainIds).map((key) => Number(key));
 const chainIds: number[] = [
 	ChainIds.ARBITRUM,
 	ChainIds.AVALANCHE,
