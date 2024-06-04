@@ -48,8 +48,8 @@ const chains = [
 	"0x89",
 ];
 
-const tag = "staging";
-const description = `Transactions ${tag}`;
+const tag = "prod";
+const description = `[${tag}] Transactions`;
 
 const ERC20TransferEventABI = [
 	{
