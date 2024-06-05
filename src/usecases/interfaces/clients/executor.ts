@@ -3,6 +3,16 @@ import { KernelEncodeCallDataArgs } from "@zerodev/sdk/types";
 import { PolicyRepoAdapter } from "../../schemas/policies";
 
 interface IExecutorClient {
+	getKernelAddress({
+		seed,
+		eoaAddress,
+		chainId,
+	}: {
+		seed: number;
+		eoaAddress: `0x${string}`;
+		chainId: number;
+	}): Promise<`0x${string}`>;
+
 	execCallDataWithPolicy({
 		policy,
 		callDataArgs,
