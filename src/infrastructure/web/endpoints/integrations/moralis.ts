@@ -6,7 +6,7 @@ import morgan from "morgan";
 import {
 	// getAuthClient,
 	// getEmailClient,
-	getIndexerClient,
+	// getIndexerClient,
 	getLockersRepo,
 	getTokenTxsRepo,
 	logger,
@@ -115,12 +115,11 @@ moralisRouter.post(
 		const { body: moralisBody } = req;
 		const { txs } = moralisBody;
 
+		console.log("Received Moralis webhook");
+		console.log(JSON.stringify(moralisBody, null, 2));
 		try {
 			// 1. verify webhook
-			const indexer = await getIndexerClient();
-
-			console.log("Received Moralis webhook");
-			console.log(JSON.stringify(moralisBody, null, 2));
+			// const indexer = await getIndexerClient();
 
 			// try {
 			// 	await indexer.verifyWebhook(moralisBody, req.headers);
@@ -141,7 +140,8 @@ moralisRouter.post(
 			if (txs.length > 0) {
 				const tokenTxsRepo = await getTokenTxsRepo();
 				const lockersRepo = await getLockersRepo();
-				const { tokenTx, locker } = await adaptMoralisBody2TokenTx(
+				// const { tokenTx, locker } = await adaptMoralisBody2TokenTx(
+				const { tokenTx } = await adaptMoralisBody2TokenTx(
 					moralisBody,
 					lockersRepo
 				);
