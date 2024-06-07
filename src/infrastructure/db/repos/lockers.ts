@@ -134,7 +134,7 @@ export default class LockersRepo implements ILockersRepo {
 	}): Promise<LockerInDb[]> {
 		const conditions = [];
 
-		if (options.userId !== undefined) {
+		if (options.userId) {
 			conditions.push(eq(lockers.userId, options.userId));
 		}
 

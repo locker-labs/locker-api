@@ -117,11 +117,15 @@ export default class AutomationService implements IAutomationService {
 
 		const amountOut = BigInt(amountOutStr);
 
-		const erc20Data = encodeFunctionData({
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const erc20UnencodedData: any = {
 			abi: ERC20_TRANSFER_ABI,
 			functionName: "transfer",
 			args: [toAddress, amountOut],
-		});
+		};
+		console.log("erc20UnencodedData", erc20UnencodedData);
+
+		const erc20Data = encodeFunctionData(erc20UnencodedData);
 
 		const callDataArgs = {
 			to: contractAddress,
@@ -130,15 +134,15 @@ export default class AutomationService implements IAutomationService {
 			callType: "call" as CallType,
 		};
 
-		console.log("Executing", callDataArgs);
-
 		// submit on-chain
-		let txHash = genRanHex(30) as `0x${string}`;
+		let txHash = genRanHex(64) as `0x${string}`;
 		if (!isTestEnv()) {
+			console.log("Executing", callDataArgs);
 			txHash = (await this.callDataExecutor.execCallDataWithPolicy({
 				policy,
 				callDataArgs,
 			})) as `0x${string}`;
+			console.log("Executed", txHash);
 		}
 
 		console.log("Executed", txHash);

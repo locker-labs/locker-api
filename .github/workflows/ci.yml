@@ -22,4 +22,8 @@ jobs:
         run: npm run lint:check
 
       - name: Run tests
+        env:
+          NODE_ENV: test
+          DB_URL: ${{ secrets.DB_URL_TEST }}
+          LOCKER_API_KEY: fooBar
         run: npm run test

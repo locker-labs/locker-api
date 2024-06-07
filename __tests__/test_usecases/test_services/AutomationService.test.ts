@@ -10,9 +10,7 @@ import {
 	TokenTxInDb,
 } from "../../../src/usecases/schemas/tokenTxs";
 import AutomationService from "../../../src/usecases/services/automation";
-import TestCallDataExecutor, {
-	DEFAULT_HASH,
-} from "../../utils/TestCallDataExecutor";
+import TestCallDataExecutor from "../../utils/TestCallDataExecutor";
 import TestLockerApi from "../../utils/TestLockerApi";
 import TestPolicyApi from "../../utils/TestPolicyApi";
 import TestTokenTxApi from "../../utils/TestTokenTxApi";
@@ -326,7 +324,6 @@ describe("AutomationService", () => {
 			lockerDirection: ETokenTxLockerDirection.OUT,
 			automationsState: ETokenTxAutomationsState.STARTED,
 			contractAddress: "0x456",
-			txHash: DEFAULT_HASH,
 			tokenSymbol: "FOO",
 			// the locker itself
 			fromAddress: locker.address,

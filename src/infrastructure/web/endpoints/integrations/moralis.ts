@@ -7,9 +7,6 @@ import {
 	getAuthClient,
 	getEmailClient,
 	getIndexerClient,
-	// getAuthClient,
-	// getEmailClient,
-	// getIndexerClient,
 	getLockersRepo,
 	getTokenTxsRepo,
 	logger,
@@ -27,7 +24,6 @@ import {
 	TokenTxRepoAdapter,
 } from "../../../../usecases/schemas/tokenTxs";
 import InvalidSignature from "../../../clients/errors";
-// import InvalidSignature from "../../../clients/errors";
 import DuplicateRecordError from "../../../db/errors";
 
 const moralisRouter = express.Router();
@@ -45,30 +41,47 @@ export const adaptMoralisBody2TokenTx = async (
 
 	if (erc20Transfers.length > 0) {
 		const erc20Tx = erc20Transfers[0];
+		const {
+			from,
+			to,
+			transactionHash,
+			tokenSymbol,
+			tokenDecimals,
+			value,
+			contract,
+		} = erc20Tx;
+
+		// assume ERC20 transfer
+		let lockerDirection = ETokenTxLockerDirection.IN;
+		let automationsState = ETokenTxAutomationsState.NOT_STARTED;
 
 		locker = await lockersRepo.retrieve({
-			address: erc20Tx.to,
+			address: to,
 		});
-		if (!locker) throw new Error(`Locker not found ${erc20Tx.toAddress}`);
 
-		const isRecipientLocker =
-			erc20Tx.to.toLowerCase() === locker!.address.toLowerCase();
-		const lockerDirection = isRecipientLocker
-			? ETokenTxLockerDirection.IN
-			: ETokenTxLockerDirection.OUT;
+		if (!locker) {
+			locker = await lockersRepo.retrieve({
+				address: from,
+			});
+			if (!locker) throw new Error(`Locker not found ${from}, ${to}`);
+
+			lockerDirection = ETokenTxLockerDirection.OUT;
+			// Outgoing transactions can not trigger additional automations
+			automationsState = ETokenTxAutomationsState.STARTED;
+		}
 
 		tokenTx = {
 			lockerId: locker!.id,
 			lockerDirection,
-			automationsState: ETokenTxAutomationsState.NOT_STARTED,
-			contractAddress: erc20Tx.contract as `0x${string}`,
-			txHash: erc20Tx.transactionHash,
-			tokenSymbol: erc20Tx.tokenSymbol,
-			tokenDecimals: erc20Tx.tokenDecimals,
-			fromAddress: erc20Tx.from,
-			toAddress: erc20Tx.to,
+			automationsState,
+			contractAddress: contract as `0x${string}`,
+			txHash: transactionHash,
+			tokenSymbol,
+			tokenDecimals: parseInt(tokenDecimals),
+			fromAddress: from,
+			toAddress: to,
 			isConfirmed: moralisBody.confirmed,
-			amount: BigInt(erc20Tx.value),
+			amount: BigInt(value),
 			chainId: parseInt(moralisBody.chainId, 16),
 		};
 	} else {
@@ -85,6 +98,11 @@ export const adaptMoralisBody2TokenTx = async (
 			locker = await lockersRepo.retrieve({
 				address: fromAddress,
 			});
+			if (!locker)
+				throw new Error(
+					`Locker not found ${toAddress}, ${fromAddress}`
+				);
+
 			lockerDirection = ETokenTxLockerDirection.OUT;
 		}
 

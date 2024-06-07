@@ -35,7 +35,6 @@ policiesDbHookRouter.post(
 			} = policy;
 
 			if (!encryptedSessionKey || !encodedIv) {
-				console.log("no session key or iv");
 				res.status(200).send({ message: "ok" });
 				return;
 			}

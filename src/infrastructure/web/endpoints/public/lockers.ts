@@ -161,7 +161,11 @@ lockerRouter.get(
 		const lockers = await lockersRepo.retrieveMany({
 			userId: req.auth.userId,
 		});
-		res.status(200).json({ data: { lockers } });
+		if (lockers) {
+			res.status(200).json({ data: { lockers } });
+		} else {
+			res.status(200).json({ data: { lockers: [] } });
+		}
 	}
 );
 
