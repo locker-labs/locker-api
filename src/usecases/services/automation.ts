@@ -3,6 +3,7 @@ import Big from "big.js";
 import { encodeFunctionData } from "viem";
 
 import { ERC20_TRANSFER_ABI } from "../../dependencies";
+import { genRanHex, isTestEnv } from "../../dependencies/environment";
 import { logger } from "../../dependencies/logger";
 import IExecutorClient from "../interfaces/clients/executor";
 import ILockersRepo from "../interfaces/repos/lockers";
@@ -54,6 +55,8 @@ export default class AutomationService implements IAutomationService {
 			chainId,
 		} = maybeTrigger;
 
+		console.log("shouldGenerateAutomations", maybeTrigger);
+
 		// Only generate automations from deposits
 		if (lockerDirection !== ETokenTxLockerDirection.IN) return false;
 
@@ -61,18 +64,22 @@ export default class AutomationService implements IAutomationService {
 		if (automationsState !== ETokenTxAutomationsState.NOT_STARTED)
 			return false;
 
+		console.log("Checking confirmed");
 		// Don't automate unconfirmed transactions
 		if (!isConfirmed) return false;
 
+		console.log("Checking policy");
 		// Retrieve the policy for the locker
 		const policy = await this.policiesApi.retrieve(
 			{ lockerId, chainId },
 			true
 		);
+		if (!policy) return false;
 
+		console.log("Checking encrytedSessionKey");
 		// If no policy is found, don't generate automations
 		const { encryptedSessionKey } = policy as PolicyInDb;
-		if (!policy || !encryptedSessionKey) return false;
+		if (!encryptedSessionKey) return false;
 
 		return true;
 	}
@@ -92,6 +99,9 @@ export default class AutomationService implements IAutomationService {
 	): Promise<TokenTxInDb | null> {
 		console.log("Spawning on-chain tx");
 		console.log(automation);
+		console.log(policy);
+		console.log(maybeTrigger);
+		console.log(locker);
 		const { lockerId } = policy;
 		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
 			maybeTrigger;
@@ -107,11 +117,15 @@ export default class AutomationService implements IAutomationService {
 
 		const amountOut = BigInt(amountOutStr);
 
-		const erc20Data = encodeFunctionData({
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const erc20UnencodedData: any = {
 			abi: ERC20_TRANSFER_ABI,
 			functionName: "transfer",
 			args: [toAddress, amountOut],
-		});
+		};
+		console.log("erc20UnencodedData", erc20UnencodedData);
+
+		const erc20Data = encodeFunctionData(erc20UnencodedData);
 
 		const callDataArgs = {
 			to: contractAddress,
@@ -121,10 +135,17 @@ export default class AutomationService implements IAutomationService {
 		};
 
 		// submit on-chain
-		const txHash = (await this.callDataExecutor.execCallDataWithPolicy({
-			policy,
-			callDataArgs,
-		})) as `0x${string}`;
+		let txHash = genRanHex(64) as `0x${string}`;
+		if (!isTestEnv()) {
+			console.log("Executing", callDataArgs);
+			txHash = (await this.callDataExecutor.execCallDataWithPolicy({
+				policy,
+				callDataArgs,
+			})) as `0x${string}`;
+			console.log("Executed", txHash);
+		}
+
+		console.log("Executed", txHash);
 
 		// Persist to DB.
 		// This TX will also be picked up by Moralis, but here we can record what triggered this automation.
@@ -247,6 +268,8 @@ export default class AutomationService implements IAutomationService {
 	): Promise<boolean> {
 		const shouldGenerate =
 			await this.shouldGenerateAutomations(maybeTrigger);
+
+		console.log("Should generate", shouldGenerate);
 
 		if (!shouldGenerate) return false;
 

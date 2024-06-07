@@ -53,6 +53,8 @@ policiesDbHookRouter.post(
 
 			// Find all transactions from same chain as first
 			const txs = await tokenTxsApi.retrieveMany({ chainId, lockerId });
+			console.log("Got relevant txs", txs);
+			console.log(txs);
 			const txAutomationPromises = txs.map((tx) =>
 				automationsGenerator.generateAutomations(tx)
 			);

@@ -1,3 +1,4 @@
+import { getKernelAddressFromECDSA } from "@zerodev/ecdsa-validator";
 import { deserializePermissionAccount } from "@zerodev/permissions";
 import { toECDSASigner } from "@zerodev/permissions/signers";
 import {
@@ -6,7 +7,7 @@ import {
 } from "@zerodev/sdk";
 import { KernelEncodeCallDataArgs } from "@zerodev/sdk/types";
 import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
-import { createPublicClient, http } from "viem";
+import { createPublicClient, http, type PublicClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 import config from "../../config";
@@ -16,6 +17,39 @@ import { PolicyRepoAdapter } from "../../usecases/schemas/policies";
 import { decrypt } from "../../usecases/services/encryption";
 
 export default class ZerodevClient implements IExecutorClient {
+	getPublicClient(chainId: number): PublicClient {
+		const { bundlerRpcUrl } = SUPPORTED_CHAINS[chainId];
+		const publicClient = createPublicClient({
+			transport: http(bundlerRpcUrl),
+		});
+
+		if (!publicClient) {
+			throw new Error("Public client not found");
+		}
+
+		return publicClient;
+	}
+
+	async getKernelAddress({
+		seed,
+		eoaAddress,
+		chainId,
+	}: {
+		seed: number;
+		eoaAddress: `0x${string}`;
+		chainId: number;
+	}): Promise<`0x${string}`> {
+		const publicClient = this.getPublicClient(chainId);
+		const kernelAddress = await getKernelAddressFromECDSA({
+			publicClient,
+			eoaAddress,
+			index: BigInt(seed),
+			entryPointAddress: ENTRYPOINT_ADDRESS_V07,
+		});
+
+		return kernelAddress;
+	}
+
 	async enablePaymaster({
 		chainId,
 		addressToSponsor,

@@ -2,8 +2,9 @@
 // One stream is created for all addresses we want to
 import dotenv from "dotenv";
 import Moralis from "moralis";
+import path from "path";
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../.env.stream") });
 
 // Subset of Moralis + ZeroDev supported chains
 // https://docs.moralis.io/supported-chains
@@ -48,7 +49,7 @@ const chains = [
 	"0x89",
 ];
 
-const tag = "prod";
+const tag = process.env.MORALIS_STREAM_TAG!;
 const description = `[${tag}] Transactions`;
 
 const ERC20TransferEventABI = [

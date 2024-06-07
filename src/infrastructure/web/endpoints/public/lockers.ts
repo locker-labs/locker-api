@@ -18,6 +18,8 @@ import {
 	logger,
 	stream,
 } from "../../../../dependencies";
+import { getExecutorClient } from "../../../../dependencies/clients";
+import ChainIds from "../../../../usecases/schemas/blockchains";
 import {
 	CreateLockerRequest,
 	LockerRepoAdapter,
@@ -57,12 +59,27 @@ lockerRouter.post(
 		req: AuthenticatedRequest<Request>,
 		res: Response
 	): Promise<void> => {
+		// Useful to give different environments different seed ranges so that there's no collisions
+		const defaultEnvironmentOffset = 0;
+		const seedEnvironmentOffset =
+			parseInt(process.env.LOCKER_SEED_OFFSET!) ||
+			defaultEnvironmentOffset;
+		const seed = req.body.seed + seedEnvironmentOffset;
+
+		const address = await getExecutorClient().getKernelAddress({
+			seed,
+			eoaAddress: req.body.ownerAddress,
+			// Kernel addresses are valid on all chains
+			// We pick one arbitrarily
+			chainId: ChainIds.BASE,
+		});
+
 		const locker: LockerRepoAdapter = {
 			userId: req.auth.userId,
-			seed: req.body.seed,
+			seed,
+			address,
 			provider: req.body.provider,
 			ownerAddress: req.body.ownerAddress,
-			address: req.body.address,
 		};
 
 		// store locker in database
@@ -144,7 +161,11 @@ lockerRouter.get(
 		const lockers = await lockersRepo.retrieveMany({
 			userId: req.auth.userId,
 		});
-		res.status(200).json({ data: { lockers } });
+		if (lockers) {
+			res.status(200).json({ data: { lockers } });
+		} else {
+			res.status(200).json({ data: { lockers: [] } });
+		}
 	}
 );
 

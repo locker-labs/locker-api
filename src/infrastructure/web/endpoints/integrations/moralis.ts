@@ -13,6 +13,7 @@ import {
 	stream,
 } from "../../../../dependencies";
 import SUPPORTED_CHAINS from "../../../../dependencies/chains";
+import { isTestEnv } from "../../../../dependencies/environment";
 import { zeroAddress } from "../../../../usecases/interfaces/clients/indexer";
 import ILockersRepo from "../../../../usecases/interfaces/repos/lockers";
 import ChainIds from "../../../../usecases/schemas/blockchains";
@@ -40,30 +41,47 @@ export const adaptMoralisBody2TokenTx = async (
 
 	if (erc20Transfers.length > 0) {
 		const erc20Tx = erc20Transfers[0];
+		const {
+			from,
+			to,
+			transactionHash,
+			tokenSymbol,
+			tokenDecimals,
+			value,
+			contract,
+		} = erc20Tx;
+
+		// assume ERC20 transfer
+		let lockerDirection = ETokenTxLockerDirection.IN;
+		let automationsState = ETokenTxAutomationsState.NOT_STARTED;
 
 		locker = await lockersRepo.retrieve({
-			address: erc20Tx.to,
+			address: to,
 		});
-		if (!locker) throw new Error(`Locker not found ${erc20Tx.toAddress}`);
 
-		const isRecipientLocker =
-			erc20Tx.to.toLowerCase() === locker!.address.toLowerCase();
-		const lockerDirection = isRecipientLocker
-			? ETokenTxLockerDirection.IN
-			: ETokenTxLockerDirection.OUT;
+		if (!locker) {
+			locker = await lockersRepo.retrieve({
+				address: from,
+			});
+			if (!locker) throw new Error(`Locker not found ${from}, ${to}`);
+
+			lockerDirection = ETokenTxLockerDirection.OUT;
+			// Outgoing transactions can not trigger additional automations
+			automationsState = ETokenTxAutomationsState.STARTED;
+		}
 
 		tokenTx = {
 			lockerId: locker!.id,
 			lockerDirection,
-			automationsState: ETokenTxAutomationsState.NOT_STARTED,
-			contractAddress: erc20Tx.contract as `0x${string}`,
-			txHash: erc20Tx.transactionHash,
-			tokenSymbol: erc20Tx.tokenSymbol,
-			tokenDecimals: erc20Tx.tokenDecimals,
-			fromAddress: erc20Tx.from,
-			toAddress: erc20Tx.to,
+			automationsState,
+			contractAddress: contract as `0x${string}`,
+			txHash: transactionHash,
+			tokenSymbol,
+			tokenDecimals: parseInt(tokenDecimals),
+			fromAddress: from,
+			toAddress: to,
 			isConfirmed: moralisBody.confirmed,
-			amount: BigInt(erc20Tx.value),
+			amount: BigInt(value),
 			chainId: parseInt(moralisBody.chainId, 16),
 		};
 	} else {
@@ -80,6 +98,11 @@ export const adaptMoralisBody2TokenTx = async (
 			locker = await lockersRepo.retrieve({
 				address: fromAddress,
 			});
+			if (!locker)
+				throw new Error(
+					`Locker not found ${toAddress}, ${fromAddress}`
+				);
+
 			lockerDirection = ETokenTxLockerDirection.OUT;
 		}
 
@@ -112,27 +135,31 @@ export const adaptMoralisBody2TokenTx = async (
 moralisRouter.post(
 	"/webhooks/transactions",
 	async (req: Request, res: Response): Promise<void> => {
-		// 1. verify webhook
-		const indexer = await getIndexerClient();
 		const { body: moralisBody } = req;
 		const { txs } = moralisBody;
 
+		console.log("Received Moralis webhook");
+		console.log(JSON.stringify(moralisBody, null, 2));
 		try {
-			await indexer.verifyWebhook(moralisBody, req.headers);
-		} catch (error) {
-			if (error instanceof InvalidSignature) {
-				res.status(400).send({ error: error.message });
-				return;
+			// 1. verify webhook
+			if (!isTestEnv()) {
+				const indexer = await getIndexerClient();
+				try {
+					await indexer.verifyWebhook(moralisBody, req.headers);
+				} catch (error) {
+					if (error instanceof InvalidSignature) {
+						res.status(400).send({ error: error.message });
+						return;
+					}
+
+					res.status(500).send({
+						error: "An unexpected error occurred.",
+					});
+
+					return;
+				}
 			}
 
-			res.status(500).send({
-				error: "An unexpected error occurred.",
-			});
-
-			return;
-		}
-
-		try {
 			// 2. store tx data in database
 			if (txs.length > 0) {
 				const tokenTxsRepo = await getTokenTxsRepo();
@@ -159,15 +186,17 @@ moralisRouter.post(
 				}
 
 				// 3. Send email
-				const authClient = await getAuthClient();
-				const user = await authClient.getUser(locker!.userId);
+				if (!isTestEnv()) {
+					const authClient = await getAuthClient();
+					const user = await authClient.getUser(locker!.userId);
 
-				const emailClient = await getEmailClient();
-				await emailClient.send(
-					user.emailAddresses[0].emailAddress,
-					tokenTx,
-					moralisBody.confirmed
-				);
+					const emailClient = await getEmailClient();
+					await emailClient.send(
+						user.emailAddresses[0].emailAddress,
+						tokenTx,
+						moralisBody.confirmed
+					);
+				}
 			}
 		} catch (error) {
 			// Swallow exceptions to prevent unexpected retry behavior from Moralis
