@@ -4,6 +4,9 @@ import express, { Request, Response } from "express";
 import morgan from "morgan";
 
 import {
+	getAuthClient,
+	getEmailClient,
+	getIndexerClient,
 	// getAuthClient,
 	// getEmailClient,
 	// getIndexerClient,
@@ -13,6 +16,7 @@ import {
 	stream,
 } from "../../../../dependencies";
 import SUPPORTED_CHAINS from "../../../../dependencies/chains";
+import { isTestEnv } from "../../../../dependencies/environment";
 import { zeroAddress } from "../../../../usecases/interfaces/clients/indexer";
 import ILockersRepo from "../../../../usecases/interfaces/repos/lockers";
 import ChainIds from "../../../../usecases/schemas/blockchains";
@@ -22,6 +26,7 @@ import {
 	ETokenTxLockerDirection,
 	TokenTxRepoAdapter,
 } from "../../../../usecases/schemas/tokenTxs";
+import InvalidSignature from "../../../clients/errors";
 // import InvalidSignature from "../../../clients/errors";
 import DuplicateRecordError from "../../../db/errors";
 
@@ -119,29 +124,29 @@ moralisRouter.post(
 		console.log(JSON.stringify(moralisBody, null, 2));
 		try {
 			// 1. verify webhook
-			// const indexer = await getIndexerClient();
+			if (!isTestEnv()) {
+				const indexer = await getIndexerClient();
+				try {
+					await indexer.verifyWebhook(moralisBody, req.headers);
+				} catch (error) {
+					if (error instanceof InvalidSignature) {
+						res.status(400).send({ error: error.message });
+						return;
+					}
 
-			// try {
-			// 	await indexer.verifyWebhook(moralisBody, req.headers);
-			// } catch (error) {
-			// 	if (error instanceof InvalidSignature) {
-			// 		res.status(400).send({ error: error.message });
-			// 		return;
-			// 	}
+					res.status(500).send({
+						error: "An unexpected error occurred.",
+					});
 
-			// 	res.status(500).send({
-			// 		error: "An unexpected error occurred.",
-			// 	});
-
-			// 	return;
-			// }
+					return;
+				}
+			}
 
 			// 2. store tx data in database
 			if (txs.length > 0) {
 				const tokenTxsRepo = await getTokenTxsRepo();
 				const lockersRepo = await getLockersRepo();
-				// const { tokenTx, locker } = await adaptMoralisBody2TokenTx(
-				const { tokenTx } = await adaptMoralisBody2TokenTx(
+				const { tokenTx, locker } = await adaptMoralisBody2TokenTx(
 					moralisBody,
 					lockersRepo
 				);
@@ -163,15 +168,17 @@ moralisRouter.post(
 				}
 
 				// 3. Send email
-				// const authClient = await getAuthClient();
-				// const user = await authClient.getUser(locker!.userId);
+				if (!isTestEnv()) {
+					const authClient = await getAuthClient();
+					const user = await authClient.getUser(locker!.userId);
 
-				// const emailClient = await getEmailClient();
-				// await emailClient.send(
-				// 	user.emailAddresses[0].emailAddress,
-				// 	tokenTx,
-				// 	moralisBody.confirmed
-				// );
+					const emailClient = await getEmailClient();
+					await emailClient.send(
+						user.emailAddresses[0].emailAddress,
+						tokenTx,
+						moralisBody.confirmed
+					);
+				}
 			}
 		} catch (error) {
 			// Swallow exceptions to prevent unexpected retry behavior from Moralis

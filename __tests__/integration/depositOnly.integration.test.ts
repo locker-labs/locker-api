@@ -1,20 +1,26 @@
-import { chainId } from "permissionless";
-import { getLockersRepo, getTokenTxsRepo } from "../../src/dependencies";
-import express, { Express } from "express";
+import {
+	getLockersRepo,
+	getPoliciesRepo,
+	getTokenTxsRepo,
+	logger,
+} from "../../src/dependencies";
+import express from "express";
 import moralisRouter from "../../src/infrastructure/web/endpoints/integrations/moralis";
 import crypto from "crypto";
 import request from "supertest";
 import { generatePrivateKey } from "viem/accounts";
 import { privateKeyToAccount } from "viem/accounts";
 import tokentxsDbHookRouter from "../../src/infrastructure/web/endpoints/db-hooks/tokentxs";
-import AutomationService from "../../src/usecases/services/automation";
 import { ETokenTxLockerDirection } from "../../src/usecases/schemas/tokenTxs";
 import policiesDbHookRouter from "../../src/infrastructure/web/endpoints/db-hooks/policies";
-
-const genRanHex = (size: number) =>
-	[...Array(size)]
-		.map(() => Math.floor(Math.random() * 16).toString(16))
-		.join("");
+import {
+	EAutomationStatus,
+	EAutomationType,
+	PolicyInDb,
+} from "../../src/usecases/schemas/policies";
+import getOrCreateDatabase from "../../src/infrastructure/db/connect";
+import { policies } from "../../src/infrastructure/db/models";
+import { genRanHex } from "../../src/dependencies/environment";
 
 const app = express();
 app.use("/integrations/moralis", moralisRouter);
@@ -38,6 +44,9 @@ describe("User deposits into locker, then policy is created", () => {
 		const ownerWallet = privateKeyToAccount(ownerKey);
 		const lockerKey = generatePrivateKey();
 		const lockerWallet = privateKeyToAccount(lockerKey);
+
+		const db = getOrCreateDatabase(logger);
+		await db.delete(policies);
 
 		// 1. create a locker with a new random address
 		const lockersDb = await getLockersRepo();
@@ -153,15 +162,34 @@ describe("User deposits into locker, then policy is created", () => {
 
 		const txDb = await getTokenTxsRepo();
 		const tx = await txDb.retrieve({ txHash: txHash, chainId: 11155111 });
+		console.log("TRANS");
 		console.log(tx);
 		expect(tx).toMatchObject(expectedTx);
 
+		const dbTx = {
+			id: tx!.id,
+			locker_id: tx!.lockerId,
+			chain_id: tx!.chainId,
+			contract_address: tx!.contractAddress,
+			tx_hash: txHash,
+			token_symbol: tx!.tokenSymbol,
+			from_address: tx!.fromAddress,
+			to_address: tx!.toAddress,
+			token_decimals: tx!.tokenDecimals,
+			is_confirmed: tx!.isConfirmed,
+			amount: tx!.amount,
+			locker_direction: tx!.lockerDirection,
+			automations_state: tx!.automationsState,
+			triggered_by_token_tx_id: tx!.triggeredByTokenTxId,
+			created_at: tx!.createdAt,
+			updated_at: tx!.updatedAt,
+		};
 		// 3. Process updated transaction from db-hooks
 		const txUpdatedResp = await request(app)
 			.post("/db-hooks/tokentxs/update")
 			.send(
 				JSON.stringify(
-					{ record: tx },
+					{ record: dbTx },
 					(key, value) =>
 						typeof value === "bigint" ? value.toString() : value // return everything else unchanged
 				)
@@ -306,12 +334,31 @@ describe("User deposits into locker, then policy is created", () => {
 		console.log(confirmedTx);
 		expect(confirmedTx).toMatchObject(expectedConfirmedTx);
 
+		const confirmedDbTx = {
+			id: confirmedTx!.id,
+			locker_id: confirmedTx!.lockerId,
+			chain_id: confirmedTx!.chainId,
+			contract_address: confirmedTx!.contractAddress,
+			tx_hash: txHash,
+			token_symbol: confirmedTx!.tokenSymbol,
+			from_address: confirmedTx!.fromAddress,
+			to_address: confirmedTx!.toAddress,
+			token_decimals: confirmedTx!.tokenDecimals,
+			is_confirmed: confirmedTx!.isConfirmed,
+			amount: confirmedTx!.amount,
+			locker_direction: confirmedTx!.lockerDirection,
+			automations_state: confirmedTx!.automationsState,
+			triggered_by_token_tx_id: confirmedTx!.triggeredByTokenTxId,
+			created_at: confirmedTx!.createdAt,
+			updated_at: confirmedTx!.updatedAt,
+		};
+
 		// 5. Process updated transaction from db-hooks
 		const confirmedTxUpdatedResp = await request(app)
 			.post("/db-hooks/tokentxs/update")
 			.send(
 				JSON.stringify(
-					{ record: tx },
+					{ record: confirmedDbTx },
 					(key, value) =>
 						typeof value === "bigint" ? value.toString() : value // return everything else unchanged
 				)
@@ -333,28 +380,46 @@ describe("User deposits into locker, then policy is created", () => {
 
 		// 6. Create a policy
 		const policy = {
-			id: 3,
-			chain_id: 11155111,
-			locker_id: locker.id,
-			created_at: "2024-06-07T02:47:19.270127+00:00",
-			encoded_iv: "==",
-			updated_at: "2024-06-07T02:47:19.270127+00:00",
+			chainId: 11155111,
+			lockerId: locker.id,
+			encodedIv: "456",
 			automations: [
-				{ type: "savings", status: "ready", allocation: 0.2 },
 				{
-					type: "forward_to",
-					status: "ready",
+					type: EAutomationType.SAVINGS,
+					status: EAutomationStatus.READY,
+					allocation: 0.2,
+				},
+				{
+					type: EAutomationType.FORWARD_TO,
+					status: EAutomationStatus.READY,
 					allocation: 0.1,
 					recipientAddress:
-						"0xaf115955b028c145ce3a7367b25a274723c5104b",
+						"0xaf115955b028c145ce3a7367b25a274723c5104b" as `0x${string}`,
 				},
-				{ type: "off_ramp", status: "new", allocation: 0.7 },
+				{
+					type: EAutomationType.OFF_RAMP,
+					status: EAutomationStatus.NEW,
+					allocation: 0.7,
+				},
 			],
-			encrypted_session_key: "000",
+			encryptedSessionKey: "123",
+		};
+		const policyDb = await getPoliciesRepo();
+		const newPolicy = (await policyDb.create(policy)) as PolicyInDb;
+		newPolicy.encryptedSessionKey = "123";
+		newPolicy.encodedIv = "456";
+		console.log("newPolicy", newPolicy);
+
+		const dbPolicy = {
+			chain_id: policy.chainId,
+			locker_id: locker.id,
+			encoded_iv: policy.encodedIv,
+			automations: policy.automations,
+			encrypted_session_key: policy.encryptedSessionKey,
 		};
 		const policyResp = await request(app)
 			.post("/db-hooks/policies/update")
-			.send(JSON.stringify({ record: policy }))
+			.send({ record: dbPolicy })
 			.set("api-key", process.env.LOCKER_API_KEY!);
 		expect(policyResp.status).toEqual(200);
 
@@ -363,6 +428,7 @@ describe("User deposits into locker, then policy is created", () => {
 			lockerDirection: ETokenTxLockerDirection.OUT,
 		});
 		expect(txsAfterAutomations).toHaveLength(1);
+		expect(txsAfterAutomations[0].triggeredByTokenTxId).toEqual(tx!.id);
 	});
 });
 // if deposit is confirmed before policy is created, then

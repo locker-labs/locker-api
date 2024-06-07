@@ -35,6 +35,7 @@ policiesDbHookRouter.post(
 			} = policy;
 
 			if (!encryptedSessionKey || !encodedIv) {
+				console.log("no session key or iv");
 				res.status(200).send({ message: "ok" });
 				return;
 			}
@@ -53,6 +54,8 @@ policiesDbHookRouter.post(
 
 			// Find all transactions from same chain as first
 			const txs = await tokenTxsApi.retrieveMany({ chainId, lockerId });
+			console.log("Got relevant txs", txs);
+			console.log(txs);
 			const txAutomationPromises = txs.map((tx) =>
 				automationsGenerator.generateAutomations(tx)
 			);

@@ -19,12 +19,12 @@ import {
 	stream,
 } from "../../../../dependencies";
 import { getExecutorClient } from "../../../../dependencies/clients";
+import CreatePolicyRequest from "../../../../usecases/schemas/CreatePolicyRequest";
 import {
-	CreatePolicyRequest,
 	PolicyRepoAdapter,
 	UpdatePoliciesRepoAdapter,
-	UpdatePolicyRequest,
 } from "../../../../usecases/schemas/policies";
+import UpdatePolicyRequest from "../../../../usecases/schemas/UpdatePolicyRequest";
 import { encrypt } from "../../../../usecases/services/encryption";
 import DuplicateRecordError from "../../../db/errors";
 

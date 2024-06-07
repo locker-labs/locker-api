@@ -30,6 +30,8 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 					isConfirmed: tokenTx.isConfirmed,
 					amount: tokenTx.amount,
 					chainId: tokenTx.chainId,
+					automationsState: tokenTx.automationsState,
+					triggeredByTokenTxId: tokenTx.triggeredByTokenTxId,
 				})
 				.onConflictDoUpdate({
 					target: [tokenTxs.chainId, tokenTxs.txHash],
@@ -37,6 +39,7 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 						isConfirmed: tokenTx.isConfirmed,
 						automationsState: tokenTx.automationsState,
 						txHash: tokenTx.txHash,
+						triggeredByTokenTxId: tokenTx.triggeredByTokenTxId,
 					},
 				})
 				.returning();
