@@ -5,8 +5,10 @@ const checkApiKey = (req: Request, res: Response, next: NextFunction) => {
 	// reading the headers
 	const token = req.headers["api-key"];
 	if (token !== process.env.LOCKER_API_KEY) {
+		console.log("Invalid API key", token);
 		res.status(200).send({ message: "ok" });
+	} else {
+		next();
 	}
-	next();
 };
 export default checkApiKey;

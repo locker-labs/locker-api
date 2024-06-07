@@ -10,13 +10,13 @@ import {
 
 import ChainIds from "./blockchains";
 
-enum EAutomationType {
+export enum EAutomationType {
 	SAVINGS = "savings",
 	FORWARD_TO = "forward_to",
 	OFF_RAMP = "off_ramp",
 }
 
-enum EAutomationStatus {
+export enum EAutomationStatus {
 	NEW = "new",
 	PENDING = "pending",
 	READY = "ready",

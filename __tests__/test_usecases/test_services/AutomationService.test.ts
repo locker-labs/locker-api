@@ -1,5 +1,9 @@
 import { LockerInDb } from "../../../src/usecases/schemas/lockers";
-import { IAutomation } from "../../../src/usecases/schemas/policies";
+import {
+	EAutomationStatus,
+	EAutomationType,
+	IAutomation,
+} from "../../../src/usecases/schemas/policies";
 import {
 	ETokenTxAutomationsState,
 	ETokenTxLockerDirection,
@@ -191,9 +195,9 @@ describe("AutomationService", () => {
 		};
 
 		const automation: IAutomation = {
-			type: "savings",
+			type: EAutomationType.SAVINGS,
 			allocation: 0.1,
-			status: "ready",
+			status: EAutomationStatus.READY,
 		};
 
 		const generator = new AutomationService(
@@ -240,9 +244,9 @@ describe("AutomationService", () => {
 		};
 
 		const automation: IAutomation = {
-			type: "forward_to",
+			type: EAutomationType.FORWARD_TO,
 			allocation: 0.1,
-			status: "new",
+			status: EAutomationStatus.NEW,
 		};
 
 		const policy = {
@@ -289,9 +293,9 @@ describe("AutomationService", () => {
 		};
 
 		const automation: IAutomation = {
-			type: "forward_to",
+			type: EAutomationType.FORWARD_TO,
 			allocation: 0.1,
-			status: "ready",
+			status: EAutomationStatus.READY,
 			recipientAddress: "0xF445b07Aad98De9cc2794593B68ecD4aa5f81076",
 		};
 

@@ -9,4 +9,4 @@
 .env.test
 dist
 drizzle/migrations/
-tests/
+__tests__/

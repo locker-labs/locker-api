@@ -79,6 +79,8 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 			.limit(1)
 			.execute();
 
+		console.log("Got response");
+		console.log(result);
 		return result.length > 0 ? (result[0] as TokenTxInDb) : null;
 	}
 

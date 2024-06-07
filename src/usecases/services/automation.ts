@@ -69,10 +69,11 @@ export default class AutomationService implements IAutomationService {
 			{ lockerId, chainId },
 			true
 		);
+		if (!policy) return false;
 
 		// If no policy is found, don't generate automations
 		const { encryptedSessionKey } = policy as PolicyInDb;
-		if (!policy || !encryptedSessionKey) return false;
+		if (!encryptedSessionKey) return false;
 
 		return true;
 	}

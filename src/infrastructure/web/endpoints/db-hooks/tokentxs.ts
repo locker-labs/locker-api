@@ -14,6 +14,7 @@ import { TokenTxInDb } from "../../../../usecases/schemas/tokenTxs";
 import AutomationService from "../../../../usecases/services/automation";
 import ZerodevClient from "../../../clients/zerodev";
 import checkApiKey from "./check-api-key";
+// import checkApiKey from "./check-api-key";
 
 const tokentxsDbHookRouter = express.Router();
 tokentxsDbHookRouter.use(express.json());
@@ -26,7 +27,7 @@ tokentxsDbHookRouter.post(
 		try {
 			console.log("Processing tokentx...");
 			const rawTx = req.body.record;
-			console.log(req.body.record);
+			console.log(JSON.stringify(req.body.record, null, 2));
 
 			const policiesApi = await getPoliciesRepo();
 			const tokenTxsApi = await getTokenTxsRepo();
@@ -77,8 +78,15 @@ tokentxsDbHookRouter.post(
 				createdAt,
 				updatedAt,
 			};
+			console.log("Successfully processed");
 
-			await automationsGenerator.generateAutomations(tx);
+			const generatedAutomations =
+				await automationsGenerator.generateAutomations(tx);
+			res.status(200).send({
+				message: "ok",
+				generatedAutomations,
+			});
+			return;
 		} catch (e) {
 			logger.error(
 				"Something went wrong while processing the request",
@@ -86,7 +94,7 @@ tokentxsDbHookRouter.post(
 			);
 		}
 
-		res.status(200).send({ message: "ok" });
+		res.status(200).send({ message: "ok", generatedAutomations: false });
 	}
 );
 
