@@ -186,7 +186,10 @@ moralisRouter.post(
 				}
 
 				// 3. Send email
-				if (!isTestEnv()) {
+				if (
+					!isTestEnv() &&
+					tokenTx.lockerDirection === ETokenTxLockerDirection.IN
+				) {
 					const authClient = await getAuthClient();
 					const user = await authClient.getUser(locker!.userId);
 
