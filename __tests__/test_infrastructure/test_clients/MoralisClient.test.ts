@@ -1,7 +1,4 @@
-import { zeroAddress } from "viem";
-
 import MoralisClient from "../../../src/infrastructure/clients/moralis";
-import { ILockerTokenBalance } from "../../../src/usecases/schemas/lockers";
 
 describe.skip("MoralisClient", () => {
 	it("getLockerTokenBalances", async () => {

@@ -1,6 +1,8 @@
 # Environment Variable Files
 *.env
+.env.stream
 .secrets.*
+.env.test
 
 # Node
 node_modules/

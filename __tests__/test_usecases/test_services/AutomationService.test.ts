@@ -1,14 +1,16 @@
 import { LockerInDb } from "../../../src/usecases/schemas/lockers";
-import { IAutomation } from "../../../src/usecases/schemas/policies";
+import {
+	EAutomationStatus,
+	EAutomationType,
+	IAutomation,
+} from "../../../src/usecases/schemas/policies";
 import {
 	ETokenTxAutomationsState,
 	ETokenTxLockerDirection,
 	TokenTxInDb,
 } from "../../../src/usecases/schemas/tokenTxs";
 import AutomationService from "../../../src/usecases/services/automation";
-import TestCallDataExecutor, {
-	DEFAULT_HASH,
-} from "../../utils/TestCallDataExecutor";
+import TestCallDataExecutor from "../../utils/TestCallDataExecutor";
 import TestLockerApi from "../../utils/TestLockerApi";
 import TestPolicyApi from "../../utils/TestPolicyApi";
 import TestTokenTxApi from "../../utils/TestTokenTxApi";
@@ -191,9 +193,9 @@ describe("AutomationService", () => {
 		};
 
 		const automation: IAutomation = {
-			type: "savings",
+			type: EAutomationType.SAVINGS,
 			allocation: 0.1,
-			status: "ready",
+			status: EAutomationStatus.READY,
 		};
 
 		const generator = new AutomationService(
@@ -240,9 +242,9 @@ describe("AutomationService", () => {
 		};
 
 		const automation: IAutomation = {
-			type: "forward_to",
+			type: EAutomationType.FORWARD_TO,
 			allocation: 0.1,
-			status: "new",
+			status: EAutomationStatus.NEW,
 		};
 
 		const policy = {
@@ -289,9 +291,9 @@ describe("AutomationService", () => {
 		};
 
 		const automation: IAutomation = {
-			type: "forward_to",
+			type: EAutomationType.FORWARD_TO,
 			allocation: 0.1,
-			status: "ready",
+			status: EAutomationStatus.READY,
 			recipientAddress: "0xF445b07Aad98De9cc2794593B68ecD4aa5f81076",
 		};
 
@@ -322,7 +324,6 @@ describe("AutomationService", () => {
 			lockerDirection: ETokenTxLockerDirection.OUT,
 			automationsState: ETokenTxAutomationsState.STARTED,
 			contractAddress: "0x456",
-			txHash: DEFAULT_HASH,
 			tokenSymbol: "FOO",
 			// the locker itself
 			fromAddress: locker.address,
