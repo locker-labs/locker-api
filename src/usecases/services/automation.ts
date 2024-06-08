@@ -1,6 +1,6 @@
 import { CallType } from "@zerodev/sdk/types";
 import Big from "big.js";
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, zeroAddress } from "viem";
 
 import { ERC20_TRANSFER_ABI } from "../../dependencies";
 import { genRanHex, isTestEnv } from "../../dependencies/environment";
@@ -102,6 +102,10 @@ export default class AutomationService implements IAutomationService {
 		console.log(policy);
 		console.log(maybeTrigger);
 		console.log(locker);
+
+		// Disable ETH automations
+		if (maybeTrigger.contractAddress === zeroAddress) return null;
+
 		const { lockerId } = policy;
 		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
 			maybeTrigger;
@@ -137,15 +141,13 @@ export default class AutomationService implements IAutomationService {
 		// submit on-chain
 		let txHash = genRanHex(64) as `0x${string}`;
 		if (!isTestEnv()) {
-			console.log("Executing", callDataArgs);
+			console.log("Preparing userOp", callDataArgs);
 			txHash = (await this.callDataExecutor.execCallDataWithPolicy({
 				policy,
 				callDataArgs,
 			})) as `0x${string}`;
-			console.log("Executed", txHash);
+			console.log("Transaction sent", txHash);
 		}
-
-		console.log("Executed", txHash);
 
 		// Persist to DB.
 		// This TX will also be picked up by Moralis, but here we can record what triggered this automation.
