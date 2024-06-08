@@ -52,14 +52,19 @@ policiesDbHookRouter.post(
 			);
 
 			// Find all transactions from same chain as first
+			// Because of nonces, userOps will fail if multiple are sent at once
+			// Therefore we currently only use the most recent tx to generate automations
 			const txs = await tokenTxsApi.retrieveMany({ chainId, lockerId });
 			console.log("Got relevant txs", txs);
 			console.log(txs);
-			const txAutomationPromises = txs.map((tx) =>
-				automationsGenerator.generateAutomations(tx)
-			);
 
-			await Promise.all(txAutomationPromises);
+			if (txs.length > 0) {
+				// const txAutomationPromises = txs.map((tx) =>
+				await automationsGenerator.generateAutomations(txs[0]);
+				// );
+			}
+
+			// await Promise.all(txAutomationPromises);
 		} catch (e) {
 			logger.error(
 				"Something went wrong while processing the request",

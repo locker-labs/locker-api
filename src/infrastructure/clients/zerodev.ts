@@ -6,7 +6,7 @@ import {
 	createZeroDevPaymasterClient,
 } from "@zerodev/sdk";
 import { KernelEncodeCallDataArgs } from "@zerodev/sdk/types";
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
+import { bundlerActions, ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { createPublicClient, http, type PublicClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -136,6 +136,16 @@ export default class ZerodevClient implements IExecutorClient {
 			},
 		});
 
-		return userOpHash;
+		// Wait for transaction
+		const bundlerClient = kernelClient.extend(
+			bundlerActions(ENTRYPOINT_ADDRESS_V07)
+		);
+		console.log("Waiting for user operation receipt", userOpHash);
+		const txReceipt = await bundlerClient.waitForUserOperationReceipt({
+			hash: userOpHash,
+		});
+		console.log("User operation receipt", txReceipt);
+
+		return txReceipt.receipt.transactionHash;
 	}
 }

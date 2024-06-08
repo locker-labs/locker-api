@@ -137,15 +137,13 @@ export default class AutomationService implements IAutomationService {
 		// submit on-chain
 		let txHash = genRanHex(64) as `0x${string}`;
 		if (!isTestEnv()) {
-			console.log("Executing", callDataArgs);
+			console.log("Preparing userOp", callDataArgs);
 			txHash = (await this.callDataExecutor.execCallDataWithPolicy({
 				policy,
 				callDataArgs,
 			})) as `0x${string}`;
-			console.log("Executed", txHash);
+			console.log("Transaction sent", txHash);
 		}
-
-		console.log("Executed", txHash);
 
 		// Persist to DB.
 		// This TX will also be picked up by Moralis, but here we can record what triggered this automation.
