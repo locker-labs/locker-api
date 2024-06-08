@@ -1,6 +1,6 @@
 import { CallType } from "@zerodev/sdk/types";
 import Big from "big.js";
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, zeroAddress } from "viem";
 
 import { ERC20_TRANSFER_ABI } from "../../dependencies";
 import { genRanHex, isTestEnv } from "../../dependencies/environment";
@@ -102,6 +102,10 @@ export default class AutomationService implements IAutomationService {
 		console.log(policy);
 		console.log(maybeTrigger);
 		console.log(locker);
+
+		// Disable ETH automations
+		if (maybeTrigger.contractAddress === zeroAddress) return null;
+
 		const { lockerId } = policy;
 		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
 			maybeTrigger;
