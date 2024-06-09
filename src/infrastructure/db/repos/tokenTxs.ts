@@ -36,20 +36,19 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 				.onConflictDoUpdate({
 					target: [tokenTxs.chainId, tokenTxs.txHash],
 					set: {
-						isConfirmed: sql.raw(`
-						CASE
-							WHEN ${tokenTxs.isConfirmed} IS TRUE THEN TRUE
-							ELSE ${tokenTx.isConfirmed}
-						END
-					`),
 						automationsState: tokenTx.automationsState,
-						txHash: tokenTx.txHash,
+						isConfirmed: sql.raw(`
+							CASE
+								WHEN token_transactions.${tokenTxs.isConfirmed.name} IS TRUE THEN TRUE
+								ELSE excluded.${tokenTxs.isConfirmed.name}
+							END
+						`),
 						triggeredByTokenTxId: sql.raw(`
-						CASE
-							WHEN ${tokenTxs.triggeredByTokenTxId} IS NOT NULL THEN ${tokenTxs.triggeredByTokenTxId}
-							ELSE ${tokenTx.triggeredByTokenTxId}
-						END
-					`),
+							CASE
+								WHEN token_transactions.${tokenTxs.triggeredByTokenTxId.name} IS NOT NULL THEN token_transactions.${tokenTxs.triggeredByTokenTxId.name}
+								ELSE excluded.${tokenTxs.triggeredByTokenTxId.name}
+							END
+						`),
 					},
 				})
 				.returning();

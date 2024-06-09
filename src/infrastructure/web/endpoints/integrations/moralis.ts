@@ -145,7 +145,7 @@ moralisRouter.post(
 			);
 			if (txs.length > 0) {
 				console.log(
-					`TxHash: ${txs[0].hash}, From: ${txs[0].fromAddress}, To: ${txs[0].toAddres}, ERC20: ${erc20Transfers.length}`
+					`TxHash: ${txs[0].hash}, From: ${txs[0].fromAddress}, To: ${txs[0].toAddress}, ERC20: ${erc20Transfers.length}`
 				);
 			}
 

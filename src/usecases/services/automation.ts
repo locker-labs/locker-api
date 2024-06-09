@@ -99,7 +99,7 @@ export default class AutomationService implements IAutomationService {
 	): Promise<TokenTxInDb | null> {
 		console.log("Spawning on-chain tx");
 		console.log(automation);
-		console.log(policy);
+		// console.log(policy);
 		console.log(maybeTrigger);
 		console.log(locker);
 
