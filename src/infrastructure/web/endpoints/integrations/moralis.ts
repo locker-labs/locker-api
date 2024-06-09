@@ -178,7 +178,13 @@ moralisRouter.post(
 				);
 
 				try {
-					await tokenTxsRepo.create(tokenTx);
+					const createdTx = await tokenTxsRepo.create(tokenTx);
+					// This can happen if the tx is already confirmed and we try to upsert it as unconfirmed
+					if (!createdTx) {
+						throw new Error(
+							"Unable to create token tx, maybe it was already confirmed before this update?"
+						);
+					}
 				} catch (error) {
 					if (error instanceof DuplicateRecordError) {
 						res.status(409).send({
@@ -212,6 +218,7 @@ moralisRouter.post(
 		} catch (error) {
 			// Swallow exceptions to prevent unexpected retry behavior from Moralis
 			logger.error("Unable to process message from moralis", moralisBody);
+			logger.error(error);
 		}
 
 		// Saving the txs to the DB triggers webhooks from Supabase
