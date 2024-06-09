@@ -136,11 +136,19 @@ moralisRouter.post(
 	"/webhooks/transactions",
 	async (req: Request, res: Response): Promise<void> => {
 		const { body: moralisBody } = req;
-		const { txs } = moralisBody;
+		const { txs, chainId, confirmed, erc20Transfers } = moralisBody;
 
-		console.log("Received Moralis webhook");
-		console.log(JSON.stringify(moralisBody, null, 2));
 		try {
+			console.log("Received Moralis webhook");
+			console.log(
+				`Chain: ${parseInt(chainId, 16)}, Confirmed: ${confirmed}`
+			);
+			if (txs.length > 0) {
+				console.log(
+					`TxHash: ${txs[0].hash}, From: ${txs[0].fromAddress}, To: ${txs[0].toAddress}, ERC20: ${erc20Transfers.length}`
+				);
+			}
+
 			// 1. verify webhook
 			if (!isTestEnv()) {
 				const indexer = await getIndexerClient();

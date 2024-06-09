@@ -25,7 +25,10 @@ policiesDbHookRouter.post(
 		try {
 			console.log("policy updated");
 			const policy = req.body.record;
-			console.log(req.body.record);
+			const policyToLog = JSON.parse(JSON.stringify(policy));
+			delete policyToLog.encrypted_session_key;
+			delete policyToLog.encoded_iv;
+			console.log(policyToLog);
 
 			const {
 				encrypted_session_key: encryptedSessionKey,
