@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import ITokenTxsRepo from "../../../usecases/interfaces/repos/tokenTxs";
@@ -36,10 +36,20 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 				.onConflictDoUpdate({
 					target: [tokenTxs.chainId, tokenTxs.txHash],
 					set: {
-						isConfirmed: tokenTx.isConfirmed,
+						isConfirmed: sql.raw(`
+						CASE
+							WHEN ${tokenTxs.isConfirmed} IS TRUE THEN TRUE
+							ELSE ${tokenTx.isConfirmed}
+						END
+					`),
 						automationsState: tokenTx.automationsState,
 						txHash: tokenTx.txHash,
-						triggeredByTokenTxId: tokenTx.triggeredByTokenTxId,
+						triggeredByTokenTxId: sql.raw(`
+						CASE
+							WHEN ${tokenTxs.triggeredByTokenTxId} IS NOT NULL THEN ${tokenTxs.triggeredByTokenTxId}
+							ELSE ${tokenTx.triggeredByTokenTxId}
+						END
+					`),
 					},
 				})
 				.returning();
