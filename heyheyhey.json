@@ -1,0 +1,55 @@
+{
+	"abi": [
+		{
+			"anonymous": false,
+			"inputs": [
+				{ "indexed": true, "name": "from", "type": "address" },
+				{ "indexed": true, "name": "to", "type": "address" },
+				{ "indexed": false, "name": "value", "type": "uint256" }
+			],
+			"name": "Transfer",
+			"type": "event"
+		}
+	],
+	"block": {
+		"hash": "0xed487fda2dc12bf1da74cf2bf52878e8b62da59ff7486ffababf4444b51d9d34",
+		"number": "6003862",
+		"timestamp": "1717034844"
+	},
+	"chainId": "0xaa36a7",
+	"confirmed": false,
+	"erc20Approvals": [],
+	"erc20Transfers": [],
+	"logs": [],
+	"nativeBalances": [],
+	"nftApprovals": { "ERC1155": [], "ERC721": [] },
+	"nftTokenApprovals": [],
+	"nftTransfers": [],
+	"retries": 0,
+	"streamId": "0755a037-14fa-49b5-bbfb-fc0229743c6d",
+	"tag": "lockerTxs",
+	"txs": [
+		{
+			"fromAddress": "0x9919ec3ef3782382fe1487c4a36b72f02e03189b",
+			"gas": "21000",
+			"gasPrice": "1502495949",
+			"hash": "0x2bed1be9617e407777c17dbfdb3c45f0385c4baf04738a657cd2524982a3d398",
+			"input": "0x",
+			"nonce": "8",
+			"r": "84207607565224278097984465375443386041829563932598284207118537810467129925341",
+			"receiptContractAddress": null,
+			"receiptCumulativeGasUsed": "10223121",
+			"receiptGasUsed": "21000",
+			"receiptRoot": null,
+			"receiptStatus": "1",
+			"s": "32631974593973809674478488611335554835915444646827519571359390314149120295844",
+			"toAddress": "0xb225a316df876b3869fd3e1d7c4bd43e859a2109",
+			"transactionIndex": "22",
+			"triggered_by": ["0xb225a316df876b3869fd3e1d7c4bd43e859a2109"],
+			"type": "2",
+			"v": "1",
+			"value": "1000000000000000"
+		}
+	],
+	"txsInternal": []
+}
