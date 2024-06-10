@@ -13,7 +13,9 @@ import lockers from "./lockers";
 const offrampAccount = pgTable("offramp_accounts", {
 	id: serial("id").primaryKey(),
 	lockerId: integer("locker_id").references(() => lockers.id),
-	userId: varchar("beam_account_id", { length: 256 }).notNull(),
+	beamAccountId: varchar("beam_account_id", { length: 256 })
+		.notNull()
+		.unique(),
 	status: varchar("status", { length: 256 }).notNull(), // for onboarding
 	errors: varchar("errors", { length: 256 }),
 	createdAt: timestamp("created_at", {

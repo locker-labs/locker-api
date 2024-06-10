@@ -11,13 +11,15 @@ import express, {
 import morgan from "morgan";
 import basicAuth from "basic-auth";
 
-import { logger, stream } from "../../../../dependencies";
+import {
+	logger,
+	stream,
+	//getOffRampRepo
+} from "../../../../dependencies";
 
 import BeamWebhookRequest from "../../../../usecases/schemas/BeamWebhookRequest";
-// import {
-// 	PolicyRepoAdapter,
-// 	UpdatePoliciesRepoAdapter,
-// } from "../../../../usecases/schemas/policies";
+// import { OffRampRepoAdapter } from "../../../../usecases/schemas/offramp";
+
 // import DuplicateRecordError from "../../../db/errors";
 
 const beamRouter = express.Router();
@@ -63,11 +65,26 @@ function validateRequest<T extends object>(type: {
 	};
 }
 
+// 1. when a user creates an account through our API, we'll receive id and tie to a locker object in our db
+// 2. we will then receive that same id here in this webhook
+//    --> this means that all operations here will be "updates" to the database, not "creates"
 beamRouter.post(
-	"/webhooks/test",
+	"/webhooks/onboarding",
 	authRequired,
 	validateRequest(BeamWebhookRequest),
 	async (req: Request, res: Response): Promise<void> => {
+		console.log(req.body);
+
+		// const offRampRepo = await getOffRampRepo();
+
+		if (req.body.eventName === "User.Onboarding.Submitted") {
+			// something
+		} else if (req.body.eventName === "User.Onboarding.Approved") {
+			// something
+		} else if (req.body.eventName === "User.Onboarding.Rejected") {
+			// something
+		}
+
 		res.status(200).send();
 	}
 );

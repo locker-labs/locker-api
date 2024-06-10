@@ -1,0 +1,1 @@
+ALTER TABLE "offramp_accounts" ADD CONSTRAINT "offramp_accounts_beam_account_id_unique" UNIQUE("beam_account_id");

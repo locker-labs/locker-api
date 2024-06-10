@@ -10,4 +10,9 @@ export {
 export { logger, stream } from "./logger";
 
 export { ERC20_TRANSFER_ABI };
-export { getLockersRepo, getPoliciesRepo, getTokenTxsRepo } from "./repos";
+export {
+	getLockersRepo,
+	getPoliciesRepo,
+	getTokenTxsRepo,
+	getOffRampRepo,
+} from "./repos";
