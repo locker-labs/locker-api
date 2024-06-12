@@ -6,6 +6,7 @@ export {
 	getAuthClient,
 	getEmailClient,
 	getIndexerClient,
+	getOffRampClient,
 } from "./clients";
 export { logger, stream } from "./logger";
 

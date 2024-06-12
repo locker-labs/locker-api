@@ -6,10 +6,12 @@ import { ClerkAuthClient } from "../infrastructure/clients/clerk";
 import MoralisClient from "../infrastructure/clients/moralis";
 import ResendClient from "../infrastructure/clients/resend";
 import ZerodevClient from "../infrastructure/clients/zerodev";
+import BeamClient from "../infrastructure/clients/beam";
 import { IAuthClient } from "../usecases/interfaces/clients/auth";
 import IEmailClient from "../usecases/interfaces/clients/email";
 import IExecutorClient from "../usecases/interfaces/clients/executor";
 import { IIndexerClient } from "../usecases/interfaces/clients/indexer";
+import IOffRampClient from "../usecases/interfaces/clients/offramp";
 
 // singleton because moralis should only be initialized once
 let indexerClient: IIndexerClient | undefined;
@@ -48,6 +50,14 @@ async function getAuthClient(): Promise<IAuthClient> {
 	return authClient;
 }
 
+let offRampClient: IOffRampClient | undefined;
+async function getOffRampClient(): Promise<IOffRampClient> {
+	if (!offRampClient) {
+		offRampClient = new BeamClient();
+	}
+	return offRampClient;
+}
+
 export {
 	type AuthenticatedRequest,
 	authRequired,
@@ -55,4 +65,5 @@ export {
 	getEmailClient,
 	getExecutorClient,
 	getIndexerClient,
+	getOffRampClient,
 };

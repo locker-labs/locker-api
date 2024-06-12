@@ -14,7 +14,8 @@ import basicAuth from "basic-auth";
 import {
 	logger,
 	stream,
-	//getOffRampRepo
+	// getOffRampRepo,
+	getOffRampClient,
 } from "../../../../dependencies";
 
 import BeamWebhookRequest from "../../../../usecases/schemas/BeamWebhookRequest";
@@ -65,9 +66,50 @@ function validateRequest<T extends object>(type: {
 	};
 }
 
-// 1. when a user creates an account through our API, we'll receive id and tie to a locker object in our db
-// 2. we will then receive that same id here in this webhook
-//    --> this means that all operations here will be "updates" to the database, not "creates"
+function getUSDCEthAddress(accountData: any): string | undefined {
+	return accountData.walletAddresses.find(
+		(wallet: any) => wallet.asset === "USDC.ETH"
+	)?.depositInstructions.address;
+}
+
+function getUSDCArbitrumAddress(accountData: any): string | undefined {
+	return accountData.walletAddresses.find(
+		(wallet: any) => wallet.asset === "USDC.ARBITRUM"
+	)?.depositInstructions.address;
+}
+
+function getUSDCPolygonAddress(accountData: any): string | undefined {
+	return accountData.walletAddresses.find(
+		(wallet: any) => wallet.asset === "USDC.POLYGON"
+	)?.depositInstructions.address;
+}
+
+function getUSDCAvaxAddress(accountData: any): string | undefined {
+	return accountData.walletAddresses.find(
+		(wallet: any) => wallet.asset === "USDC.AVAX"
+	)?.depositInstructions.address;
+}
+
+function getUSDCBaseAddress(accountData: any): string | undefined {
+	return accountData.walletAddresses.find(
+		(wallet: any) => wallet.asset === "USDC.BASE"
+	)?.depositInstructions.address;
+}
+
+// NOTES:
+// in order to trigger this webhook:
+// 1. create a beam account manually using their api (you'll receive a call back url)
+// 2. add the callbalck url to the iFrame in testPage.html
+// 3. render testPage.html in the brower and go through dummy kyc flow
+// 4. when complete, beam will trigger this webhook (make sure you register it -- i use ngrok to expose my localhost)
+
+// CURRENT STATUS:
+// 1. right now, it receives webhook saying address got created
+// 2. it then fetches the address for that chain
+
+// NEXT STEPS:
+// - update the beam acocunt in our database (the act of creating it will initially place it there)
+// - store that address in the db when address is received
 beamRouter.post(
 	"/webhooks/onboarding",
 	authRequired,
@@ -76,13 +118,33 @@ beamRouter.post(
 		console.log(req.body);
 
 		// const offRampRepo = await getOffRampRepo();
+		const offRampClient = await getOffRampClient();
 
-		if (req.body.eventName === "User.Onboarding.Submitted") {
-			// something
-		} else if (req.body.eventName === "User.Onboarding.Approved") {
-			// something
-		} else if (req.body.eventName === "User.Onboarding.Rejected") {
-			// something
+		const resourcePath = req.body.resources[0];
+		const userId = resourcePath.split("/").pop();
+		const resp = await offRampClient.getAccount(userId);
+
+		if (req.body.eventName === "User.Onboarding.Approved") {
+			console.log("\n\nUser got approved\n\n");
+		} else if (
+			req.body.eventName === "User.BeamAddress.Added.USDC.ARBITRUM"
+		) {
+			const usdcArbitrumAddress = getUSDCArbitrumAddress(resp);
+			console.log(usdcArbitrumAddress);
+		} else if (req.body.eventName === "User.BeamAddress.Added.USDC.ETH") {
+			const usdcEthAddress = getUSDCEthAddress(resp);
+			console.log(usdcEthAddress);
+		} else if (req.body.eventName === "User.BeamAddress.Added.USDC.AVAX") {
+			const usdcAxaxAddress = getUSDCAvaxAddress(resp);
+			console.log(usdcAxaxAddress);
+		} else if (
+			req.body.eventName === "User.BeamAddress.Added.USDC.POLYGON"
+		) {
+			const usdcPolygonAddress = getUSDCPolygonAddress(resp);
+			console.log(usdcPolygonAddress);
+		} else if (req.body.eventName === "User.BeamAddress.Added.USDC.BASE") {
+			const usdcBaseAddress = getUSDCBaseAddress(resp);
+			console.log(usdcBaseAddress);
 		}
 
 		res.status(200).send();
