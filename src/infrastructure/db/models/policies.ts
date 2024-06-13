@@ -16,10 +16,8 @@ const policies = pgTable(
 		id: serial("id").primaryKey(),
 		lockerId: integer("locker_id").references(() => lockers.id),
 		chainId: integer("chain_id").notNull(),
-		encryptedSessionKey: varchar("encrypted_session_key", {
-			length: 8192,
-		}).notNull(),
-		encodedIv: varchar("encoded_iv", { length: 256 }).notNull(),
+		encryptedSessionKey: varchar("encrypted_session_key").notNull(),
+		encodedIv: varchar("encoded_iv").notNull(),
 		automations: jsonb("automations").notNull(),
 		createdAt: timestamp("created_at", {
 			mode: "date",
