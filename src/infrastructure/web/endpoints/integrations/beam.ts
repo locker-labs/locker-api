@@ -66,33 +66,9 @@ function validateRequest<T extends object>(type: {
 	};
 }
 
-function getUSDCEthAddress(accountData: any): string | undefined {
+function getAddress(accountData: any, tokenId: string): string | undefined {
 	return accountData.walletAddresses.find(
-		(wallet: any) => wallet.asset === "USDC.ETH"
-	)?.depositInstructions.address;
-}
-
-function getUSDCArbitrumAddress(accountData: any): string | undefined {
-	return accountData.walletAddresses.find(
-		(wallet: any) => wallet.asset === "USDC.ARBITRUM"
-	)?.depositInstructions.address;
-}
-
-function getUSDCPolygonAddress(accountData: any): string | undefined {
-	return accountData.walletAddresses.find(
-		(wallet: any) => wallet.asset === "USDC.POLYGON"
-	)?.depositInstructions.address;
-}
-
-function getUSDCAvaxAddress(accountData: any): string | undefined {
-	return accountData.walletAddresses.find(
-		(wallet: any) => wallet.asset === "USDC.AVAX"
-	)?.depositInstructions.address;
-}
-
-function getUSDCBaseAddress(accountData: any): string | undefined {
-	return accountData.walletAddresses.find(
-		(wallet: any) => wallet.asset === "USDC.BASE"
+		(wallet: any) => wallet.asset === tokenId
 	)?.depositInstructions.address;
 }
 
@@ -124,27 +100,29 @@ beamRouter.post(
 		const userId = resourcePath.split("/").pop();
 		const resp = await offRampClient.getAccount(userId);
 
+		let address;
+		let tokenId;
 		if (req.body.eventName === "User.Onboarding.Approved") {
-			console.log("\n\nUser got approved\n\n");
+			// update beam acocunt object in database (created elsewhere)
 		} else if (
 			req.body.eventName === "User.BeamAddress.Added.USDC.ARBITRUM"
 		) {
-			const usdcArbitrumAddress = getUSDCArbitrumAddress(resp);
-			console.log(usdcArbitrumAddress);
+			tokenId = "USDC.ARBITRUM";
+			address = getAddress(resp, tokenId);
 		} else if (req.body.eventName === "User.BeamAddress.Added.USDC.ETH") {
-			const usdcEthAddress = getUSDCEthAddress(resp);
-			console.log(usdcEthAddress);
+			tokenId = "USDC.ETH";
+			address = getAddress(resp, tokenId);
 		} else if (req.body.eventName === "User.BeamAddress.Added.USDC.AVAX") {
-			const usdcAxaxAddress = getUSDCAvaxAddress(resp);
-			console.log(usdcAxaxAddress);
+			tokenId = "USDC.AVAX";
+			address = getAddress(resp, tokenId);
 		} else if (
 			req.body.eventName === "User.BeamAddress.Added.USDC.POLYGON"
 		) {
-			const usdcPolygonAddress = getUSDCPolygonAddress(resp);
-			console.log(usdcPolygonAddress);
+			tokenId = "USDC.POLYGON";
+			address = getAddress(resp, tokenId);
 		} else if (req.body.eventName === "User.BeamAddress.Added.USDC.BASE") {
-			const usdcBaseAddress = getUSDCBaseAddress(resp);
-			console.log(usdcBaseAddress);
+			tokenId = "USDC.BASE";
+			address = getAddress(resp, tokenId);
 		}
 
 		res.status(200).send();

@@ -12,6 +12,7 @@ import healthRouter from "./endpoints/metrics/health";
 import lockerRouter from "./endpoints/public/lockers";
 import policyRouter from "./endpoints/public/policies";
 import tokenTxsRouter from "./endpoints/public/tokenTxs";
+import offrampRouter from "./endpoints/public/offramp";
 // Integrations
 import beamRouter from "./endpoints/integrations/beam";
 import moralisRouter from "./endpoints/integrations/moralis";
@@ -19,10 +20,16 @@ import moralisRouter from "./endpoints/integrations/moralis";
 function setupRoutes(app: Express): void {
 	app.use(cors({ origin: true, credentials: true }));
 
+	// Metrics
+	app.use("/metrics/health", healthRouter);
+
+	// Core API
 	app.use("/public/lockers", lockerRouter);
 	app.use("/public/tokenTxs", tokenTxsRouter);
 	app.use("/public/policies", policyRouter);
-	app.use("/metrics/health", healthRouter);
+	app.use("/public/offramp", offrampRouter);
+
+	// Db hooks
 	app.use("/db-hooks/tokentxs", tokentxsDbHookRouter);
 	app.use("/db-hooks/policies", policiesDbHookRouter);
 	// Integrations
