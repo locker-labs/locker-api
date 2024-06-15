@@ -1,6 +1,6 @@
 import { IsString, Length } from "class-validator";
 
-export enum EOffRampAccountStatus {
+enum EOffRampAccountStatus {
 	PENDING = "pending",
 	APPROVED = "approved",
 	REJECTED = "rejected",
@@ -19,10 +19,21 @@ interface OffRampRepoAdapter {
 	errors?: string;
 }
 
+interface OffRampRepoUpdateAdapter {
+	status: string;
+	errors?: string | null;
+}
+
 interface OffRampInDb extends OffRampRepoAdapter {
 	id: number;
 	createdAt: Date;
 	updatedAt: Date;
 }
 
-export { type OffRampRepoAdapter, type OffRampInDb, CreateOfframpRequest };
+export {
+	type OffRampRepoAdapter,
+	type OffRampInDb,
+	type OffRampRepoUpdateAdapter,
+	CreateOfframpRequest,
+	EOffRampAccountStatus,
+};

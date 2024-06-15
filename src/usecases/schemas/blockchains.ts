@@ -5,6 +5,7 @@ enum ChainIds {
 	BASE = 8453,
 	OPTIMISM = 10,
 	POLYGON = 137,
+	ETHEREUM = 1,
 
 	ARBITRUM_SEPOLIA = 421614,
 	// not supported on moralis
