@@ -15,6 +15,8 @@ import {
 	logger,
 	stream,
 	getOffRampRepo,
+	getLockersRepo,
+	getPoliciesRepo,
 	getOffRampClient,
 } from "../../../../dependencies";
 
@@ -23,8 +25,12 @@ import {
 	OffRampRepoUpdateAdapter,
 	EOffRampAccountStatus,
 } from "../../../../usecases/schemas/offramp";
+import { EAutomationType } from "../../../../usecases/schemas/policies";
 import ChainIds from "../../../../usecases/schemas/blockchains";
+import { EAutomationStatus } from "../../../../usecases/schemas/policies";
 import IOffRampRepo from "../../../../usecases/interfaces/repos/offramp";
+import ILockersRepo from "../../../../usecases/interfaces/repos/lockers";
+import IPoliciesRepo from "../../../../usecases/interfaces/repos/policies";
 
 // import DuplicateRecordError from "../../../db/errors";
 
@@ -77,10 +83,30 @@ function getAddress(accountData: any, tokenId: string): string | undefined {
 	)?.depositInstructions.address;
 }
 
+async function updateAutomations(
+	lockerId: number,
+	policiesRepo: IPoliciesRepo
+) {
+	const policies = await policiesRepo.retrieveMany(lockerId);
+
+	for (const policy of policies) {
+		const automations = policy.automations;
+		for (const automation of policy.automations) {
+			if (automation.type === EAutomationType.OFF_RAMP) {
+				automation.status = EAutomationStatus.READY;
+			}
+		}
+
+		await policiesRepo.update({ id: policy.id }, { automations });
+	}
+}
+
 async function handleOnboardingEvent(
 	eventName: string,
 	offRampAccountId: string,
-	offRampRepo: IOffRampRepo
+	offRampRepo: IOffRampRepo,
+	lockersRepo: ILockersRepo,
+	policiesRepo: IPoliciesRepo
 ): Promise<void> {
 	let status: EOffRampAccountStatus;
 
@@ -97,7 +123,15 @@ async function handleOnboardingEvent(
 		errors: null,
 	};
 
+	// 1. Update beam account status
 	await offRampRepo.update(offRampAccountId, offRampAccountUpdates);
+
+	// 2. Update automation status
+	const offRampAccount = await offRampRepo.retrieve({
+		beamAccountId: offRampAccountId,
+	});
+	const locker = await lockersRepo.retrieve({ id: offRampAccount!.lockerId });
+	await updateAutomations(locker!.id, policiesRepo);
 }
 
 async function handleAddressAddedEvent(
@@ -160,6 +194,8 @@ beamRouter.post(
 	validateRequest(BeamWebhookRequest),
 	async (req: Request, res: Response): Promise<void> => {
 		const offRampRepo = await getOffRampRepo();
+		const lockerRepo = await getLockersRepo();
+		const policiesRepo = await getPoliciesRepo();
 		const offRampClient = await getOffRampClient();
 
 		const resourcePath = req.body.resources[0];
@@ -171,7 +207,9 @@ beamRouter.post(
 				await handleOnboardingEvent(
 					req.body.eventName,
 					offRampAccountId,
-					offRampRepo
+					offRampRepo,
+					lockerRepo,
+					policiesRepo
 				);
 			} else if (
 				req.body.eventName.startsWith("User.BeamAddress.Added.")

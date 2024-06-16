@@ -103,6 +103,7 @@ policyRouter.post(
 				res.status(409).send({ error: error.message });
 				return;
 			}
+			console.log("error:", error);
 			res.status(500).send({ error: "An unexpected error occurred." });
 		}
 	}
