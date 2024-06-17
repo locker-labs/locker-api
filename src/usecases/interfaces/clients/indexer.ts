@@ -15,6 +15,16 @@ interface IIndexerClient {
 	}: {
 		lockerAddress: `0x${string}`;
 	}): Promise<ILockerTokenBalance[]>;
+
+	/**
+	 * USD value of all tokens in Locker
+	 * @param
+	 */
+	getLockerUsdValue({
+		lockerAddress,
+	}: {
+		lockerAddress: `0x${string}`;
+	}): Promise<number>;
 }
 
 export { type Headers, type IIndexerClient, zeroAddress };

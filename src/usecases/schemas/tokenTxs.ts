@@ -32,6 +32,7 @@ interface TokenTxInDb extends TokenTxRepoAdapter {
 	id: number;
 	createdAt: Date;
 	updatedAt: Date;
+	usd_value?: number;
 }
 
 export {

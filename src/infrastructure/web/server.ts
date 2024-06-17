@@ -9,6 +9,7 @@ import tokentxsDbHookRouter from "./endpoints/db-hooks/tokentxs";
 // import getOrCreateDatabase from "../db/connect";
 import moralisRouter from "./endpoints/integrations/moralis";
 import healthRouter from "./endpoints/metrics/health";
+import reportingRouter from "./endpoints/metrics/reporting";
 import lockerRouter from "./endpoints/public/lockers";
 import policyRouter from "./endpoints/public/policies";
 import tokenTxsRouter from "./endpoints/public/tokenTxs";
@@ -20,6 +21,7 @@ function setupRoutes(app: Express): void {
 	app.use("/public/tokenTxs", tokenTxsRouter);
 	app.use("/public/policies", policyRouter);
 	app.use("/metrics/health", healthRouter);
+	app.use("/metrics/reporting", reportingRouter);
 	app.use("/integrations/moralis", moralisRouter);
 	app.use("/db-hooks/tokentxs", tokentxsDbHookRouter);
 	app.use("/db-hooks/policies", policiesDbHookRouter);
