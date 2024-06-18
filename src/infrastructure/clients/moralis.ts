@@ -36,7 +36,7 @@ export default class MoralisClient implements IIndexerClient {
 				})
 				.then((r) => r.toJSON());
 
-			console.log(response);
+			// console.log(response);
 
 			return Number(response.total_networth_usd);
 		} catch (e) {
