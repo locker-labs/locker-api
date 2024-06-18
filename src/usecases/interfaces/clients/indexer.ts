@@ -16,6 +16,14 @@ interface IIndexerClient {
 		lockerAddress: `0x${string}`;
 	}): Promise<ILockerTokenBalance[]>;
 
+	getTxUsdValue({
+		chainId,
+		txHash,
+	}: {
+		chainId: number;
+		txHash: string;
+	}): Promise<number>;
+
 	/**
 	 * USD value of all tokens in Locker
 	 * @param

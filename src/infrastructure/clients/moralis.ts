@@ -1,4 +1,5 @@
 import { IWebhook } from "@moralisweb3/streams-typings";
+// import Big from "big.js";
 import Moralis from "moralis";
 import { numberToHex, zeroAddress } from "viem";
 import web3 from "web3";
@@ -20,6 +21,64 @@ const chainIds: number[] = Object.keys(SUPPORTED_CHAINS).map((key) =>
 export default class MoralisClient implements IIndexerClient {
 	constructor() {
 		this.startClient();
+	}
+
+	async getTxUsdValue({
+		chainId,
+		txHash,
+	}: {
+		chainId: number;
+		txHash: string;
+	}): Promise<number> {
+		console.log("getTxUsdValue", chainId, txHash);
+		try {
+			const chainIdHex = numberToHex(chainId);
+			const response =
+				await Moralis.EvmApi.transaction.getTransactionVerbose({
+					chain: chainIdHex,
+					transactionHash: txHash,
+				});
+			// .then((r) => r.toJSON());
+
+			if (!response) {
+				throw new Error("No response from Moralis.");
+			}
+
+			const { logs } = response.toJSON();
+			// const { logs, value } = response.toJSON();
+			if (logs.length === 0) throw new Error("No logs in response.");
+
+			const transfer = logs[0];
+			const isErc20Transfer = transfer.decoded_event;
+			if (isErc20Transfer) {
+				const { address, decoded_event: evt } = transfer;
+
+				const priceResp = await Moralis.EvmApi.token.getTokenPrice({
+					chain: chainIdHex,
+					address,
+				});
+
+				if (!priceResp) {
+					throw new Error("No response from Moralis.");
+				}
+
+				// const { usdPrice, tokenDecimals } = priceResp.toJSON();
+				// return Big(evt.params![2])
+				// 	.div(tokenDecimals)
+				// 	.times(usdPrice)
+				// 	.toNumber();
+
+				console.log("ERC20 Transfer", evt);
+				return 1;
+			}
+
+			throw new Error("Not an ERC20 transfer.");
+			// console.log("ETHN Transfer", transfer);
+			// return Big(value).div(1e18).times(4000).toNumber();
+		} catch (e) {
+			console.error(e);
+			throw e;
+		}
 	}
 
 	async getLockerUsdValue({

@@ -4,7 +4,7 @@ import morgan from "morgan";
 import { getIndexerClient, stream } from "../../../../dependencies";
 import supabase from "../../../../lib/supabase";
 import { LockerInDb } from "../../../../usecases/schemas/lockers";
-// import { TokenTxInDb } from "../../../../usecases/schemas/tokenTxs";
+import { TokenTxInDb } from "../../../../usecases/schemas/tokenTxs";
 
 const reportingRouter = express.Router();
 reportingRouter.use(express.json());
@@ -31,25 +31,27 @@ const setLockerUsdValue = async (locker: LockerInDb): Promise<void> => {
 	}
 };
 
-// const setTxUsdValue = async (tx: TokenTxInDb): Promise<void> => {
-// 	const indexer = await getIndexerClient();
-// 	try {
-// 		const usdValue = await indexer.getLockerUsdValue({
-// 			lockerAddress: locker.address,
-// 		});
-// 		console.log("setting", usdValue);
-// 		const { data, error } = await supabase
-// 			.from("lockers")
-// 			.update({ usd_value: usdValue })
-// 			.eq("id", tx.id);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const setTxUsdValue = async (tx: any): Promise<void> => {
+	const indexer = await getIndexerClient();
+	try {
+		const usdValue = await indexer.getTxUsdValue({
+			chainId: tx.chain_id,
+			txHash: tx.tx_hash,
+		});
+		console.log("setting tx", usdValue);
+		// const { data, error } = await supabase
+		// 	.from("token_transactions")
+		// 	.update({ usd_value: usdValue })
+		// 	.eq("id", tx.id);
 
-// 		console.log("updated locker", locker.id);
-// 		console.log(error);
-// 		console.log(data);
-// 	} catch (error) {
-// 		// Do nothing
-// 	}
-// };
+		// console.log("updated tx", tx.id);
+		// console.log(error);
+		// console.log(data);
+	} catch (error) {
+		// Do nothing
+	}
+};
 const updateLockerValues = async (): Promise<number> => {
 	const { data, error } = await supabase
 		.from("lockers")
@@ -65,23 +67,23 @@ const updateLockerValues = async (): Promise<number> => {
 	return lockers.length;
 };
 
-// const updateTxValues = async (): Promise<number> => {
-// 	const { data, error } = await supabase
-// 		.from("transactions")
-// 		.select("*")
-// 		.is("usd_value", null)
-// 		.limit(10);
+const updateTxValues = async (): Promise<number> => {
+	const { data, error } = await supabase
+		.from("token_transactions")
+		.select("*")
+		.is("usd_value", null)
+		.limit(10);
 
-// 	console.log(data);
-// 	console.log(error);
+	console.log(data);
+	console.log(error);
 
-// 	if (!data) return 0;
+	if (!data) return 0;
 
-// 	const txs = data as TokenTxInDb[];
-// 	// const txUpdates = txs.map(setTxUsdValue);
-// 	// await Promise.all(txUpdates);
-// 	return txs.length;
-// };
+	const txs = data as TokenTxInDb[];
+	const txUpdates = txs.map(setTxUsdValue);
+	await Promise.all(txUpdates);
+	return txs.length;
+};
 
 /*
     Get usd_value for all lockers and transactions
@@ -90,12 +92,12 @@ reportingRouter.get("/", async (req: Request, res: Response): Promise<void> => {
 	const currentDateTime = new Date().toISOString();
 
 	const numLockers = await updateLockerValues();
-	// const numTxs = await updateTxValues();
+	const numTxs = await updateTxValues();
 	// get all lockers without usd_value set, call moralis, set it
 	// get all transactions without usd_value set, call moralist, set it
 	res.status(200).send({
 		numLockers,
-		numTxs: 0,
+		numTxs,
 		datetime: currentDateTime,
 	});
 });
