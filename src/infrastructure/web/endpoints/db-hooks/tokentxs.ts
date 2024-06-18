@@ -7,6 +7,7 @@ import {
 	getLockersRepo,
 	getPoliciesRepo,
 	getTokenTxsRepo,
+	getOffRampRepo,
 	logger,
 	stream,
 } from "../../../../dependencies";
@@ -29,15 +30,17 @@ tokentxsDbHookRouter.post(
 			const rawTx = req.body.record;
 			console.log(JSON.stringify(req.body.record, null, 2));
 
-			const policiesApi = await getPoliciesRepo();
-			const tokenTxsApi = await getTokenTxsRepo();
-			const lockersApi = await getLockersRepo();
+			const policiesRepo = await getPoliciesRepo();
+			const tokenTxsRepo = await getTokenTxsRepo();
+			const lockersRepo = await getLockersRepo();
+			const offRampRepo = await getOffRampRepo();
 			const callDataExecutor = new ZerodevClient();
 
 			const automationsGenerator = new AutomationService(
-				policiesApi,
-				tokenTxsApi,
-				lockersApi,
+				policiesRepo,
+				tokenTxsRepo,
+				lockersRepo,
+				offRampRepo,
 				callDataExecutor
 			);
 

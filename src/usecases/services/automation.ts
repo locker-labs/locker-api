@@ -9,9 +9,11 @@ import IExecutorClient from "../interfaces/clients/executor";
 import ILockersRepo from "../interfaces/repos/lockers";
 import IPoliciesRepo from "../interfaces/repos/policies";
 import ITokenTxsRepo from "../interfaces/repos/tokenTxs";
+import IOffRampRepo from "../interfaces/repos/offramp";
 import IAutomationService from "../interfaces/services/automation";
 import { LockerInDb } from "../schemas/lockers";
 import {
+	EAutomationType,
 	IAutomation,
 	PolicyInDb,
 	PolicyRepoAdapter,
@@ -24,23 +26,27 @@ import {
 } from "../schemas/tokenTxs";
 
 export default class AutomationService implements IAutomationService {
-	policiesApi: IPoliciesRepo;
+	policiesRepo: IPoliciesRepo;
 
-	tokenTxsApi: ITokenTxsRepo;
+	tokenTxsRepo: ITokenTxsRepo;
 
-	lockersApi: ILockersRepo;
+	lockersRepo: ILockersRepo;
+
+	offRampRepo: IOffRampRepo;
 
 	callDataExecutor: IExecutorClient;
 
 	constructor(
-		policiesApi: IPoliciesRepo,
-		tokenTxsApi: ITokenTxsRepo,
-		lockersApi: ILockersRepo,
+		policiesRepo: IPoliciesRepo,
+		tokenTxsRepo: ITokenTxsRepo,
+		lockersRepo: ILockersRepo,
+		offRampRepo: IOffRampRepo,
 		callDataExecutor: IExecutorClient
 	) {
-		this.policiesApi = policiesApi;
-		this.tokenTxsApi = tokenTxsApi;
-		this.lockersApi = lockersApi;
+		this.policiesRepo = policiesRepo;
+		this.tokenTxsRepo = tokenTxsRepo;
+		this.lockersRepo = lockersRepo;
+		this.offRampRepo = offRampRepo;
 		this.callDataExecutor = callDataExecutor;
 	}
 
@@ -70,7 +76,7 @@ export default class AutomationService implements IAutomationService {
 
 		console.log("Checking policy");
 		// Retrieve the policy for the locker
-		const policy = await this.policiesApi.retrieve(
+		const policy = await this.policiesRepo.retrieve(
 			{ lockerId, chainId },
 			true
 		);
@@ -110,7 +116,24 @@ export default class AutomationService implements IAutomationService {
 		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
 			maybeTrigger;
 		const { address: fromAddress } = locker;
-		const { recipientAddress: toAddress, allocation } = automation;
+
+		// get recipient address
+		// TODO: standardize generalize method across all automation types in db
+		let toAddress;
+		const { allocation } = automation;
+
+		if (automation.type == EAutomationType.OFF_RAMP) {
+			const offRampAccount = await this.offRampRepo.retrieve({
+				lockerId: locker.id,
+			});
+
+			toAddress = (await this.offRampRepo.getAddressOffRampAddress(
+				offRampAccount!.id,
+				policy.chainId
+			)) as `0x${string}`;
+		} else if (automation.type == EAutomationType.FORWARD_TO) {
+			({ recipientAddress: toAddress } = automation);
+		}
 
 		if (!toAddress) return null;
 
@@ -167,7 +190,7 @@ export default class AutomationService implements IAutomationService {
 			triggeredByTokenTxId: maybeTrigger.id,
 		};
 
-		const spawnedTx = await this.tokenTxsApi.create(triggeredTx);
+		const spawnedTx = await this.tokenTxsRepo.create(triggeredTx);
 
 		return spawnedTx;
 	}
@@ -186,7 +209,9 @@ export default class AutomationService implements IAutomationService {
 		locker: LockerInDb
 	): Promise<TokenTxInDb | null> {
 		try {
-			// Ensure off
+			// Pre-execution checks
+			if (!policy.sessionKeyIsValid) return null;
+
 			if (automation.status !== "ready") return null;
 
 			if (automation.type === "savings") return null;
@@ -226,7 +251,7 @@ export default class AutomationService implements IAutomationService {
 		const { lockerId, chainId } = maybeTrigger;
 
 		// Retrieve the policy for the locker so we know it is deployed and has session keys
-		const policy = await this.policiesApi.retrieve(
+		const policy = await this.policiesRepo.retrieve(
 			{ lockerId, chainId },
 			true
 		);
@@ -234,7 +259,7 @@ export default class AutomationService implements IAutomationService {
 		// If no existing policy, automations can't be run
 		if (!policy) return [];
 
-		const locker = await this.lockersApi.retrieve({ id: lockerId });
+		const locker = await this.lockersRepo.retrieve({ id: lockerId });
 		// Should never happen, but just in case
 		if (!locker) return [];
 
@@ -276,7 +301,7 @@ export default class AutomationService implements IAutomationService {
 		if (!shouldGenerate) return false;
 
 		// set automationState to started
-		await this.tokenTxsApi.create({
+		await this.tokenTxsRepo.create({
 			...maybeTrigger,
 			automationsState: ETokenTxAutomationsState.STARTED,
 		});

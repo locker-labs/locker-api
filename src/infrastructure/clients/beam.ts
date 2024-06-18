@@ -35,6 +35,8 @@ export default class BeamClient implements IOffRampClient {
 	): Promise<any> {
 		const url = `${config.beamBaseUrl}/accounts/individuals`;
 
+		const email = "hello7@foundry.com";
+
 		const options = {
 			method: "POST",
 			headers: {
@@ -44,7 +46,7 @@ export default class BeamClient implements IOffRampClient {
 			},
 			body: JSON.stringify({
 				kyc: {
-					emailAddress: emailAddress,
+					emailAddress: email,
 				},
 				sourceAddresses: [sourceAddress],
 			}),

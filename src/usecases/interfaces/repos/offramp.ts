@@ -20,4 +20,8 @@ export default interface IOffRampRepo {
 		chainId: number,
 		address: string
 	): Promise<void>;
+	getAddressOffRampAddress(
+		offRampAccountId: number,
+		chainId: number
+	): Promise<string | null>;
 }

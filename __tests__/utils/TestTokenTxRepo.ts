@@ -6,7 +6,7 @@ import {
 	TokenTxRepoAdapter,
 } from "../../src/usecases/schemas/tokenTxs";
 
-export default class TestTokenTxApi implements ITokenTxsRepo {
+export default class TestTokenTxRepo implements ITokenTxsRepo {
 	create(tokenTx: TokenTxRepoAdapter): Promise<TokenTxInDb> {
 		// throw new Error("Method not implemented.");
 		return Promise.resolve({

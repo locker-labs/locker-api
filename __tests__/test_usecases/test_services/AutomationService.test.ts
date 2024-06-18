@@ -11,14 +11,16 @@ import {
 } from "../../../src/usecases/schemas/tokenTxs";
 import AutomationService from "../../../src/usecases/services/automation";
 import TestCallDataExecutor from "../../utils/TestCallDataExecutor";
-import TestLockerApi from "../../utils/TestLockerApi";
-import TestPolicyApi from "../../utils/TestPolicyApi";
-import TestTokenTxApi from "../../utils/TestTokenTxApi";
+import TestLockerRepo from "../../utils/TestLockerRepo";
+import TestPolicyRepo from "../../utils/TestPolicyRepo";
+import TestTokenTxRepo from "../../utils/TestTokenTxRepo";
+import TestOffRampRepo from "../../utils/TestOffRampRepo";
 
-const testPolicyApi = new TestPolicyApi();
-const testTokenTxApi = new TestTokenTxApi();
+const testPolicyRepo = new TestPolicyRepo();
+const testTokenTxRepo = new TestTokenTxRepo();
+const testLockerRepo = new TestLockerRepo();
+const testOffRampRepo = new TestOffRampRepo();
 const testCallDataExecutor = new TestCallDataExecutor();
-const testLockerApi = new TestLockerApi();
 
 describe("AutomationService", () => {
 	const locker: LockerInDb = {
@@ -52,9 +54,10 @@ describe("AutomationService", () => {
 			chainId: 1,
 		};
 		const generator = new AutomationService(
-			testPolicyApi,
-			testTokenTxApi,
-			testLockerApi,
+			testPolicyRepo,
+			testTokenTxRepo,
+			testLockerRepo,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
@@ -80,9 +83,10 @@ describe("AutomationService", () => {
 			chainId: 1,
 		};
 		const generator = new AutomationService(
-			testPolicyApi,
-			testTokenTxApi,
-			testLockerApi,
+			testPolicyRepo,
+			testTokenTxRepo,
+			testLockerRepo,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
@@ -108,9 +112,10 @@ describe("AutomationService", () => {
 			chainId: 1,
 		};
 		const generator = new AutomationService(
-			testPolicyApi,
-			testTokenTxApi,
-			testLockerApi,
+			testPolicyRepo,
+			testTokenTxRepo,
+			testLockerRepo,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
@@ -136,9 +141,10 @@ describe("AutomationService", () => {
 			chainId: 1,
 		};
 		const generator = new AutomationService(
-			testPolicyApi,
-			testTokenTxApi,
-			testLockerApi,
+			testPolicyRepo,
+			testTokenTxRepo,
+			testLockerRepo,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
@@ -164,9 +170,10 @@ describe("AutomationService", () => {
 			chainId: 1,
 		};
 		const generator = new AutomationService(
-			testPolicyApi,
-			testTokenTxApi,
-			testLockerApi,
+			testPolicyRepo,
+			testTokenTxRepo,
+			testLockerRepo,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
@@ -199,9 +206,10 @@ describe("AutomationService", () => {
 		};
 
 		const generator = new AutomationService(
-			testPolicyApi,
-			testTokenTxApi,
-			testLockerApi,
+			testPolicyRepo,
+			testTokenTxRepo,
+			testLockerRepo,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 
@@ -211,6 +219,7 @@ describe("AutomationService", () => {
 			encryptedSessionKey: "",
 			encodedIv: "",
 			automations: [],
+			sessionKeyIsValid: true,
 		};
 
 		const spawnedAutomation = await generator.spawnAutomation(
@@ -253,12 +262,14 @@ describe("AutomationService", () => {
 			encryptedSessionKey: "",
 			encodedIv: "",
 			automations: [],
+			sessionKeyIsValid: true,
 		};
 
 		const generator = new AutomationService(
-			testPolicyApi,
-			testTokenTxApi,
-			testLockerApi,
+			testPolicyRepo,
+			testTokenTxRepo,
+			testLockerRepo,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 
@@ -298,9 +309,10 @@ describe("AutomationService", () => {
 		};
 
 		const generator = new AutomationService(
-			testPolicyApi,
-			testTokenTxApi,
-			testLockerApi,
+			testPolicyRepo,
+			testTokenTxRepo,
+			testLockerRepo,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 
@@ -310,6 +322,7 @@ describe("AutomationService", () => {
 			encryptedSessionKey: "",
 			encodedIv: "",
 			automations: [],
+			sessionKeyIsValid: true,
 		};
 
 		const spawnedAutomation = await generator.spawnAutomation(

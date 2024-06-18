@@ -120,4 +120,28 @@ export default class OffRampRepo implements IOffRampRepo {
 			throw new Error(e.message);
 		}
 	}
+
+	async getAddressOffRampAddress(
+		offRampAccountId: number,
+		chainId: number
+	): Promise<string | null> {
+		try {
+			const result = await this.db
+				.select()
+				.from(offRampAddresses)
+				.where(
+					and(
+						eq(offRampAddresses.offRampAccountId, offRampAccountId),
+						eq(offRampAddresses.chainId, chainId)
+					)
+				)
+				.limit(1)
+				.execute();
+
+			return result.length > 0 ? result[0].address : null;
+		} catch (error: unknown) {
+			const e = error as { message: string };
+			throw new Error(e.message);
+		}
+	}
 }

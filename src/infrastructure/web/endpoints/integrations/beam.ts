@@ -97,7 +97,10 @@ async function updateAutomations(
 			}
 		}
 
-		await policiesRepo.update({ id: policy.id }, { automations });
+		await policiesRepo.update(
+			{ id: policy.id },
+			{ automations: automations, sessionKeyIsValid: false }
+		);
 	}
 }
 
@@ -189,7 +192,7 @@ async function handleAddressAddedEvent(
 // 3. render testPage.html in the brower and go through dummy kyc flow
 // 4. when complete, beam will trigger this webhook (make sure you register it -- i use ngrok to expose my localhost)
 beamRouter.post(
-	"/webhooks/onboarding",
+	"/webhook",
 	authRequired,
 	validateRequest(BeamWebhookRequest),
 	async (req: Request, res: Response): Promise<void> => {
@@ -220,6 +223,9 @@ beamRouter.post(
 					offRampAccountId,
 					offRampRepo
 				);
+			} else if (req.body.eventName === "User.Deposit") {
+				console.log("\n\nWE MADE IT TO THE DEPOSIT EVENT");
+				console.log(req.body);
 			} else {
 				throw new Error("Unsupported event");
 			}

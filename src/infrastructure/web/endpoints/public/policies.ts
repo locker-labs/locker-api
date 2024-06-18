@@ -81,6 +81,7 @@ policyRouter.post(
 			encryptedSessionKey: encryptedText,
 			encodedIv: iv,
 			automations,
+			sessionKeyIsValid: true,
 		};
 
 		const policiesRepo = await getPoliciesRepo();
@@ -138,6 +139,7 @@ policyRouter.patch(
 			};
 		}
 		policyUpdate.automations = req.body.automations;
+		policyUpdate.sessionKeyIsValid = req.body.sessionKeyIsValid;
 
 		// update policy
 		let updatedPolicy;
@@ -154,6 +156,7 @@ policyRouter.patch(
 				res.status(409).send({ error: error.message });
 				return;
 			}
+			console.log("error:", error);
 			res.status(500).send({ error: "An unexpected error occurred." });
 		}
 	}

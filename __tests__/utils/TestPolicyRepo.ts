@@ -7,7 +7,7 @@ import {
 	UpdatePoliciesRepoAdapter,
 } from "../../src/usecases/schemas/policies";
 
-export default class TestPolicyApi implements IPoliciesRepo {
+export default class TestPolicyRepo implements IPoliciesRepo {
 	create(policy: PolicyRepoAdapter): Promise<PolicyInDbWithoutSessionKey> {
 		throw new Error("Method not implemented.");
 	}

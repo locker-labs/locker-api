@@ -1,0 +1,1 @@
+ALTER TABLE "policies" ADD COLUMN "session_key_is_valid" boolean DEFAULT true NOT NULL;

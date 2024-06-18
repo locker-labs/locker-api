@@ -30,6 +30,7 @@ interface UpdatePoliciesRepoAdapter {
 	encryptedSessionKey?: string;
 	encodedIv?: string;
 	automations?: IAutomation[];
+	sessionKeyIsValid?: boolean;
 }
 
 interface PolicyRepoAdapter {
@@ -38,6 +39,7 @@ interface PolicyRepoAdapter {
 	encryptedSessionKey: string;
 	encodedIv: string;
 	automations: IAutomation[];
+	sessionKeyIsValid: boolean;
 }
 
 interface PolicyInDb extends PolicyRepoAdapter {

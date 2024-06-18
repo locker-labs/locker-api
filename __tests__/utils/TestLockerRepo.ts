@@ -5,7 +5,7 @@ import {
 	UpdateLockerRepoAdapter,
 } from "../../src/usecases/schemas/lockers";
 
-export default class TestLockerApi implements ILockersRepo {
+export default class TestLockersRepo implements ILockersRepo {
 	create(locker: LockerRepoAdapter): Promise<LockerInDb> {
 		throw new Error("Method not implemented.");
 	}
