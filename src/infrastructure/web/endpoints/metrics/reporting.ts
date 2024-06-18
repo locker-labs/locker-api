@@ -24,7 +24,10 @@ const setLockerUsdValue = async (locker: LockerInDb): Promise<void> => {
 		});
 		await supabase
 			.from("lockers")
-			.update({ usd_value: usdValue })
+			.update({
+				usd_value: usdValue,
+				updated_at: new Date().toISOString(),
+			})
 			.eq("id", locker.id);
 	} catch (error) {
 		// Do nothing
@@ -51,10 +54,13 @@ const setLockerUsdValue = async (locker: LockerInDb): Promise<void> => {
 // 	}
 // };
 const updateLockerValues = async (): Promise<number> => {
+	const now = new Date();
+	const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
 	const { data, error } = await supabase
 		.from("lockers")
 		.select("*")
-		.is("usd_value", null)
+		.lte("updated_at", oneDayAgo.toISOString())
 		.limit(10);
 
 	if (error) return 0;
