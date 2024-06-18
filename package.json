@@ -34,6 +34,7 @@
 	},
 	"dependencies": {
 		"@clerk/clerk-sdk-node": "^5.0.3",
+		"@supabase/supabase-js": "^2.43.5",
 		"@zerodev/ecdsa-validator": "^5.2.3",
 		"@zerodev/permissions": "^5.2.9",
 		"@zerodev/sdk": "^5.2.13",

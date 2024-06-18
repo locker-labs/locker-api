@@ -1,4 +1,5 @@
 import {
+	doublePrecision,
 	integer,
 	pgTable,
 	serial,
@@ -13,6 +14,7 @@ const lockers = pgTable("lockers", {
 	provider: varchar("provider", { length: 256 }).notNull(),
 	address: varchar("address", { length: 256 }).notNull().unique(),
 	ownerAddress: varchar("owner_address", { length: 256 }).notNull(),
+	usdValue: doublePrecision("usd_value"),
 	createdAt: timestamp("created_at", {
 		mode: "date",
 		precision: 6,

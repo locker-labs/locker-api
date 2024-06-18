@@ -69,7 +69,8 @@ interface LockerInDb extends LockerRepoAdapter {
 	id: number;
 	createdAt: Date;
 	updatedAt: Date;
-	deployments: DeploymentRecord[];
+	deployments?: DeploymentRecord[];
+	usd_value?: number;
 }
 
 interface ILockerTokenBalance {

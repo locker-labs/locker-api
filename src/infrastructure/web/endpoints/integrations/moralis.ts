@@ -136,16 +136,20 @@ moralisRouter.post(
 	"/webhooks/transactions",
 	async (req: Request, res: Response): Promise<void> => {
 		const { body: moralisBody } = req;
-		const { txs, chainId, confirmed, erc20Transfers } = moralisBody;
+		const {
+			txs,
+			chainId: chainIdHex,
+			confirmed,
+			erc20Transfers,
+		} = moralisBody;
 
 		try {
+			const chainId = parseInt(chainIdHex, 16);
 			console.log("Received Moralis webhook");
-			console.log(
-				`Chain: ${parseInt(chainId, 16)}, Confirmed: ${confirmed}`
-			);
+			console.log(`Chain: ${chainId}, Confirmed: ${confirmed}`);
 			if (txs.length > 0) {
 				console.log(
-					`TxHash: ${txs[0].hash}, From: ${txs[0].fromAddress}, To: ${txs[0].toAddress}, ERC20: ${erc20Transfers.length}`
+					`TxHash: ${txs[0].hash}, ChainId: ${chainId}, From: ${txs[0].fromAddress}, To: ${txs[0].toAddress}, ERC20: ${erc20Transfers.length}`
 				);
 			}
 
