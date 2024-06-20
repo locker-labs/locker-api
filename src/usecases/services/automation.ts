@@ -103,12 +103,6 @@ export default class AutomationService implements IAutomationService {
 		policy: PolicyRepoAdapter,
 		locker: LockerInDb
 	): Promise<TokenTxInDb | null> {
-		console.log("Spawning on-chain tx");
-		console.log(automation);
-		// console.log(policy);
-		console.log(maybeTrigger);
-		console.log(locker);
-
 		// Disable ETH automations
 		if (maybeTrigger.contractAddress === zeroAddress) return null;
 
@@ -120,7 +114,7 @@ export default class AutomationService implements IAutomationService {
 		// get recipient address
 		// TODO: standardize generalize method across all automation types in db
 		let toAddress;
-		const { allocation } = automation;
+		const { allocation: allocationPercent } = automation;
 
 		if (automation.type == EAutomationType.OFF_RAMP) {
 			const offRampAccount = await this.offRampRepo.retrieve({
@@ -138,8 +132,9 @@ export default class AutomationService implements IAutomationService {
 		if (!toAddress) return null;
 
 		// construct web3 transaction, using session key
+		const allocationDecimal = allocationPercent / 100;
 		const amountOutStr = Big(amount.toString())
-			.times(allocation)
+			.times(allocationDecimal)
 			.toFixed(0);
 
 		const amountOut = BigInt(amountOutStr);
@@ -150,7 +145,6 @@ export default class AutomationService implements IAutomationService {
 			functionName: "transfer",
 			args: [toAddress, amountOut],
 		};
-		console.log("erc20UnencodedData", erc20UnencodedData);
 
 		const erc20Data = encodeFunctionData(erc20UnencodedData);
 
@@ -164,7 +158,6 @@ export default class AutomationService implements IAutomationService {
 		// submit on-chain
 		let txHash = genRanHex(64) as `0x${string}`;
 		if (!isTestEnv()) {
-			console.log("Preparing userOp", callDataArgs);
 			txHash = (await this.callDataExecutor.execCallDataWithPolicy({
 				policy,
 				callDataArgs,
@@ -269,9 +262,21 @@ export default class AutomationService implements IAutomationService {
 		if (!policyApi.encryptedSessionKey) return [];
 		const { automations } = policy;
 
-		const spawnedAutomationsPromises = automations.map((automation) =>
-			this.spawnAutomation(maybeTrigger, automation, policyApi, locker)
-		);
+		const delay = (ms: number) =>
+			new Promise((resolve) => setTimeout(resolve, ms));
+
+		const spawnedAutomationsPromises: Promise<TokenTxInDb | null>[] = [];
+
+		for (const automation of automations) {
+			const promise = this.spawnAutomation(
+				maybeTrigger,
+				automation,
+				policyApi,
+				locker
+			);
+			spawnedAutomationsPromises.push(promise);
+			await delay(10000); // Wait for 10 seconds before the next iteration
+		}
 
 		const spawnedAutomations = await Promise.all(
 			spawnedAutomationsPromises

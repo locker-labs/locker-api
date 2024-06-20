@@ -203,6 +203,7 @@ beamRouter.post(
 
 		const resourcePath = req.body.resources[0];
 		const offRampAccountId = resourcePath.split("/").pop();
+		console.log("\n\noffRampAccountId: ", offRampAccountId, "\n\n");
 		const resp = await offRampClient.getAccount(offRampAccountId);
 
 		try {
