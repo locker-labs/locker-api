@@ -33,6 +33,7 @@ export default class MoralisClient implements IIndexerClient {
 					excludeSpam: true,
 					excludeUnverifiedContracts: true,
 					address: lockerAddress,
+					chains: chainIds.map((chainId) => numberToHex(chainId)),
 				})
 				.then((r) => r.toJSON());
 
