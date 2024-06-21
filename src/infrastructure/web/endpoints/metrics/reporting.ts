@@ -22,6 +22,7 @@ const setLockerUsdValue = async (locker: LockerInDb): Promise<void> => {
 		const usdValue = await indexer.getLockerUsdValue({
 			lockerAddress: locker.address,
 		});
+		// console.log("setting", usdValue);
 		await supabase
 			.from("lockers")
 			.update({
