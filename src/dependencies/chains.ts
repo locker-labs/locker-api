@@ -4,6 +4,7 @@ import {
 	base,
 	baseSepolia,
 	Chain,
+	linea,
 	optimism,
 	polygon,
 	sepolia,
@@ -18,8 +19,11 @@ const getBundlerRpcUrl = (projectId: string) =>
 const getPaymasterRpcUrl = (projectId: string) =>
 	`${ZERODEV_API_BASE}/paymaster/${projectId}`;
 
-// https://docs.moralis.io/supported-chains
-const SUPPORTED_CHAINS: {
+enum EChainFeature {
+	OFFRAMP = "OFFRAMP",
+}
+
+type IChainsType = {
 	[chainId: string]: {
 		name: string;
 		native: string;
@@ -29,8 +33,12 @@ const SUPPORTED_CHAINS: {
 		paymasterRpcUrl: string;
 		viemChain: Chain;
 		zerodevProjectId: string;
+		features: string[];
 	};
-} = {
+};
+
+// https://docs.moralis.io/supported-chains
+const SUPPORTED_CHAINS: IChainsType = {
 	// Mainnets
 	[ChainIds.ARBITRUM]: {
 		name: "Arbitrum",
@@ -41,6 +49,7 @@ const SUPPORTED_CHAINS: {
 		bundlerRpcUrl: getBundlerRpcUrl(config.arbitrumZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.arbitrumZerodevProjectId),
 		viemChain: arbitrum,
+		features: [EChainFeature.OFFRAMP],
 	},
 	[ChainIds.AVALANCHE]: {
 		name: "Avalanche",
@@ -51,6 +60,7 @@ const SUPPORTED_CHAINS: {
 		bundlerRpcUrl: getBundlerRpcUrl(config.avalancheZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.avalancheZerodevProjectId),
 		viemChain: avalanche,
+		features: [EChainFeature.OFFRAMP],
 	},
 	[ChainIds.BASE]: {
 		name: "Base",
@@ -61,6 +71,7 @@ const SUPPORTED_CHAINS: {
 		bundlerRpcUrl: getBundlerRpcUrl(config.baseZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.baseZerodevProjectId),
 		viemChain: base,
+		features: [EChainFeature.OFFRAMP],
 	},
 	[ChainIds.OPTIMISM]: {
 		name: "Optimism",
@@ -71,6 +82,7 @@ const SUPPORTED_CHAINS: {
 		bundlerRpcUrl: getBundlerRpcUrl(config.optimismZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.optimismZerodevProjectId),
 		viemChain: optimism,
+		features: [EChainFeature.OFFRAMP],
 	},
 	[ChainIds.POLYGON]: {
 		name: "Polygon",
@@ -81,6 +93,18 @@ const SUPPORTED_CHAINS: {
 		bundlerRpcUrl: getBundlerRpcUrl(config.polygonZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.polygonZerodevProjectId),
 		viemChain: polygon,
+		features: [EChainFeature.OFFRAMP],
+	},
+	[ChainIds.LINEA]: {
+		name: "LINEA",
+		native: "ETH",
+		blockExplorer: "https://lineascan.build/",
+		rpcUrl: config.lineaRpc,
+		zerodevProjectId: config.lineaZerodevProjectId,
+		bundlerRpcUrl: getBundlerRpcUrl(config.lineaZerodevProjectId),
+		paymasterRpcUrl: getPaymasterRpcUrl(config.lineaZerodevProjectId),
+		viemChain: linea,
+		features: [],
 	},
 
 	// Testnets
@@ -93,6 +117,7 @@ const SUPPORTED_CHAINS: {
 		bundlerRpcUrl: getBundlerRpcUrl(config.baseSepoliaZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.baseSepoliaZerodevProjectId),
 		viemChain: baseSepolia,
+		features: [],
 	},
 	[ChainIds.SEPOLIA]: {
 		name: "Sepolia",
@@ -103,6 +128,7 @@ const SUPPORTED_CHAINS: {
 		bundlerRpcUrl: getBundlerRpcUrl(config.sepoliaZerodevProjectId),
 		paymasterRpcUrl: getPaymasterRpcUrl(config.sepoliaZerodevProjectId),
 		viemChain: sepolia,
+		features: [],
 	},
 };
 

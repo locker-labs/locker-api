@@ -36,11 +36,55 @@ To generate an empty migration: `yarn migration:blank`
 
 ### Adding new chains
 
-1. Make sure it's supported on Beam: https://docs.beam.ansiblelabs.xyz/v2.0/docs/individuals
-1. Create ZeroDev project through dashboard.zerodev.app
+1. Before beginning, think about if you want to do a single network or also a testnet.
+1. Add to `config.ts`:
+
+```ts
+// define variables
+lineaRpc: string;
+lineaZerodevProjectId;
+
+// RPC
+this.lineaRpc = process.env.LINEA_RPC!;
+
+// zerodev
+this.lineaZerodevProjectId = process.env.LINEA_ZERODEV_PROJECT_ID!;
+```
+
 1. Add ZeroDev project ID to .env
+
+```env
+LINEA_RPC=
+LINEA_ZERODEV_PROJECT_ID=
+```
+
+1. Create ZeroDev project through dashboard.zerodev.app
 1. Add project ID to src/config.ts
-1. Add to SUPPORTED_CHAINS src/dependencies/chains.ts
+1. Add to `SUPPORTED_CHAINS` in `src/dependencies/chains.ts`.
+
+```ts
+const SUPPORTED_CHAINS: IChainsType = {
+	[ChainIds.LINEA]: {
+		name: "LINEA",
+		native: "ETH",
+		blockExplorer: "https://lineascan.build/",
+		rpcUrl: config.lineaRpc,
+		zerodevProjectId: config.lineaZerodevProjectId,
+		bundlerRpcUrl: getBundlerRpcUrl(config.lineaZerodevProjectId),
+		paymasterRpcUrl: getPaymasterRpcUrl(config.lineaZerodevProjectId),
+		viemChain: linea,
+		features: [],
+	},
+};
+```
+
+1. Update Moralis stream script (`gen-moralis-stream.ts`) and Moralis through admin.moralis.io with new chain.
+1. Make sure it's supported on Beam: https://docs.beam.ansiblelabs.xyz/v2.0/docs/individuals
+1. Update config.ts
+
+```ts
+
+```
 
 ### Setting up new environment
 
