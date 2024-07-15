@@ -36,6 +36,7 @@ To generate an empty migration: `yarn migration:blank`
 
 ### Adding new chains
 
+1. Before beginning, think about if you want to do a single network or also a testnet.
 1. Add to `config.ts`:
 
 ```ts
@@ -77,7 +78,13 @@ const SUPPORTED_CHAINS: IChainsType = {
 };
 ```
 
+1. Update Moralis stream script (`gen-moralis-stream.ts`) and Moralis through admin.moralis.io with new chain.
 1. Make sure it's supported on Beam: https://docs.beam.ansiblelabs.xyz/v2.0/docs/individuals
+1. Update config.ts
+
+```ts
+
+```
 
 ### Setting up new environment
 
