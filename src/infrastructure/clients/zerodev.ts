@@ -4,11 +4,18 @@ import { toECDSASigner } from "@zerodev/permissions/signers";
 import {
 	createKernelAccountClient,
 	createZeroDevPaymasterClient,
+	getCustomNonceKeyFromString,
 } from "@zerodev/sdk";
 import { KERNEL_V3_1 } from "@zerodev/sdk/constants";
-import { KernelEncodeCallDataArgs } from "@zerodev/sdk/types";
+import { CallType, KernelEncodeCallDataArgs } from "@zerodev/sdk/types";
 import { bundlerActions, ENTRYPOINT_ADDRESS_V07 } from "permissionless";
-import { createPublicClient, http, type PublicClient } from "viem";
+import {
+	Address,
+	createPublicClient,
+	Hex,
+	http,
+	type PublicClient,
+} from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 import config from "../../config";
@@ -83,9 +90,11 @@ export default class ZerodevClient implements IExecutorClient {
 	async execCallDataWithPolicy({
 		policy,
 		callDataArgs,
+		scope,
 	}: {
 		policy: PolicyRepoAdapter;
 		callDataArgs: KernelEncodeCallDataArgs;
+		scope: string;
 	}): Promise<string> {
 		const entryPoint = ENTRYPOINT_ADDRESS_V07;
 		const { chainId } = policy;
@@ -134,10 +143,37 @@ export default class ZerodevClient implements IExecutorClient {
 			},
 		});
 
+		const nonceKey = getCustomNonceKeyFromString(scope, entryPoint);
+		const nonce = await sessionKeyAccount.getNonce(nonceKey);
+
+		const isEthTransfer = true;
+
+		// Send ETH transfer
+		if (isEthTransfer) {
+			const { to, value, data } = callDataArgs as {
+				to: Address;
+				value: bigint;
+				data: Hex;
+				callType: CallType;
+			};
+			const txHash = await kernelClient.sendTransaction({
+				to,
+				value,
+				data,
+				// FIXME `AA25 invalid account nonce` when included
+				// nonce: Number(nonce),
+			});
+
+			return txHash;
+		}
+
+		// Otherwise is ER20
 		// Send user operation
+		const callData = await sessionKeyAccount.encodeCallData(callDataArgs);
 		const userOpHash = await kernelClient.sendUserOperation({
 			userOperation: {
-				callData: await sessionKeyAccount.encodeCallData(callDataArgs),
+				callData,
+				nonce,
 			},
 		});
 
