@@ -65,6 +65,7 @@ lockerRouter.post(
 			parseInt(process.env.LOCKER_SEED_OFFSET!) ||
 			defaultEnvironmentOffset;
 		const seed = req.body.seed + seedEnvironmentOffset;
+		const { address: expectedAddress } = req.body;
 
 		const address = await getExecutorClient().getKernelAddress({
 			seed,
@@ -73,6 +74,11 @@ lockerRouter.post(
 			// We pick one arbitrarily
 			chainId: ChainIds.BASE,
 		});
+		if (expectedAddress !== address) {
+			res.status(500).send({
+				error: `Address generated on client (${expectedAddress}) does not match the server side address (${address}). Seed used = ${seed}`,
+			});
+		}
 
 		const locker: LockerRepoAdapter = {
 			userId: req.auth.userId,

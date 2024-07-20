@@ -27,7 +27,8 @@ tokentxsDbHookRouter.post(
 		try {
 			console.log("Processing tokentx...");
 			const rawTx = req.body.record;
-			console.log(JSON.stringify(req.body.record, null, 2));
+			// console.log(JSON.stringify(req.body.record, null, 2));
+			logger.debug(JSON.stringify(req.body.record, null, 2));
 
 			const policiesApi = await getPoliciesRepo();
 			const tokenTxsApi = await getTokenTxsRepo();

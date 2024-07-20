@@ -29,7 +29,7 @@ const chains = [
 	"0x2105",
 
 	// linea mainnet - 59144
-	// "0xe708",
+	"0xe708",
 
 	// ZeroDev is on linea goerli currently but moralis is on sepolia, so we have to use mainnet
 	// linea sepolia - 59141
