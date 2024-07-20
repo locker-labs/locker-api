@@ -97,11 +97,11 @@ export default class AutomationService implements IAutomationService {
 		policy: PolicyRepoAdapter,
 		locker: LockerInDb
 	): Promise<TokenTxInDb | null> {
-		console.log("Spawning on-chain tx");
-		console.log(automation);
+		logger.debug("Spawning on-chain tx");
+		logger.debug(automation);
 		// console.log(policy);
-		console.log(maybeTrigger);
-		console.log(locker);
+		logger.debug(maybeTrigger);
+		logger.debug(locker);
 
 		// Disable ETH automations
 		if (maybeTrigger.contractAddress === zeroAddress) return null;
@@ -127,7 +127,7 @@ export default class AutomationService implements IAutomationService {
 			functionName: "transfer",
 			args: [toAddress, amountOut],
 		};
-		console.log("erc20UnencodedData", erc20UnencodedData);
+		logger.debug("erc20UnencodedData", erc20UnencodedData);
 
 		const erc20Data = encodeFunctionData(erc20UnencodedData);
 
@@ -141,12 +141,12 @@ export default class AutomationService implements IAutomationService {
 		// submit on-chain
 		let txHash = genRanHex(64) as `0x${string}`;
 		if (!isTestEnv()) {
-			console.log("Preparing userOp", callDataArgs);
+			logger.debug("Preparing userOp", callDataArgs);
 			txHash = (await this.callDataExecutor.execCallDataWithPolicy({
 				policy,
 				callDataArgs,
 			})) as `0x${string}`;
-			console.log("Transaction sent", txHash);
+			logger.debug("Transaction sent", txHash);
 		}
 
 		// Persist to DB.
@@ -271,7 +271,7 @@ export default class AutomationService implements IAutomationService {
 		const shouldGenerate =
 			await this.shouldGenerateAutomations(maybeTrigger);
 
-		console.log("Should generate", shouldGenerate);
+		logger.debug("Should generate", shouldGenerate);
 
 		if (!shouldGenerate) return false;
 
