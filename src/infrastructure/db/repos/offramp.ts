@@ -1,15 +1,14 @@
+import { and, eq } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { eq, and } from "drizzle-orm";
 
 import IOffRampRepo from "../../../usecases/interfaces/repos/offramp";
-
-import DuplicateRecordError from "../errors";
-import { offrampAccount, offRampAddresses } from "../models/offramp";
 import {
+	OffRampInDb,
 	OffRampRepoAdapter,
 	OffRampRepoUpdateAdapter,
-	OffRampInDb,
 } from "../../../usecases/schemas/offramp";
+import DuplicateRecordError from "../errors";
+import { offrampAccount, offRampAddresses } from "../models/offramp";
 
 export default class OffRampRepo implements IOffRampRepo {
 	constructor(private db: PostgresJsDatabase) {}
@@ -106,8 +105,8 @@ export default class OffRampRepo implements IOffRampRepo {
 				.insert(offRampAddresses)
 				.values({
 					offRampAccountId: offRampId,
-					chainId: chainId,
-					address: address,
+					chainId,
+					address,
 				})
 				.onConflictDoNothing();
 		} catch (error: unknown) {

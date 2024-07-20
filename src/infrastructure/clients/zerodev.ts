@@ -5,6 +5,7 @@ import {
 	createKernelAccountClient,
 	createZeroDevPaymasterClient,
 } from "@zerodev/sdk";
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants";
 import { KernelEncodeCallDataArgs } from "@zerodev/sdk/types";
 import { bundlerActions, ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { createPublicClient, http, type PublicClient } from "viem";
@@ -44,6 +45,7 @@ export default class ZerodevClient implements IExecutorClient {
 			publicClient,
 			eoaAddress,
 			index: BigInt(seed),
+			kernelVersion: KERNEL_V3_1,
 			entryPointAddress: ENTRYPOINT_ADDRESS_V07,
 		});
 
@@ -105,9 +107,12 @@ export default class ZerodevClient implements IExecutorClient {
 			policy.encryptedSessionKey,
 			policy.encodedIv
 		);
+		console.log("Using session key");
+		console.log(serializedSessionKey);
 		const sessionKeyAccount = await deserializePermissionAccount(
 			publicClient,
 			entryPoint,
+			KERNEL_V3_1,
 			serializedSessionKey,
 			sessionKeySigner
 		);

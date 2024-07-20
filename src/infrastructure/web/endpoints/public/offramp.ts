@@ -13,18 +13,17 @@ import morgan from "morgan";
 import {
 	AuthenticatedRequest,
 	authRequired,
-	getOffRampClient,
 	getAuthClient,
-	getOffRampRepo,
 	getLockersRepo,
+	getOffRampClient,
+	getOffRampRepo,
 	logger,
 	stream,
 } from "../../../../dependencies";
-
 import {
-	OffRampRepoAdapter,
 	CreateOfframpRequest,
 	EOffRampAccountStatus,
+	OffRampRepoAdapter,
 } from "../../../../usecases/schemas/offramp";
 import DuplicateRecordError from "../../../db/errors";
 
@@ -89,7 +88,7 @@ offrampRouter.post(
 			req.body.address
 		);
 
-		const onboardingUrl = resp.onboardingUrl;
+		const { onboardingUrl } = resp;
 
 		// 3. Store beam account in database
 		const offRampAccount: OffRampRepoAdapter = {
@@ -113,7 +112,7 @@ offrampRouter.post(
 		}
 		res.status(200).send({
 			offrampAccount: offrampAccountInDb,
-			onboardingUrl: onboardingUrl,
+			onboardingUrl,
 		});
 	}
 );

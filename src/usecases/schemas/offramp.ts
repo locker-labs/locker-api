@@ -31,9 +31,9 @@ interface OffRampInDb extends OffRampRepoAdapter {
 }
 
 export {
-	type OffRampRepoAdapter,
-	type OffRampInDb,
-	type OffRampRepoUpdateAdapter,
 	CreateOfframpRequest,
 	EOffRampAccountStatus,
+	type OffRampInDb,
+	type OffRampRepoAdapter,
+	type OffRampRepoUpdateAdapter,
 };

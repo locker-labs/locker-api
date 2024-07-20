@@ -22,6 +22,30 @@ export default class MoralisClient implements IIndexerClient {
 		this.startClient();
 	}
 
+	async getLockerUsdValue({
+		lockerAddress,
+	}: {
+		lockerAddress: `0x${string}`;
+	}): Promise<number> {
+		try {
+			const response = await Moralis.EvmApi.wallets
+				.getWalletNetWorth({
+					excludeSpam: true,
+					excludeUnverifiedContracts: true,
+					address: lockerAddress,
+					chains: chainIds.map((chainId) => numberToHex(chainId)),
+				})
+				.then((r) => r.toJSON());
+
+			// console.log(response);
+
+			return Number(response.total_networth_usd);
+		} catch (e) {
+			console.error(e);
+			throw e;
+		}
+	}
+
 	async moralisGetErc20BalanceByWallet(
 		lockerAddress: `0x${string}`,
 		chainId: number

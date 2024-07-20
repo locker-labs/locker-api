@@ -65,6 +65,11 @@ export class Config {
 
 	sepoliaZerodevProjectId: string;
 
+	// Linea
+	lineaRpc: string;
+
+	lineaZerodevProjectId;
+
 	// Moralis
 	moralisStreamId: string;
 
@@ -88,6 +93,7 @@ export class Config {
 
 	// Beam
 	beamApiKey: string;
+
 	beamBaseUrl: string;
 
 	constructor() {
@@ -151,6 +157,11 @@ export class Config {
 			process.env.OPTIMISM_SEPOLIA_ZERODEV_PROJECT_ID!;
 		this.sepoliaZerodevProjectId = process.env.SEPOLIA_ZERODEV_PROJECT_ID!;
 
+		// RPC
+		this.lineaRpc = process.env.LINEA_RPC!;
+
+		// zerodev
+		this.lineaZerodevProjectId = process.env.LINEA_ZERODEV_PROJECT_ID!;
 		// Moralis
 		this.moralisStreamId = process.env.MORALIS_STREAM_ID!;
 

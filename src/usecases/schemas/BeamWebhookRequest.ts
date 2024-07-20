@@ -1,4 +1,4 @@
-import { IsString, IsArray, IsDateString } from "class-validator";
+import { IsArray, IsDateString, IsString } from "class-validator";
 
 class BeamWebhookRequest {
 	@IsString()

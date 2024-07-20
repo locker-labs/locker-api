@@ -5,9 +5,9 @@ import morgan from "morgan";
 
 import {
 	getLockersRepo,
+	getOffRampRepo,
 	getPoliciesRepo,
 	getTokenTxsRepo,
-	getOffRampRepo,
 	logger,
 	stream,
 } from "../../../../dependencies";

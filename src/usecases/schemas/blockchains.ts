@@ -1,4 +1,5 @@
 /* eslint-disable no-shadow */
+// All chains can be listed here even if not fully or partially supported by Locker.
 enum ChainIds {
 	ARBITRUM = 42161,
 	AVALANCHE = 43114,
@@ -6,6 +7,7 @@ enum ChainIds {
 	OPTIMISM = 10,
 	POLYGON = 137,
 	ETHEREUM = 1,
+	LINEA = 59144,
 
 	ARBITRUM_SEPOLIA = 421614,
 	// not supported on moralis

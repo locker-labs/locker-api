@@ -3,8 +3,8 @@ import {
 	pgTable,
 	serial,
 	timestamp,
-	varchar,
 	uniqueIndex,
+	varchar,
 } from "drizzle-orm/pg-core";
 
 import lockers from "./lockers";

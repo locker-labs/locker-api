@@ -44,7 +44,7 @@ export default class BeamClient implements IOffRampClient {
 			},
 			body: JSON.stringify({
 				kyc: {
-					emailAddress: emailAddress,
+					emailAddress,
 				},
 				sourceAddresses: [sourceAddress],
 			}),

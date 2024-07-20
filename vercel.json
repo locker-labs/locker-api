@@ -17,5 +17,11 @@
 				}
 			]
 		}
+	],
+	"crons": [
+		{
+			"path": "/metrics/reporting",
+			"schedule": "*/2 * * * *"
+		}
 	]
 }

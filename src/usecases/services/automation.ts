@@ -7,9 +7,9 @@ import { genRanHex, isTestEnv } from "../../dependencies/environment";
 import { logger } from "../../dependencies/logger";
 import IExecutorClient from "../interfaces/clients/executor";
 import ILockersRepo from "../interfaces/repos/lockers";
+import IOffRampRepo from "../interfaces/repos/offramp";
 import IPoliciesRepo from "../interfaces/repos/policies";
 import ITokenTxsRepo from "../interfaces/repos/tokenTxs";
-import IOffRampRepo from "../interfaces/repos/offramp";
 import IAutomationService from "../interfaces/services/automation";
 import { LockerInDb } from "../schemas/lockers";
 import {

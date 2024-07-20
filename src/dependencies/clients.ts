@@ -1,3 +1,4 @@
+import BeamClient from "../infrastructure/clients/beam";
 import {
 	type AuthenticatedRequest,
 	authRequired,
@@ -6,7 +7,6 @@ import { ClerkAuthClient } from "../infrastructure/clients/clerk";
 import MoralisClient from "../infrastructure/clients/moralis";
 import ResendClient from "../infrastructure/clients/resend";
 import ZerodevClient from "../infrastructure/clients/zerodev";
-import BeamClient from "../infrastructure/clients/beam";
 import { IAuthClient } from "../usecases/interfaces/clients/auth";
 import IEmailClient from "../usecases/interfaces/clients/email";
 import IExecutorClient from "../usecases/interfaces/clients/executor";

@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString, IsBoolean } from "class-validator";
+import { IsArray, IsBoolean, IsOptional, IsString } from "class-validator";
 
 import { IAutomation } from "./policies";
 

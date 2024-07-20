@@ -1,5 +1,6 @@
 import "dotenv/config";
 
+import basicAuth from "basic-auth";
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
 import express, {
@@ -9,28 +10,28 @@ import express, {
 	Response,
 } from "express";
 import morgan from "morgan";
-import basicAuth from "basic-auth";
 
 import {
+	getLockersRepo,
+	getOffRampClient,
+	getOffRampRepo,
+	getPoliciesRepo,
 	logger,
 	stream,
-	getOffRampRepo,
-	getLockersRepo,
-	getPoliciesRepo,
-	getOffRampClient,
 } from "../../../../dependencies";
-
-import BeamWebhookRequest from "../../../../usecases/schemas/BeamWebhookRequest";
-import {
-	OffRampRepoUpdateAdapter,
-	EOffRampAccountStatus,
-} from "../../../../usecases/schemas/offramp";
-import { EAutomationType } from "../../../../usecases/schemas/policies";
-import ChainIds from "../../../../usecases/schemas/blockchains";
-import { EAutomationStatus } from "../../../../usecases/schemas/policies";
-import IOffRampRepo from "../../../../usecases/interfaces/repos/offramp";
 import ILockersRepo from "../../../../usecases/interfaces/repos/lockers";
+import IOffRampRepo from "../../../../usecases/interfaces/repos/offramp";
 import IPoliciesRepo from "../../../../usecases/interfaces/repos/policies";
+import BeamWebhookRequest from "../../../../usecases/schemas/BeamWebhookRequest";
+import ChainIds from "../../../../usecases/schemas/blockchains";
+import {
+	EOffRampAccountStatus,
+	OffRampRepoUpdateAdapter,
+} from "../../../../usecases/schemas/offramp";
+import {
+	EAutomationStatus,
+	EAutomationType,
+} from "../../../../usecases/schemas/policies";
 
 // import DuplicateRecordError from "../../../db/errors";
 
@@ -55,7 +56,6 @@ const authRequired = (req: Request, res: Response, next: NextFunction) => {
 	}
 
 	next();
-	return;
 };
 
 function validateRequest<T extends object>(type: {
@@ -90,7 +90,7 @@ async function updateAutomations(
 	const policies = await policiesRepo.retrieveMany(lockerId);
 
 	for (const policy of policies) {
-		const automations = policy.automations;
+		const { automations } = policy;
 		for (const automation of policy.automations) {
 			if (automation.type === EAutomationType.OFF_RAMP) {
 				automation.status = EAutomationStatus.READY;
@@ -99,7 +99,7 @@ async function updateAutomations(
 
 		await policiesRepo.update(
 			{ id: policy.id },
-			{ automations: automations, sessionKeyIsValid: false }
+			{ automations, sessionKeyIsValid: false }
 		);
 	}
 }
@@ -122,7 +122,7 @@ async function handleOnboardingEvent(
 	}
 
 	const offRampAccountUpdates: OffRampRepoUpdateAdapter = {
-		status: status,
+		status,
 		errors: null,
 	};
 

@@ -13,7 +13,7 @@ export { logger, stream } from "./logger";
 export { ERC20_TRANSFER_ABI };
 export {
 	getLockersRepo,
+	getOffRampRepo,
 	getPoliciesRepo,
 	getTokenTxsRepo,
-	getOffRampRepo,
 } from "./repos";

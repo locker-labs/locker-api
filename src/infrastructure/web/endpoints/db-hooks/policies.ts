@@ -5,12 +5,13 @@ import morgan from "morgan";
 
 import {
 	getLockersRepo,
+	getOffRampRepo,
 	getPoliciesRepo,
 	getTokenTxsRepo,
-	getOffRampRepo,
 	logger,
 	stream,
 } from "../../../../dependencies";
+import { ETokenTxLockerDirection } from "../../../../usecases/schemas/tokenTxs";
 import AutomationService from "../../../../usecases/services/automation";
 import ZerodevClient from "../../../clients/zerodev";
 import checkApiKey from "./check-api-key";
@@ -60,7 +61,11 @@ policiesDbHookRouter.post(
 			// Find all transactions from same chain as first
 			// Because of nonces, userOps will fail if multiple are sent at once
 			// Therefore we currently only use the most recent tx to generate automations
-			const txs = await tokenTxsRepo.retrieveMany({ chainId, lockerId });
+			const txs = await tokenTxsRepo.retrieveMany({
+				chainId,
+				lockerId,
+				lockerDirection: ETokenTxLockerDirection.IN,
+			});
 			console.log("Got relevant txs", txs);
 			console.log(txs);
 
