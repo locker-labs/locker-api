@@ -1,6 +1,6 @@
 import { CallType } from "@zerodev/sdk/types";
 import Big from "big.js";
-import { encodeFunctionData, zeroAddress } from "viem";
+import { encodeFunctionData, pad, zeroAddress } from "viem";
 
 import { ERC20_TRANSFER_ABI } from "../../dependencies";
 import { genRanHex, isTestEnv } from "../../dependencies/environment";
@@ -84,28 +84,14 @@ export default class AutomationService implements IAutomationService {
 		return true;
 	}
 
-	/**
-	 * Send a transaction/userOp on-chain and persist to DB.
-	 * Send amount is based on percentage defined in automation.
-	 * @param maybeTrigger
-	 * @param automation
-	 * @returns
-	 */
-	async spawnOnChainTx(
+	async spawnOnChainErc20Tx(
 		maybeTrigger: TokenTxInDb,
 		automation: IAutomation,
 		policy: PolicyRepoAdapter,
-		locker: LockerInDb
+		locker: LockerInDb,
+		scope: string
 	): Promise<TokenTxInDb | null> {
-		logger.debug("Spawning on-chain tx");
-		logger.debug(automation);
-		// console.log(policy);
-		logger.debug(maybeTrigger);
-		logger.debug(locker);
-
-		// Disable ETH automations
-		if (maybeTrigger.contractAddress === zeroAddress) return null;
-
+		console.log("spawnOnChainErc20Tx");
 		const { lockerId } = policy;
 		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
 			maybeTrigger;
@@ -145,6 +131,80 @@ export default class AutomationService implements IAutomationService {
 			txHash = (await this.callDataExecutor.execCallDataWithPolicy({
 				policy,
 				callDataArgs,
+				scope,
+			})) as `0x${string}`;
+			logger.debug("Transaction sent", txHash);
+		}
+
+		// Persist to DB.
+		// This TX will also be picked up by Moralis, but here we can record what triggered this automation.
+		const triggeredTx: TokenTxRepoAdapter = {
+			lockerId,
+			txHash,
+			contractAddress,
+			tokenSymbol,
+			fromAddress,
+			toAddress,
+			tokenDecimals,
+			isConfirmed: false,
+			amount: amountOut,
+			chainId,
+			lockerDirection: ETokenTxLockerDirection.OUT,
+			automationsState: ETokenTxAutomationsState.STARTED,
+			triggeredByTokenTxId: maybeTrigger.id,
+		};
+
+		const spawnedTx = await this.tokenTxsApi.create(triggeredTx);
+
+		return spawnedTx;
+	}
+
+	async spawnOnChainEthTx(
+		maybeTrigger: TokenTxInDb,
+		automation: IAutomation,
+		policy: PolicyRepoAdapter,
+		locker: LockerInDb,
+		scope: string
+	): Promise<TokenTxInDb | null> {
+		console.log("spawnOnChainEthTx");
+		const { lockerId } = policy;
+		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
+			maybeTrigger;
+		const { address: fromAddress } = locker;
+		const { recipientAddress: toAddress, allocation } = automation;
+
+		if (!toAddress) return null;
+
+		// construct web3 transaction, using session key
+		const amountOutStr = Big(amount.toString())
+			.times(allocation)
+			.toFixed(0);
+
+		const amountOut = BigInt(amountOutStr);
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const erc20UnencodedData: any = {
+			abi: ERC20_TRANSFER_ABI,
+			functionName: "transfer",
+			args: [toAddress, amountOut],
+		};
+		logger.debug("erc20UnencodedData", erc20UnencodedData);
+
+		const callDataArgs = {
+			to: toAddress,
+			value: amountOut,
+			data: pad("0x", { size: 4 }),
+			callType: "call" as CallType,
+		};
+
+		// submit on-chain
+		let txHash = genRanHex(64) as `0x${string}`;
+		if (!isTestEnv()) {
+			logger.debug("Preparing tx", callDataArgs);
+			txHash = (await this.callDataExecutor.execCallDataWithPolicy({
+				policy,
+				callDataArgs,
+				scope,
 			})) as `0x${string}`;
 			logger.debug("Transaction sent", txHash);
 		}
@@ -173,6 +233,48 @@ export default class AutomationService implements IAutomationService {
 	}
 
 	/**
+	 * Send a transaction/userOp on-chain and persist to DB.
+	 * Send amount is based on percentage defined in automation.
+	 * @param maybeTrigger
+	 * @param automation
+	 * @returns
+	 */
+	async spawnOnChainTx(
+		maybeTrigger: TokenTxInDb,
+		automation: IAutomation,
+		policy: PolicyRepoAdapter,
+		locker: LockerInDb,
+		// used for the key of the nonce
+		scope: string = "default"
+	): Promise<TokenTxInDb | null> {
+		logger.debug("Spawning on-chain tx");
+		logger.debug(automation);
+		// console.log(policy);
+		logger.debug(maybeTrigger);
+		logger.debug(locker);
+
+		// Process ETH transactions
+		if (maybeTrigger.contractAddress === zeroAddress) {
+			return this.spawnOnChainEthTx(
+				maybeTrigger,
+				automation,
+				policy,
+				locker,
+				scope
+			);
+		}
+
+		// Otherwise, process as ERC20 transaction
+		return this.spawnOnChainErc20Tx(
+			maybeTrigger,
+			automation,
+			policy,
+			locker,
+			scope
+		);
+	}
+
+	/**
 	 * Return null if spawning fails.
 	 * All automations run in the same thread, so we don't want to
 	 * prevent other automations from running by throwing a terminal exception.
@@ -193,12 +295,20 @@ export default class AutomationService implements IAutomationService {
 
 			switch (automation.type) {
 				case "forward_to":
+					return await this.spawnOnChainTx(
+						maybeTrigger,
+						automation,
+						policy,
+						locker,
+						"forward_to"
+					);
 				case "off_ramp":
 					return await this.spawnOnChainTx(
 						maybeTrigger,
 						automation,
 						policy,
-						locker
+						locker,
+						"off_ramp"
 					);
 
 				default:

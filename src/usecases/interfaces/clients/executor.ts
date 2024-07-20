@@ -16,9 +16,11 @@ interface IExecutorClient {
 	execCallDataWithPolicy({
 		policy,
 		callDataArgs,
+		scope,
 	}: {
 		policy: PolicyRepoAdapter;
 		callDataArgs: KernelEncodeCallDataArgs;
+		scope: string;
 	}): Promise<string>;
 
 	/**
