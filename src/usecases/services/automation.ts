@@ -131,7 +131,7 @@ export default class AutomationService implements IAutomationService {
 			txHash = (await this.callDataExecutor.execCallDataWithPolicy({
 				policy,
 				callDataArgs,
-				scope,
+				scope: `${scope}-${contractAddress}-${maybeTrigger.id}`,
 			})) as `0x${string}`;
 			logger.debug("Transaction sent", txHash);
 		}
@@ -204,7 +204,7 @@ export default class AutomationService implements IAutomationService {
 			txHash = (await this.callDataExecutor.execCallDataWithPolicy({
 				policy,
 				callDataArgs,
-				scope,
+				scope: `${scope}-${toAddress}-${maybeTrigger.id}`,
 			})) as `0x${string}`;
 			logger.debug("Transaction sent", txHash);
 		}
