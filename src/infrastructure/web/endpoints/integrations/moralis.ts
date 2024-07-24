@@ -81,7 +81,7 @@ export const adaptMoralisBody2TokenTx = async (
 			fromAddress: from,
 			toAddress: to,
 			isConfirmed: moralisBody.confirmed,
-			amount: BigInt(value),
+			amount: value.toString(),
 			chainId: parseInt(moralisBody.chainId, 16),
 		};
 	} else {
@@ -124,7 +124,7 @@ export const adaptMoralisBody2TokenTx = async (
 			fromAddress: fromAddress.toLowerCase(),
 			toAddress: toAddress.toLowerCase(),
 			isConfirmed: moralisBody.confirmed,
-			amount: BigInt(value),
+			amount: value.toString(),
 			chainId: parseInt(moralisBody.chainId, 16),
 		};
 	}

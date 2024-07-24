@@ -103,7 +103,7 @@ describe("moralis", () => {
 			fromAddress: "0xf650429129ab74d1f2b647cd1d7e3b022f26181d",
 			toAddress: lockerAddress,
 			isConfirmed: false,
-			amount: BigInt(100000000000000),
+			amount: "100000000000000",
 			chainId: 137,
 		};
 		expect(tokenTx).toMatchObject(expectedTx);
@@ -181,7 +181,7 @@ describe("moralis", () => {
 			fromAddress: lockerAddress,
 			toAddress: "0xf650429129ab74d1f2b647cd1d7e3b022f26181d",
 			isConfirmed: false,
-			amount: BigInt(100000000000000),
+			amount: "100000000000000",
 			chainId: 137,
 		};
 		expect(tokenTx).toMatchObject(expectedTx);
@@ -301,7 +301,7 @@ describe("moralis", () => {
 			fromAddress: "0xaf115955b028c145ce3a7367b25a274723c5104b",
 			toAddress: lockerAddress,
 			isConfirmed: true,
-			amount: BigInt(1000),
+			amount: "1000",
 			chainId: ChainIds.SEPOLIA,
 		};
 		expect(tokenTx).toMatchObject(expectedTx);
@@ -432,7 +432,7 @@ describe("moralis", () => {
 			fromAddress: lockerAddress,
 			toAddress: "0xaf115955b028c145ce3a7367b25a274723c5104b",
 			isConfirmed: false,
-			amount: BigInt(100),
+			amount: "100",
 			chainId: ChainIds.SEPOLIA,
 		};
 		expect(tokenTx).toMatchObject(expectedTx);

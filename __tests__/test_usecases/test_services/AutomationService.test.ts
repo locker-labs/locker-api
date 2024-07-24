@@ -48,7 +48,7 @@ describe("AutomationService", () => {
 			toAddress: "0xdef",
 			tokenDecimals: 18,
 			isConfirmed: true,
-			amount: BigInt(1000),
+			amount: "1000",
 			chainId: 1,
 		};
 		const generator = new AutomationService(
@@ -76,7 +76,7 @@ describe("AutomationService", () => {
 			toAddress: "0xdef",
 			tokenDecimals: 18,
 			isConfirmed: true,
-			amount: BigInt(1000),
+			amount: "1000",
 			chainId: 1,
 		};
 		const generator = new AutomationService(
@@ -104,7 +104,7 @@ describe("AutomationService", () => {
 			toAddress: "0xdef",
 			tokenDecimals: 18,
 			isConfirmed: false,
-			amount: BigInt(1000),
+			amount: "1000",
 			chainId: 1,
 		};
 		const generator = new AutomationService(
@@ -132,7 +132,7 @@ describe("AutomationService", () => {
 			toAddress: "0xdef",
 			tokenDecimals: 18,
 			isConfirmed: false,
-			amount: BigInt(1000),
+			amount: "1000",
 			chainId: 1,
 		};
 		const generator = new AutomationService(
@@ -160,7 +160,7 @@ describe("AutomationService", () => {
 			toAddress: "0xdef",
 			tokenDecimals: 18,
 			isConfirmed: true,
-			amount: BigInt(1000),
+			amount: "1000",
 			chainId: 1,
 		};
 		const generator = new AutomationService(
@@ -188,7 +188,7 @@ describe("AutomationService", () => {
 			toAddress: "0xdef",
 			tokenDecimals: 18,
 			isConfirmed: true,
-			amount: BigInt(1000),
+			amount: "1000",
 			chainId: 1,
 		};
 
@@ -237,7 +237,7 @@ describe("AutomationService", () => {
 			toAddress: "0xdef",
 			tokenDecimals: 18,
 			isConfirmed: true,
-			amount: BigInt(1000),
+			amount: "1000",
 			chainId: 1,
 		};
 
@@ -286,7 +286,7 @@ describe("AutomationService", () => {
 			toAddress: "0xdef",
 			tokenDecimals: 18,
 			isConfirmed: true,
-			amount: BigInt(1000),
+			amount: "1000",
 			chainId: 11155111,
 		};
 
@@ -332,7 +332,7 @@ describe("AutomationService", () => {
 			tokenDecimals: 18,
 			isConfirmed: false,
 			// 10% of amount received
-			amount: BigInt(100),
+			amount: "100",
 			chainId: 11155111,
 		};
 
