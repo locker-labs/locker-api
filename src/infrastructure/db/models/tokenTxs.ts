@@ -1,11 +1,11 @@
 import { relations } from "drizzle-orm";
 import {
-	bigint,
 	boolean,
 	doublePrecision,
 	integer,
 	pgTable,
 	serial,
+	text,
 	timestamp,
 	uniqueIndex,
 	varchar,
@@ -34,7 +34,7 @@ export const tokenTxs = pgTable(
 		tokenSymbol: varchar("token_symbol", { length: 256 }).notNull(),
 		tokenDecimals: integer("token_decimals"),
 		isConfirmed: boolean("is_confirmed").default(false),
-		amount: bigint("amount", { mode: "bigint" }).notNull(),
+		amount: text("amount").notNull(),
 		usdValue: doublePrecision("usd_value"),
 		createdAt: timestamp("created_at", {
 			mode: "date",

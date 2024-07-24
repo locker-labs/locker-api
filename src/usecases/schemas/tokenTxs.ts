@@ -19,7 +19,7 @@ interface TokenTxRepoAdapter {
 	toAddress: `0x${string}`;
 	tokenDecimals: number;
 	isConfirmed: boolean;
-	amount: bigint;
+	amount: string;
 	chainId: number;
 	lockerDirection: ETokenTxLockerDirection;
 	automationsState: ETokenTxAutomationsState;
