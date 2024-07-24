@@ -149,7 +149,7 @@ describe.skip("User deposits into locker, then policy is created", () => {
 
 		expect(unconfirmedDepositResp.status).toEqual(200);
 		const expectedTx = {
-			amount: BigInt(1000),
+			amount: "1000",
 			txHash: txHash,
 			chainId: 11155111,
 			lockerId: locker.id,
@@ -313,7 +313,7 @@ describe.skip("User deposits into locker, then policy is created", () => {
 
 		expect(confirmedDepositResp.status).toEqual(200);
 		const expectedConfirmedTx = {
-			amount: BigInt(1000),
+			amount: "1000",
 			txHash: txHash,
 			chainId: 11155111,
 			lockerId: locker.id,
@@ -544,7 +544,7 @@ describe.skip("User deposits into locker, then policy is created", () => {
 
 		expect(automationResp.status).toEqual(200);
 		const expectedAutomation = {
-			amount: BigInt(100),
+			amount: "100",
 			txHash: automationHash,
 			chainId: 11155111,
 			lockerId: locker.id,

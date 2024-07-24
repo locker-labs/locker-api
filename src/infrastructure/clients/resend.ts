@@ -25,7 +25,8 @@ export default class ResendClient implements IEmailClient {
 	): Promise<void> {
 		const scale = BigInt(100000); // 10^5 for five decimal places
 		const scaledResult =
-			(tx.amount * scale) / BigInt(10) ** BigInt(tx.tokenDecimals);
+			(BigInt(tx.amount) * scale) /
+			BigInt(10) ** BigInt(tx.tokenDecimals);
 		const finalAmount = Number(scaledResult) / 100000;
 		const amountStr = `${finalAmount.toFixed(5)} ${tx.tokenSymbol}`;
 		const to = email;

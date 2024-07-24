@@ -13,7 +13,7 @@ describe.skip("TokenTxsRepo", () => {
 		const txHash = `0x${genRanHex(64)}` as `0x${string}`;
 		console.log(txHash);
 		const confirmedTx: TokenTxRepoAdapter = {
-			amount: BigInt(1000),
+			amount: "1000",
 			txHash,
 			chainId: 11155111,
 			lockerId: 1,
@@ -36,7 +36,7 @@ describe.skip("TokenTxsRepo", () => {
 
 		// then process unconfirmed
 		const unconfirmedTx: TokenTxRepoAdapter = {
-			amount: BigInt(1000),
+			amount: "1000",
 			txHash,
 			chainId: 11155111,
 			lockerId: 1,
@@ -63,7 +63,7 @@ describe.skip("TokenTxsRepo", () => {
 		const txHash = `0x${genRanHex(64)}` as `0x${string}`;
 		console.log(txHash);
 		const confirmedTx: TokenTxRepoAdapter = {
-			amount: BigInt(1000),
+			amount: "1000",
 			txHash,
 			chainId: 11155111,
 			lockerId: 1,
@@ -86,7 +86,7 @@ describe.skip("TokenTxsRepo", () => {
 
 		// then process unconfirmed
 		const unconfirmedTx: TokenTxRepoAdapter = {
-			amount: BigInt(1000),
+			amount: "1000",
 			txHash,
 			chainId: 11155111,
 			lockerId: 1,
