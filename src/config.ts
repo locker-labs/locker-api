@@ -91,6 +91,11 @@ export class Config {
 
 	encriptionKey: string;
 
+	// Beam
+	beamApiKey: string;
+
+	beamBaseUrl: string;
+
 	constructor() {
 		// Application settings
 		this.applicationName = process.env.APPLICATION_NAME || "locker";
@@ -175,6 +180,10 @@ export class Config {
 		// Encrption
 		this.encriptionAlgorithm = process.env.ENCRYPTION_ALGORITHM!;
 		this.encriptionKey = process.env.ENCRYPTION_KEY!;
+
+		// Beam
+		this.beamApiKey = process.env.BEAM_API_KEY!;
+		this.beamBaseUrl = process.env.BEAM_BASE_URL!;
 	}
 }
 

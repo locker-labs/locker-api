@@ -5,6 +5,7 @@ import morgan from "morgan";
 
 import {
 	getLockersRepo,
+	getOffRampRepo,
 	getPoliciesRepo,
 	getTokenTxsRepo,
 	logger,
@@ -33,12 +34,14 @@ tokentxsDbHookRouter.post(
 			const policiesApi = await getPoliciesRepo();
 			const tokenTxsApi = await getTokenTxsRepo();
 			const lockersApi = await getLockersRepo();
+			const offRampRepo = await getOffRampRepo();
 			const callDataExecutor = new ZerodevClient();
 
 			const automationsGenerator = new AutomationService(
 				policiesApi,
 				tokenTxsApi,
 				lockersApi,
+				offRampRepo,
 				callDataExecutor
 			);
 

@@ -7,11 +7,13 @@ import { genRanHex, isTestEnv } from "../../dependencies/environment";
 import { logger } from "../../dependencies/logger";
 import IExecutorClient from "../interfaces/clients/executor";
 import ILockersRepo from "../interfaces/repos/lockers";
+import IOffRampRepo from "../interfaces/repos/offramp";
 import IPoliciesRepo from "../interfaces/repos/policies";
 import ITokenTxsRepo from "../interfaces/repos/tokenTxs";
 import IAutomationService from "../interfaces/services/automation";
 import { LockerInDb } from "../schemas/lockers";
 import {
+	EAutomationType,
 	IAutomation,
 	PolicyInDb,
 	PolicyRepoAdapter,
@@ -32,15 +34,19 @@ export default class AutomationService implements IAutomationService {
 
 	callDataExecutor: IExecutorClient;
 
+	offRampRepo: IOffRampRepo;
+
 	constructor(
 		policiesApi: IPoliciesRepo,
 		tokenTxsApi: ITokenTxsRepo,
 		lockersApi: ILockersRepo,
+		offRampRepo: IOffRampRepo,
 		callDataExecutor: IExecutorClient
 	) {
 		this.policiesApi = policiesApi;
 		this.tokenTxsApi = tokenTxsApi;
 		this.lockersApi = lockersApi;
+		this.offRampRepo = offRampRepo;
 		this.callDataExecutor = callDataExecutor;
 	}
 
@@ -96,7 +102,25 @@ export default class AutomationService implements IAutomationService {
 		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
 			maybeTrigger;
 		const { address: fromAddress } = locker;
-		const { recipientAddress: toAddress, allocation } = automation;
+		// const { recipientAddress: toAddress, allocation } = automation;
+
+		// get recipient address
+		// TODO: standardize generalize method across all automation types in db
+		let toAddress;
+		const { allocation } = automation;
+
+		if (automation.type === EAutomationType.OFF_RAMP) {
+			const offRampAccount = await this.offRampRepo.retrieve({
+				lockerId: locker.id,
+			});
+
+			toAddress = (await this.offRampRepo.getAddressOffRampAddress(
+				offRampAccount!.id,
+				policy.chainId
+			)) as `0x${string}`;
+		} else if (automation.type === EAutomationType.FORWARD_TO) {
+			({ recipientAddress: toAddress } = automation);
+		}
 
 		if (!toAddress) return null;
 
