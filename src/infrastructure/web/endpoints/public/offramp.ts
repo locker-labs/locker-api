@@ -34,6 +34,7 @@ offrampRouter.use(morgan("combined", { stream }));
 function validateRequest<T extends object>(type: {
 	new (): T;
 }): RequestHandler {
+	console.log("Validating request");
 	return async (
 		req: AuthenticatedRequest<Request>,
 		res: Response,
@@ -44,7 +45,8 @@ function validateRequest<T extends object>(type: {
 		if (errors.length > 0) {
 			res.status(400).json(errors);
 		} else {
-			req.body = input; // Optionally, replace the req.body with the validated object
+			// Optionally, replace the req.body with the validated object
+			req.body = input;
 			next();
 		}
 	};
@@ -58,6 +60,8 @@ offrampRouter.post(
 		req: AuthenticatedRequest<Request>,
 		res: Response
 	): Promise<void> => {
+		console.log("Creating offramp account");
+		console.log(req.body);
 		// 1. retrive locker based on address
 		const lockersRepo = await getLockersRepo();
 		const locker = await lockersRepo.retrieve({
@@ -87,18 +91,23 @@ offrampRouter.post(
 			user.emailAddresses[0].emailAddress,
 			req.body.address
 		);
+		console.log("Created account");
+		console.log(resp);
 
-		const { onboardingUrl } = resp;
+		const { onboardingUrl, userId: beamAccountId } = resp;
 
 		// 3. Store beam account in database
 		const offRampAccount: OffRampRepoAdapter = {
 			lockerId: locker!.id,
-			beamAccountId: resp.userId,
+			beamAccountId,
 			status: EOffRampAccountStatus.PENDING,
+			onboardingUrl,
 		};
 
 		let offrampAccountInDb;
 		try {
+			console.log("Creating offramp account in db");
+			console.log(offRampAccount);
 			offrampAccountInDb = await offRampRepo.create(offRampAccount);
 		} catch (error) {
 			if (error instanceof DuplicateRecordError) {

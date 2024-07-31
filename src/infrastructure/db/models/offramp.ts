@@ -13,6 +13,7 @@ import lockers from "./lockers";
 const offrampAccount = pgTable("offramp_accounts", {
 	id: serial("id").primaryKey(),
 	lockerId: integer("locker_id").references(() => lockers.id),
+	onboardingUrl: text("onboarding_url").notNull(),
 	beamAccountId: text("beam_account_id").notNull().unique(),
 	status: text("status").notNull(), // for onboarding
 	errors: text("errors"),

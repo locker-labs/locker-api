@@ -189,8 +189,8 @@ async function handleAddressAddedEvent(
 // NOTES:
 // in order to trigger this webhook:
 // 1. create a beam account manually using their api (you'll receive a call back url)
-// 2. add the callbalck url to the iFrame in testPage.html
-// 3. render testPage.html in the brower and go through dummy kyc flow
+// 2. add the callback url to the iFrame in testPage.html
+// 3. render testPage.html in the browser and go through dummy kyc flow
 // 4. when complete, beam will trigger this webhook (make sure you register it -- i use ngrok to expose my localhost)
 beamRouter.post(
 	"/webhook",

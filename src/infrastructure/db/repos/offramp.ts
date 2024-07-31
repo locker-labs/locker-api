@@ -22,11 +22,9 @@ export default class OffRampRepo implements IOffRampRepo {
 
 				.values({
 					lockerId: offRamp.lockerId,
-
 					beamAccountId: offRamp.beamAccountId,
-
+					onboardingUrl: offRamp.onboardingUrl,
 					status: offRamp.status,
-
 					errors: offRamp.errors,
 				})
 
@@ -35,7 +33,6 @@ export default class OffRampRepo implements IOffRampRepo {
 
 					set: {
 						status: offRamp.status,
-
 						errors: offRamp.errors,
 					},
 				})
@@ -68,11 +65,8 @@ export default class OffRampRepo implements IOffRampRepo {
 		const updatesCopy = { ...updates };
 
 		await this.db
-
 			.update(offrampAccount)
-
 			.set(updatesCopy)
-
 			.where(eq(offrampAccount.beamAccountId, offRampAccountId));
 	}
 

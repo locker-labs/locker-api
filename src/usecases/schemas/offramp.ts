@@ -12,10 +12,11 @@ class CreateOfframpRequest {
 	address!: `0x${string}`;
 }
 
-interface OffRampRepoAdapter {
+interface IOffRampRepoAdapter {
 	lockerId: number;
 	beamAccountId: string;
 	status: string;
+	onboardingUrl: string;
 	errors?: string;
 }
 
@@ -24,7 +25,7 @@ interface OffRampRepoUpdateAdapter {
 	errors?: string | null;
 }
 
-interface OffRampInDb extends OffRampRepoAdapter {
+interface OffRampInDb extends IOffRampRepoAdapter {
 	id: number;
 	createdAt: Date;
 	updatedAt: Date;
@@ -34,6 +35,6 @@ export {
 	CreateOfframpRequest,
 	EOffRampAccountStatus,
 	type OffRampInDb,
-	type OffRampRepoAdapter,
+	type IOffRampRepoAdapter as OffRampRepoAdapter,
 	type OffRampRepoUpdateAdapter,
 };

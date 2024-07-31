@@ -18,6 +18,7 @@
 		"migration:blank": "drizzle-kit generate:pg --custom",
 		"prepare": "husky",
 		"stream:create": "tsx scripts/gen-moralis-stream.ts",
+		"scripts:beam:webhook": "tsx scripts/register-beam-webhook.ts",
 		"test": "jest --coverage",
 		"test:watch": "jest --watch",
 		"test:match": "jest --verbose"
