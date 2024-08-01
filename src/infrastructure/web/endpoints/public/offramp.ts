@@ -76,12 +76,6 @@ offrampRouter.post(
 		// 2. ensure offramp account doesn't already exist
 		const offRampRepo = await getOffRampRepo();
 		const beamAccount = await offRampRepo.retrieve({ lockerId: locker.id });
-		if (beamAccount) {
-			res.status(409).send({
-				error: "Beam account already created for this Locker.",
-			});
-			return;
-		}
 
 		// 3. Create beam account
 		const authClient = await getAuthClient();
@@ -95,6 +89,22 @@ offrampRouter.post(
 		console.log(resp);
 
 		const { onboardingUrl, userId: beamAccountId } = resp;
+
+		if (beamAccount) {
+			console.log("Beam account already created for locker");
+			if (beamAccount.beamAccountId !== beamAccountId) {
+				const msg = `Beam account ${beamAccount.beamAccountId} already created for this Locker but got a new one ${beamAccountId}.`;
+				console.log(msg);
+				res.status(409).send({
+					error: msg,
+				});
+				return;
+			}
+			// res.status(409).send({
+			// 	error: "Beam account already created for this Locker.",
+			// });
+			// return;
+		}
 
 		// 3. Store beam account in database
 		const offRampAccount: OffRampRepoAdapter = {
