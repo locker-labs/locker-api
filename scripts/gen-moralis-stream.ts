@@ -52,30 +52,71 @@ const chains = [
 const tag = process.env.MORALIS_STREAM_TAG!;
 const description = `[${tag}] Transactions`;
 
-const ERC20TransferEventABI = [
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				name: "from",
-				type: "address",
-			},
-			{
-				indexed: true,
-				name: "to",
-				type: "address",
-			},
-			{
-				indexed: false,
-				name: "value",
-				type: "uint256",
-			},
-		],
-		name: "Transfer",
-		type: "event",
-	},
-];
+const ERC20TransferEventABI = {
+	anonymous: false,
+	inputs: [
+		{
+			indexed: true,
+			name: "from",
+			type: "address",
+		},
+		{
+			indexed: true,
+			name: "to",
+			type: "address",
+		},
+		{
+			indexed: false,
+			name: "value",
+			type: "uint256",
+		},
+	],
+	name: "Transfer",
+	type: "event",
+};
+
+const UserOpEventABI = {
+	name: "UserOperationEvent",
+	type: "event",
+	anonymous: false,
+	inputs: [
+		{
+			type: "bytes32",
+			name: "userOpHash",
+			indexed: true,
+		},
+		{
+			type: "address",
+			name: "sender",
+			indexed: true,
+		},
+		{
+			type: "address",
+			name: "paymaster",
+			indexed: true,
+		},
+		{
+			type: "uint256",
+			name: "nonce",
+			indexed: false,
+		},
+		{
+			type: "bool",
+			name: "success",
+			indexed: false,
+		},
+		{
+			type: "uint256",
+			name: "actualGasCost",
+			indexed: false,
+		},
+		{
+			type: "uint256",
+			name: "actualGasUsed",
+			indexed: false,
+		},
+	],
+};
 
 const createStream = async () => {
 	const host = process.env.LOCKER_BASE_URL;
@@ -84,7 +125,9 @@ const createStream = async () => {
 	const txUpdatePath = `integrations/moralis/webhooks/transactions`;
 	const webhookUrl = `${host}/${txUpdatePath}`;
 
-	const topic = "Transfer(address,address,uint256)";
+	const erc20Topic = "Transfer(address,address,uint256)";
+	const useropTopic =
+		"UserOperationEvent(bytes32,address,address,uint256,bool,uint256,uint256)";
 
 	const response = await Moralis.Streams.add({
 		webhookUrl,
@@ -92,9 +135,9 @@ const createStream = async () => {
 		tag,
 		chains,
 		includeNativeTxs: true,
-		abi: ERC20TransferEventABI,
+		abi: [ERC20TransferEventABI, UserOpEventABI],
 		includeContractLogs: true,
-		topic0: [topic],
+		topic0: [erc20Topic, useropTopic],
 	});
 
 	return response.toJSON().id;

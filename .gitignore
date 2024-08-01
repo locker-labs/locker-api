@@ -3,6 +3,7 @@
 .env.stream
 .secrets.*
 .env.test
+.env.scripts
 
 # Node
 node_modules/
