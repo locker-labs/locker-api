@@ -80,7 +80,12 @@ export default class AutomationService implements IAutomationService {
 			{ lockerId, chainId },
 			true
 		);
-		if (!policy) return false;
+		if (!policy) {
+			console.log(
+				`No policy found for locker ${lockerId} and chain ${chainId}`
+			);
+			return false;
+		}
 
 		console.log("Checking encrytedSessionKey");
 		// If no policy is found, don't generate automations
@@ -222,6 +227,7 @@ export default class AutomationService implements IAutomationService {
 		};
 
 		// submit on-chain
+		// testing hack where we simulate sending a tx in test
 		let txHash = genRanHex(64) as `0x${string}`;
 		if (!isTestEnv()) {
 			logger.debug("Preparing tx", callDataArgs);
@@ -230,8 +236,8 @@ export default class AutomationService implements IAutomationService {
 				callDataArgs,
 				scope: `${scope}-${toAddress}-${maybeTrigger.id}`,
 			})) as `0x${string}`;
-			logger.debug("Transaction sent", txHash);
 		}
+		logger.debug("Transaction sent", txHash);
 
 		// Persist to DB.
 		// This TX will also be picked up by Moralis, but here we can record what triggered this automation.

@@ -116,8 +116,8 @@ export default class ZerodevClient implements IExecutorClient {
 			policy.encryptedSessionKey,
 			policy.encodedIv
 		);
-		console.log("Using session key");
-		console.log(serializedSessionKey);
+		// console.log("Using session key");
+		// console.log(serializedSessionKey);
 		const sessionKeyAccount = await deserializePermissionAccount(
 			publicClient,
 			entryPoint,
