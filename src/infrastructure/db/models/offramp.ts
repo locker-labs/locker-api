@@ -1,5 +1,6 @@
 import {
 	integer,
+	jsonb,
 	pgTable,
 	serial,
 	text,
@@ -71,16 +72,10 @@ const offRampAddresses = pgTable(
 // This table lets us know the status of both bank transfers and on-chain deposits into beam addresses
 const offRampEvents = pgTable("offramp_events", {
 	id: serial("id").primaryKey(),
-	offRampAccountId: integer("offramp_account_id").references(
-		() => offrampAccount.id
-	),
-	type: text("type").notNull(), // delineates between bank transfers and crypto transfers
-	offRampAddressId: integer("offramp_address_id").references(
-		// null if the record is a bank transfer
-		() => offRampAddresses.id
-	),
-	status: text("status").notNull(),
-	errors: text("errors"),
+	// parsed from the payload. Not making an explicit association to offrampAccount in case the account is deleted or missing
+	beamAccountId: text("beam_account_id"),
+	payload: jsonb("payload").notNull(),
+	type: text("type").notNull(),
 	createdAt: timestamp("created_at", {
 		mode: "date",
 		precision: 6,

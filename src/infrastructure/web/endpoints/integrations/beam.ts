@@ -19,6 +19,7 @@ import {
 	logger,
 	stream,
 } from "../../../../dependencies";
+import supabase from "../../../../lib/supabase";
 import ILockersRepo from "../../../../usecases/interfaces/repos/lockers";
 import IOffRampRepo from "../../../../usecases/interfaces/repos/offramp";
 import IPoliciesRepo from "../../../../usecases/interfaces/repos/policies";
@@ -32,7 +33,6 @@ import {
 	EAutomationStatus,
 	EAutomationType,
 } from "../../../../usecases/schemas/policies";
-
 // import DuplicateRecordError from "../../../db/errors";
 
 const beamRouter = express.Router();
@@ -48,8 +48,8 @@ const authRequired = (req: Request, res: Response, next: NextFunction) => {
 
 	if (
 		!credentials ||
-		credentials.name !== "beamUsername" ||
-		credentials.pass !== "beamPassword"
+		credentials.name !== process.env.BEAM_USERNAME ||
+		credentials.pass !== process.env.BEAM_PASSWORD
 	) {
 		res.setHeader("WWW-Authenticate", 'Basic realm="example"');
 		return res.status(401).send("Access denied");
@@ -105,6 +105,13 @@ async function updateAutomations(
 	}
 }
 
+function parseFirstUUID(input: string): string | null {
+	const regex =
+		/\b[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}\b/;
+	const match = input.match(regex);
+	return match ? match[0] : null;
+}
+
 async function handleOnboardingEvent(
 	eventName: string,
 	offRampAccountId: string,
@@ -127,15 +134,22 @@ async function handleOnboardingEvent(
 		errors: null,
 	};
 
-	// 1. Update beam account status
-	await offRampRepo.update(offRampAccountId, offRampAccountUpdates);
-
-	// 2. Update automation status
 	const offRampAccount = await offRampRepo.retrieve({
 		beamAccountId: offRampAccountId,
 	});
-	const locker = await lockersRepo.retrieve({ id: offRampAccount!.lockerId });
-	await updateAutomations(locker!.id, policiesRepo);
+
+	if (offRampAccount) {
+		// 1. Update beam account status
+		await offRampRepo.update(offRampAccountId, offRampAccountUpdates);
+
+		// 2. Update automation status
+		// const locker = await lockersRepo.retrieve({ id: offRampAccount!.lockerId });
+		await updateAutomations(offRampAccount!.lockerId, policiesRepo);
+	} else {
+		console.log(
+			`Could not find offRampAccount with beamAccountId: ${offRampAccountId}. Skipping onboarding event.`
+		);
+	}
 }
 
 async function handleAddressAddedEvent(
@@ -177,13 +191,19 @@ async function handleAddressAddedEvent(
 		beamAccountId: offRampAccountId,
 	});
 
-	const address = getAddress(resp, tokenInfo.tokenId);
+	if (offRampAccount) {
+		const address = getAddress(resp, tokenInfo.tokenId);
 
-	await offRampRepo.createOffRampAddress(
-		offRampAccount!.id,
-		tokenInfo.chainId,
-		address!
-	);
+		await offRampRepo.createOffRampAddress(
+			offRampAccount!.id,
+			tokenInfo.chainId,
+			address!
+		);
+	} else {
+		console.log(
+			`Could not find offRampAccount with beamAccountId: ${offRampAccountId}. Skipping address added event.`
+		);
+	}
 }
 
 // NOTES:
@@ -192,6 +212,7 @@ async function handleAddressAddedEvent(
 // 2. add the callback url to the iFrame in testPage.html
 // 3. render testPage.html in the browser and go through dummy kyc flow
 // 4. when complete, beam will trigger this webhook (make sure you register it -- i use ngrok to expose my localhost)
+// console.log(authRequired, validateRequest, BeamWebhookRequest);
 beamRouter.post(
 	"/webhook",
 	authRequired,
@@ -202,16 +223,34 @@ beamRouter.post(
 		const policiesRepo = await getPoliciesRepo();
 		const offRampClient = await getOffRampClient();
 
+		console.log("\n\nGot beam webhook: ", req.body, "\n\n");
+
 		const resourcePath = req.body.resources[0];
-		const offRampAccountId = resourcePath.split("/").pop();
-		console.log("\n\noffRampAccountId: ", offRampAccountId, "\n\n");
-		const resp = await offRampClient.getAccount(offRampAccountId);
+		const beamAccountId = parseFirstUUID(resourcePath);
+
+		await supabase.from("offramp_events").insert({
+			beam_account_id: beamAccountId,
+			type: req.body.eventName,
+			payload: req.body,
+		});
+
+		if (!beamAccountId) {
+			console.log(
+				"Could not find UUID in resource path, skipping.",
+				resourcePath
+			);
+			res.status(200).send();
+			return;
+		}
+		console.log("\n\noffRampAccountId: ", beamAccountId, "\n\n");
+		const resp = await offRampClient.getAccount(beamAccountId);
 
 		try {
 			if (req.body.eventName.startsWith("User.Onboarding.")) {
+				console.log("processing onboarding event");
 				await handleOnboardingEvent(
 					req.body.eventName,
-					offRampAccountId,
+					beamAccountId,
 					offRampRepo,
 					lockerRepo,
 					policiesRepo
@@ -219,16 +258,49 @@ beamRouter.post(
 			} else if (
 				req.body.eventName.startsWith("User.BeamAddress.Added.")
 			) {
+				console.log("processing new address");
 				await handleAddressAddedEvent(
 					req.body.eventName,
 					resp,
-					offRampAccountId,
+					beamAccountId,
 					offRampRepo
 				);
 			} else if (req.body.eventName === "User.Deposit") {
 				console.log("\n\nWE MADE IT TO THE DEPOSIT EVENT");
 				console.log(req.body);
+			} else if (req.body.eventName === "Beam.Deposit.Approved") {
+				// {
+				// 	id: '54f6f16c-f631-4308-8010-a1f1775b0eba',
+				// 	eventName: 'Beam.Deposit.Approved',
+				// 	partnerId: 'df803fcb-34f0-413d-99ef-dc777e88e6a4',
+				// 	createdAt: '2024-06-20T05:42:54.249Z',
+				// 	resources: [
+				// 	  'users/c97a214e-b274-465a-bf6a-0c78a09e77fc/deposits/4077cde2-ebad-4d66-b519-31c747c7416d'
+				// 	]
+				//   }
+			} else if (req.body.eventName === "Beam.Deposit.Detected") {
+				// {
+				// 	id: '6e3b01c4-5cf9-4adc-a516-e09f6ee812f5',
+				// 	eventName: 'Beam.Deposit.Detected',
+				// 	partnerId: 'df803fcb-34f0-413d-99ef-dc777e88e6a4',
+				// 	createdAt: '2024-06-20T05:42:46.695Z',
+				// 	resources: [
+				// 	  'users/c97a214e-b274-465a-bf6a-0c78a09e77fc/deposits/4077cde2-ebad-4d66-b519-31c747c7416d'
+				// 	]
+				//   }
+			} else if (req.body.eventName === "Beam.Payment.Initiated") {
+				// {
+				// 	id: '65ddf453-1f54-408e-8ef4-2ec69f44ec5f',
+				// 	eventName: 'Beam.Payment.Initiated',
+				// 	partnerId: 'df803fcb-34f0-413d-99ef-dc777e88e6a4',
+				// 	createdAt: '2024-06-20T05:50:11.932Z',
+				// 	resources: [
+				// 	  'users/c97a214e-b274-465a-bf6a-0c78a09e77fc/deposits/beac6b84-508e-4f47-a3f8-d4c5ef2de83c'
+				// 	]
+				//   }
 			} else {
+				console.log("Could not process something");
+				console.log(req.body);
 				throw new Error("Unsupported event");
 			}
 

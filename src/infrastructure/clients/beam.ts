@@ -5,13 +5,13 @@ import IOffRampClient from "../../usecases/interfaces/clients/offramp";
 
 export default class BeamClient implements IOffRampClient {
 	private async apiCall(url: string, options: RequestInit): Promise<any> {
-		console.log("Making API call to: ", url);
-		console.log("With options: ", options);
+		// console.log("Making API call to: ", url);
+		// console.log("With options: ", options);
 		try {
 			const response = await fetch(url, options);
 			const responseJson = await response.json();
-			console.log("GOt response");
-			console.log(responseJson);
+			// console.log("GOt response");
+			// console.log(responseJson);
 			// console.log(response.
 			if (!response.ok) {
 				// console.log(await response.text());
