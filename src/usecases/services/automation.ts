@@ -13,6 +13,7 @@ import ITokenTxsRepo from "../interfaces/repos/tokenTxs";
 import IAutomationService from "../interfaces/services/automation";
 import { LockerInDb } from "../schemas/lockers";
 import {
+	EAutomationStatus,
 	EAutomationType,
 	IAutomation,
 	PolicyInDb,
@@ -121,7 +122,8 @@ export default class AutomationService implements IAutomationService {
 
 			toAddress = (await this.offRampRepo.getAddressOffRampAddress(
 				offRampAccount!.id,
-				policy.chainId
+				policy.chainId,
+				contractAddress.toLowerCase()
 			)) as `0x${string}`;
 		} else if (automation.type === EAutomationType.FORWARD_TO) {
 			({ recipientAddress: toAddress } = automation);
@@ -200,7 +202,23 @@ export default class AutomationService implements IAutomationService {
 		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
 			maybeTrigger;
 		const { address: fromAddress } = locker;
-		const { recipientAddress: toAddress, allocation } = automation;
+		let toAddress;
+		const { allocation } = automation;
+
+		// If offramp, then send ETH to vendor address
+		if (automation.type === EAutomationType.OFF_RAMP) {
+			const offRampAccount = await this.offRampRepo.retrieve({
+				lockerId: locker.id,
+			});
+
+			toAddress = (await this.offRampRepo.getAddressOffRampAddress(
+				offRampAccount!.id,
+				policy.chainId,
+				zeroAddress
+			)) as `0x${string}`;
+		} else if (automation.type === EAutomationType.FORWARD_TO) {
+			({ recipientAddress: toAddress } = automation);
+		}
 
 		if (!toAddress) return null;
 
@@ -319,26 +337,26 @@ export default class AutomationService implements IAutomationService {
 	): Promise<TokenTxInDb | null> {
 		try {
 			// Ensure off
-			if (automation.status !== "ready") return null;
+			if (automation.status !== EAutomationStatus.READY) return null;
 
-			if (automation.type === "savings") return null;
+			if (automation.type === EAutomationType.SAVINGS) return null;
 
 			switch (automation.type) {
-				case "forward_to":
+				case EAutomationType.FORWARD_TO:
 					return await this.spawnOnChainTx(
 						maybeTrigger,
 						automation,
 						policy,
 						locker,
-						"forward_to"
+						EAutomationType.FORWARD_TO
 					);
-				case "off_ramp":
+				case EAutomationType.OFF_RAMP:
 					return await this.spawnOnChainTx(
 						maybeTrigger,
 						automation,
 						policy,
 						locker,
-						"off_ramp"
+						EAutomationType.OFF_RAMP
 					);
 
 				default:
@@ -358,7 +376,7 @@ export default class AutomationService implements IAutomationService {
 	 * Loop through all automations in policy corresponding to the trigger.
 	 * Create an outbound transfer for each automation proportional to split.
 	 * @param maybeTrigger
-	 * @returns
+	 * @returns persisted outbound automations
 	 */
 	public async spawnAutomations(
 		maybeTrigger: TokenTxInDb
@@ -374,11 +392,11 @@ export default class AutomationService implements IAutomationService {
 		// If no existing policy, automations can't be run
 		if (!policy) return [];
 
+		// Retrieve locker itself so we can get it's address
 		const locker = await this.lockersApi.retrieve({ id: lockerId });
+
 		// Should never happen, but just in case
 		if (!locker) return [];
-
-		// Retrieve locker itself so we can get it's address
 
 		const policyApi = policy as PolicyRepoAdapter;
 		if (!policyApi.encryptedSessionKey) return [];

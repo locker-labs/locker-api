@@ -44,6 +44,7 @@ const offRampAddresses = pgTable(
 			() => offrampAccount.id
 		),
 		chainId: integer("chain_id").notNull(),
+		contractAddress: text("contract_address").notNull(),
 		address: text("address").notNull(),
 		createdAt: timestamp("created_at", {
 			mode: "date",
@@ -64,7 +65,8 @@ const offRampAddresses = pgTable(
 	(table) => ({
 		addressChainIdIdx: uniqueIndex("addresss_chain_id_idx").on(
 			table.address,
-			table.chainId
+			table.chainId,
+			table.contractAddress
 		),
 	})
 );

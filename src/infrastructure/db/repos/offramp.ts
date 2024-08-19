@@ -98,15 +98,10 @@ export default class OffRampRepo implements IOffRampRepo {
 		}
 
 		const result = await this.db
-
 			.select()
-
 			.from(offrampAccount)
-
 			.where(and(...conditions))
-
 			.limit(1)
-
 			.execute();
 
 		return result.length > 0 ? (result[0] as OffRampInDb) : null;
@@ -114,26 +109,24 @@ export default class OffRampRepo implements IOffRampRepo {
 
 	async createOffRampAddress(
 		offRampId: number,
-
 		chainId: number,
-
-		address: string
+		address: string,
+		contractAddress: string
 	): Promise<void> {
 		try {
+			console.log("going to create offramp address");
 			await this.db
-
 				.insert(offRampAddresses)
-
 				.values({
 					offRampAccountId: offRampId,
-
 					chainId,
-
 					address,
+					contractAddress,
 				})
-
 				.onConflictDoNothing();
+			console.log("created offramp address");
 		} catch (error: unknown) {
+			console.log("Unable to create offramp address", error);
 			const e = error as { code?: string; message: string };
 
 			if (e.code === "23505") {
@@ -148,26 +141,21 @@ export default class OffRampRepo implements IOffRampRepo {
 
 	async getAddressOffRampAddress(
 		offRampAccountId: number,
-
-		chainId: number
+		chainId: number,
+		contractAddress: string
 	): Promise<string | null> {
 		try {
 			const result = await this.db
-
 				.select()
-
 				.from(offRampAddresses)
-
 				.where(
 					and(
 						eq(offRampAddresses.offRampAccountId, offRampAccountId),
-
-						eq(offRampAddresses.chainId, chainId)
+						eq(offRampAddresses.chainId, chainId),
+						eq(offRampAddresses.contractAddress, contractAddress)
 					)
 				)
-
 				.limit(1)
-
 				.execute();
 
 			return result.length > 0 ? result[0].address : null;

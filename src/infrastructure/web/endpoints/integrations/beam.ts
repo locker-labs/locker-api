@@ -10,6 +10,7 @@ import express, {
 	Response,
 } from "express";
 import morgan from "morgan";
+import { zeroAddress } from "viem";
 
 import {
 	getLockersRepo,
@@ -91,13 +92,14 @@ async function updateAutomations(
 	policiesRepo: IPoliciesRepo
 ) {
 	const policies = await policiesRepo.retrieveMany(lockerId);
+	console.log("Updating automation status for policies: ", policies);
 	// eslint-disable-next-line no-restricted-syntax
 	for (const policy of policies) {
 		const { automations } = policy;
 		// eslint-disable-next-line no-restricted-syntax
 		for (const automation of policy.automations) {
 			if (automation.type === EAutomationType.OFF_RAMP) {
-				automation.status = EAutomationStatus.READY;
+				automation.status = EAutomationStatus.AUTOMATE_THEN_READY;
 			}
 		}
 		// eslint-disable-next-line no-await-in-loop
@@ -120,6 +122,7 @@ async function handleOnboardingEvent(
 	policiesRepo: IPoliciesRepo
 ): Promise<void> {
 	let status: EOffRampAccountStatus;
+	console.log("Got onboarding event: ", eventName);
 
 	if (eventName === "User.Onboarding.Approved") {
 		status = EOffRampAccountStatus.APPROVED;
@@ -137,8 +140,14 @@ async function handleOnboardingEvent(
 	const offRampAccount = await offRampRepo.retrieve({
 		beamAccountId: offRampAccountId,
 	});
+	console.log(
+		"Got onboarding event for offRampAccount: ",
+		eventName,
+		offRampAccount
+	);
 
 	if (offRampAccount) {
+		console.log("Updating offramp account");
 		// 1. Update beam account status
 		await offRampRepo.update(offRampAccountId, offRampAccountUpdates);
 
@@ -158,31 +167,77 @@ async function handleAddressAddedEvent(
 	offRampAccountId: string,
 	offRampRepo: IOffRampRepo
 ): Promise<void> {
-	const tokenIdMap: { [key: string]: { tokenId: string; chainId: number } } =
-		{
-			"User.BeamAddress.Added.USDC.ARBITRUM": {
-				tokenId: "USDC.ARBITRUM",
-				chainId: ChainIds.ARBITRUM,
-			},
-			"User.BeamAddress.Added.USDC.ETH": {
-				tokenId: "USDC.ETH",
-				chainId: ChainIds.ETHEREUM,
-			},
-			"User.BeamAddress.Added.USDC.AVAX": {
-				tokenId: "USDC.AVAX",
-				chainId: ChainIds.AVALANCHE,
-			},
-			"User.BeamAddress.Added.USDC.POLYGON": {
-				tokenId: "USDC.POLYGON",
-				chainId: ChainIds.POLYGON,
-			},
-			"User.BeamAddress.Added.USDC.BASE": {
-				tokenId: "USDC.BASE",
-				chainId: ChainIds.BASE,
-			},
+	console.log("handleAddressAddedEvent ", eventName);
+	const tokenIdMap: {
+		[key: string]: {
+			tokenId: string;
+			chainId: number;
+			contractAddress: `0x${string}`;
 		};
+	} = {
+		// arbitrum
+		"User.BeamAddress.Added.USDC.ARBITRUM": {
+			tokenId: "USDC.ARBITRUM",
+			chainId: ChainIds.ARBITRUM,
+			contractAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+		},
+		"User.BeamAddress.Added.ETH.ARBITRUM": {
+			tokenId: "ETH.ARBITRUM",
+			chainId: ChainIds.ARBITRUM,
+			contractAddress: zeroAddress,
+		},
+
+		// ethereum
+		"User.BeamAddress.Added.USDC.ETH": {
+			tokenId: "USDC.ETH",
+			chainId: ChainIds.ETHEREUM,
+			contractAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+		},
+		"User.BeamAddress.Added.ETH": {
+			tokenId: "ETH",
+			chainId: ChainIds.ETHEREUM,
+			contractAddress: zeroAddress,
+		},
+
+		// avalanche
+		"User.BeamAddress.Added.USDC.AVAX": {
+			tokenId: "USDC.AVAX",
+			chainId: ChainIds.AVALANCHE,
+			contractAddress: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+		},
+		"User.BeamAddress.Added.AVAX": {
+			tokenId: "AVAX",
+			chainId: ChainIds.AVALANCHE,
+			contractAddress: zeroAddress,
+		},
+
+		// polygon
+		"User.BeamAddress.Added.USDC.POLYGON": {
+			tokenId: "USDC.POLYGON",
+			chainId: ChainIds.POLYGON,
+			contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+		},
+		"User.BeamAddress.Added.MATIC.POLYGON": {
+			tokenId: "MATIC.POLYGON",
+			chainId: ChainIds.POLYGON,
+			contractAddress: zeroAddress,
+		},
+
+		// base
+		"User.BeamAddress.Added.USDC.BASE": {
+			tokenId: "USDC.BASE",
+			chainId: ChainIds.BASE,
+			contractAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+		},
+		"User.BeamAddress.Added.ETH.BASE": {
+			tokenId: "ETH.BASE",
+			chainId: ChainIds.BASE,
+			contractAddress: zeroAddress,
+		},
+	};
 
 	const tokenInfo = tokenIdMap[eventName];
+	console.log("tokenInfo for ", eventName, tokenInfo);
 	if (!tokenInfo) {
 		return;
 	}
@@ -190,15 +245,33 @@ async function handleAddressAddedEvent(
 	const offRampAccount = await offRampRepo.retrieve({
 		beamAccountId: offRampAccountId,
 	});
+	console.log("For address added event: ", offRampAccount, offRampAccountId);
 
 	if (offRampAccount) {
-		const address = getAddress(resp, tokenInfo.tokenId);
+		const { contractAddress, tokenId } = tokenInfo;
+		const address = getAddress(resp, tokenId);
 
-		await offRampRepo.createOffRampAddress(
-			offRampAccount!.id,
-			tokenInfo.chainId,
-			address!
+		console.log(
+			"Adding address: ",
+			offRampAccount,
+			tokenInfo,
+			address,
+			contractAddress
 		);
+
+		try {
+			await offRampRepo.createOffRampAddress(
+				offRampAccount!.id,
+				tokenInfo.chainId,
+				address!,
+				contractAddress.toLowerCase()
+			);
+		} catch (error) {
+			console.warn(
+				"Something went wrong creating offramp address",
+				error
+			);
+		}
 	} else {
 		console.log(
 			`Could not find offRampAccount with beamAccountId: ${offRampAccountId}. Skipping address added event.`
