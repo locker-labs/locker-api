@@ -1,3 +1,4 @@
+import BeamClient from "../infrastructure/clients/beam";
 import {
 	type AuthenticatedRequest,
 	authRequired,
@@ -10,6 +11,7 @@ import { IAuthClient } from "../usecases/interfaces/clients/auth";
 import IEmailClient from "../usecases/interfaces/clients/email";
 import IExecutorClient from "../usecases/interfaces/clients/executor";
 import { IIndexerClient } from "../usecases/interfaces/clients/indexer";
+import IOffRampClient from "../usecases/interfaces/clients/offramp";
 
 // singleton because moralis should only be initialized once
 let indexerClient: IIndexerClient | undefined;
@@ -48,6 +50,15 @@ async function getAuthClient(): Promise<IAuthClient> {
 	return authClient;
 }
 
+let offRampClient: IOffRampClient | undefined;
+async function getOffRampClient(): Promise<IOffRampClient> {
+	if (!offRampClient) {
+		offRampClient = new BeamClient();
+	}
+
+	return offRampClient!;
+}
+
 export {
 	type AuthenticatedRequest,
 	authRequired,
@@ -55,4 +66,5 @@ export {
 	getEmailClient,
 	getExecutorClient,
 	getIndexerClient,
+	getOffRampClient,
 };

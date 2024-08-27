@@ -72,9 +72,19 @@ export default class PoliciesRepo implements IPoliciesRepo {
 			throw new Error("No valid identifier provided.");
 		}
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const formattedUpdates: any = { ...updates };
+		if (updates.automations) {
+			const formattedAutomations = sql`${new Param(
+				JSON.parse(JSON.stringify(updates.automations))
+			)}`;
+
+			formattedUpdates.automations = formattedAutomations;
+		}
+
 		const result = await this.db
 			.update(policies)
-			.set(updates)
+			.set(formattedUpdates)
 			.where(and(...conditions))
 			.returning();
 

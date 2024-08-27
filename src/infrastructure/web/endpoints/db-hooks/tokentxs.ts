@@ -5,6 +5,7 @@ import morgan from "morgan";
 
 import {
 	getLockersRepo,
+	getOffRampRepo,
 	getPoliciesRepo,
 	getTokenTxsRepo,
 	logger,
@@ -26,19 +27,21 @@ tokentxsDbHookRouter.post(
 	async (req: Request, res: Response): Promise<void> => {
 		try {
 			console.log("Processing tokentx...");
+			console.log(JSON.stringify(req.body, null, 2));
 			const rawTx = req.body.record;
 			// console.log(JSON.stringify(req.body.record, null, 2));
-			logger.debug(JSON.stringify(req.body.record, null, 2));
 
 			const policiesApi = await getPoliciesRepo();
 			const tokenTxsApi = await getTokenTxsRepo();
 			const lockersApi = await getLockersRepo();
+			const offRampRepo = await getOffRampRepo();
 			const callDataExecutor = new ZerodevClient();
 
 			const automationsGenerator = new AutomationService(
 				policiesApi,
 				tokenTxsApi,
 				lockersApi,
+				offRampRepo,
 				callDataExecutor
 			);
 

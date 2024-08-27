@@ -9,6 +9,8 @@ export enum EAutomationType {
 export enum EAutomationStatus {
 	NEW = "new",
 	PENDING = "pending",
+	// only blocker to being READY is regenerating the session key
+	AUTOMATE_THEN_READY = "automate_then_ready",
 	READY = "ready",
 	FAILED = "failed",
 }
