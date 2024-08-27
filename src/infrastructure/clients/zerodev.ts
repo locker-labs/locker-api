@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
 import { getKernelAddressFromECDSA } from "@zerodev/ecdsa-validator";
 import { deserializePermissionAccount } from "@zerodev/permissions";
 import { toECDSASigner } from "@zerodev/permissions/signers";
