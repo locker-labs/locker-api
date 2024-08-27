@@ -145,6 +145,7 @@ export default class ZerodevClient implements IExecutorClient {
 
 		const nonceKey = getCustomNonceKeyFromString(scope, entryPoint);
 		const nonce = await sessionKeyAccount.getNonce(nonceKey);
+		console.log("Nonce", nonce, scope, nonceKey);
 
 		const isEthTransfer = true;
 

@@ -374,7 +374,26 @@ beamRouter.post(
 			} else {
 				console.log("Could not process something");
 				console.log(req.body);
-				throw new Error("Unsupported event");
+				// throw new Error("Unsupported event");
+				// {
+				// 	id: 'ed6cc19a-6789-42ab-897a-dae278f1e184',
+				// 	eventName: 'Beam.Trade.Initiated',
+				// 	partnerId: 'df803fcb-34f0-413d-99ef-dc777e88e6a4',
+				// 	createdAt: '2024-08-13T23:23:31.291Z',
+				// 	resources: [
+				// 	  'accounts/individuals/785ca7d9-170f-4801-829f-a1a59f81e999/trades/f75ff65a-4c0b-47ba-8a3f-bc65c678579c'
+				// 	]
+				//   }
+
+				// {
+				// 	id: 'e0a02001-ee87-447a-8914-9b66e4b5c74b',
+				// 	eventName: 'Beam.Trade.Completed',
+				// 	partnerId: 'df803fcb-34f0-413d-99ef-dc777e88e6a4',
+				// 	createdAt: '2024-08-13T23:24:03.409Z',
+				// 	resources: [
+				// 		'accounts/individuals/785ca7d9-170f-4801-829f-a1a59f81e999/trades/f75ff65a-4c0b-47ba-8a3f-bc65c678579c'
+				// 	]
+				// }
 			}
 
 			res.status(200).send();

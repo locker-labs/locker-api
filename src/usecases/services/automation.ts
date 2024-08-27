@@ -366,6 +366,7 @@ export default class AutomationService implements IAutomationService {
 		} catch (e: any) {
 			logger.error(
 				`Failed to spawn automation for ${maybeTrigger.id}`,
+				automation,
 				e
 			);
 			return null;
@@ -402,18 +403,35 @@ export default class AutomationService implements IAutomationService {
 		if (!policyApi.encryptedSessionKey) return [];
 		const { automations } = policy;
 
-		const spawnedAutomationsPromises = automations.map((automation) =>
-			this.spawnAutomation(maybeTrigger, automation, policyApi, locker)
-		);
+		const tokenTxs = [];
+		// eslint-disable-next-line no-restricted-syntax
+		for (const automation of automations) {
+			logger.debug("Automation", automation);
+			const spawnedAutomation = this.spawnAutomation(
+				maybeTrigger,
+				automation,
+				policyApi,
+				locker
+			);
 
-		const spawnedAutomations = await Promise.all(
-			spawnedAutomationsPromises
-		);
+			// eslint-disable-next-line no-await-in-loop
+			const tokenTx = await spawnedAutomation;
+			if (tokenTx) tokenTxs.push(tokenTx);
+		}
 
-		// Remove automations that failed to spawn
-		return spawnedAutomations.filter(
-			(spawnedAutomation) => spawnedAutomation !== null
-		) as TokenTxInDb[];
+		return tokenTxs;
+		// const spawnedAutomationsPromises = automations.map((automation) =>
+		// 	this.spawnAutomation(maybeTrigger, automation, policyApi, locker)
+		// );
+
+		// const spawnedAutomations = await Promise.all(
+		// 	spawnedAutomationsPromises
+		// );
+
+		// // Remove automations that failed to spawn
+		// return spawnedAutomations.filter(
+		// 	(spawnedAutomation) => spawnedAutomation !== null
+		// ) as TokenTxInDb[];
 	}
 
 	/**
