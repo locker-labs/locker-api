@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
+import { ProxyAgent } from "undici";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env.scripts") });
 
@@ -11,6 +12,9 @@ const authPassword = process.env.BEAM_PASSWORD;
 console.log("authPassword: ", authPassword);
 const callbackUrl = `${process.env.BEAM_CALLBACK_BASE_URL}/integrations/beam/webhook`;
 console.log("callbackUrl: ", callbackUrl);
+
+const fixieUrl = process.env.FIXIE_URL!;
+console.log("fixieUrl: ", fixieUrl);
 
 // Webhook can only be created once
 // const webhookOptions = {
@@ -49,6 +53,7 @@ console.log("callbackUrl: ", callbackUrl);
 // 	.catch((err) => console.error(`error:${err}`));
 
 // const { id } = resp[0];
+const dispatcher = new ProxyAgent({ uri: new URL(fixieUrl).toString() });
 
 const updateWebhookOptions = {
 	method: "PUT",
@@ -58,6 +63,7 @@ const updateWebhookOptions = {
 		Authorization: `Bearer ${process.env.BEAM_API_KEY}`,
 	},
 	body: JSON.stringify({ authUsername, authPassword, callbackUrl }),
+	dispatcher,
 };
 console.log("updateWebhookOptions: ", updateWebhookOptions);
 
