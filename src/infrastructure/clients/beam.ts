@@ -1,14 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ProxyAgent } from "undici";
+
 import config from "../../config";
 import { logger } from "../../dependencies/logger";
 import IOffRampClient from "../../usecases/interfaces/clients/offramp";
+
+const fixieUrl = process.env.FIXIE_URL!;
 
 export default class BeamClient implements IOffRampClient {
 	private async apiCall(url: string, options: RequestInit): Promise<any> {
 		// console.log("Making API call to: ", url);
 		// console.log("With options: ", options);
+		let requestOptions: any = options;
+		if (fixieUrl) {
+			const dispatcher = new ProxyAgent({
+				uri: new URL(fixieUrl).toString(),
+			});
+			requestOptions = { ...options, dispatcher };
+		}
 		try {
-			const response = await fetch(url, options);
+			const response = await fetch(url, requestOptions);
 			const responseJson = await response.json();
 			// console.log("GOt response");
 			// console.log(responseJson);
