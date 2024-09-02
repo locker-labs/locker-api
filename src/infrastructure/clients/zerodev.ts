@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
 import { getKernelAddressFromECDSA } from "@zerodev/ecdsa-validator";
 import { deserializePermissionAccount } from "@zerodev/permissions";
 import { toECDSASigner } from "@zerodev/permissions/signers";
@@ -116,8 +119,8 @@ export default class ZerodevClient implements IExecutorClient {
 			policy.encryptedSessionKey,
 			policy.encodedIv
 		);
-		console.log("Using session key");
-		console.log(serializedSessionKey);
+		// console.log("Using session key");
+		// console.log(serializedSessionKey);
 		const sessionKeyAccount = await deserializePermissionAccount(
 			publicClient,
 			entryPoint,
@@ -145,6 +148,7 @@ export default class ZerodevClient implements IExecutorClient {
 
 		const nonceKey = getCustomNonceKeyFromString(scope, entryPoint);
 		const nonce = await sessionKeyAccount.getNonce(nonceKey);
+		console.log("Nonce", nonce, scope, nonceKey);
 
 		const isEthTransfer = true;
 

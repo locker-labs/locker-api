@@ -35,7 +35,7 @@ export const adaptMoralisBody2TokenTx = async (
 	moralisBody: any,
 	lockersRepo: ILockersRepo
 ): Promise<{ tokenTx: TokenTxRepoAdapter; locker: LockerInDb }> => {
-	const { erc20Transfers, txs } = moralisBody;
+	const { erc20Transfers, txs, txsInternal } = moralisBody;
 	let locker;
 	let tokenTx;
 
@@ -80,6 +80,57 @@ export const adaptMoralisBody2TokenTx = async (
 			tokenDecimals: parseInt(tokenDecimals),
 			fromAddress: from,
 			toAddress: to,
+			isConfirmed: moralisBody.confirmed,
+			amount: value.toString(),
+			chainId: parseInt(moralisBody.chainId, 16),
+		};
+	} else if (txsInternal && txsInternal.length > 1) {
+		console.log("treating as automated ETH transfer");
+		const ethTx = txsInternal[0];
+		const {
+			to: toAddress,
+			from: fromAddress,
+			value,
+			transactionHash: hash,
+		} = ethTx;
+
+		// assume ETH transfer
+		let lockerDirection = ETokenTxLockerDirection.IN;
+		console.log("looking with toAddress", toAddress);
+		locker = await lockersRepo.retrieve({
+			address: toAddress,
+		});
+
+		if (!locker) {
+			console.log("looking with fromAddress", fromAddress);
+			locker = await lockersRepo.retrieve({
+				address: fromAddress,
+			});
+			if (!locker)
+				throw new Error(
+					`Locker not found ${toAddress}, ${fromAddress}`
+				);
+
+			lockerDirection = ETokenTxLockerDirection.OUT;
+		}
+
+		if (!locker)
+			throw new Error(
+				`Locker not found ${toAddress} as sender or recipient of transaction.`
+			);
+
+		tokenTx = {
+			lockerId: locker!.id,
+			lockerDirection,
+			automationsState: ETokenTxAutomationsState.NOT_STARTED,
+			contractAddress: zeroAddress as `0x${string}`,
+			txHash: hash,
+			tokenSymbol:
+				SUPPORTED_CHAINS[parseInt(moralisBody.chainId, 16) as ChainIds]
+					.native,
+			tokenDecimals: 18,
+			fromAddress: fromAddress.toLowerCase(),
+			toAddress: toAddress.toLowerCase(),
 			isConfirmed: moralisBody.confirmed,
 			amount: value.toString(),
 			chainId: parseInt(moralisBody.chainId, 16),
@@ -136,6 +187,8 @@ moralisRouter.post(
 	"/webhooks/transactions",
 	async (req: Request, res: Response): Promise<void> => {
 		const { body: moralisBody } = req;
+		console.log("/webhooks/transactions");
+		console.log(JSON.parse(JSON.stringify(moralisBody)));
 		const {
 			txs,
 			chainId: chainIdHex,
@@ -181,6 +234,8 @@ moralisRouter.post(
 					lockersRepo
 				);
 
+				console.log("Going to insert tokenTx", tokenTx);
+
 				try {
 					const createdTx = await tokenTxsRepo.create(tokenTx);
 					// This can happen if the tx is already confirmed and we try to upsert it as unconfirmed
@@ -189,7 +244,9 @@ moralisRouter.post(
 							"Unable to create token tx, maybe it was already confirmed before this update?"
 						);
 					}
+					console.log("Created token tx", createdTx);
 				} catch (error) {
+					console.log("unable to insert");
 					if (error instanceof DuplicateRecordError) {
 						res.status(409).send({
 							error: (error as Error).message,
@@ -208,6 +265,7 @@ moralisRouter.post(
 					!isTestEnv() &&
 					tokenTx.lockerDirection === ETokenTxLockerDirection.IN
 				) {
+					console.log("Sending email");
 					const authClient = await getAuthClient();
 					const user = await authClient.getUser(locker!.userId);
 
@@ -221,6 +279,14 @@ moralisRouter.post(
 			}
 		} catch (error) {
 			// Swallow exceptions to prevent unexpected retry behavior from Moralis
+			try {
+				delete moralisBody.data;
+				delete moralisBody.input;
+				delete moralisBody.abi;
+			} catch (_) {
+				// ignore
+			}
+			console.log(error);
 			logger.error("Unable to process message from moralis", moralisBody);
 			logger.error(error);
 		}

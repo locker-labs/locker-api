@@ -1,0 +1,1 @@
+ALTER TABLE "offramp_accounts" ADD COLUMN "onboarding_url" text NOT NULL;

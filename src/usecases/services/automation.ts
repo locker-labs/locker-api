@@ -7,11 +7,14 @@ import { genRanHex, isTestEnv } from "../../dependencies/environment";
 import { logger } from "../../dependencies/logger";
 import IExecutorClient from "../interfaces/clients/executor";
 import ILockersRepo from "../interfaces/repos/lockers";
+import IOffRampRepo from "../interfaces/repos/offramp";
 import IPoliciesRepo from "../interfaces/repos/policies";
 import ITokenTxsRepo from "../interfaces/repos/tokenTxs";
 import IAutomationService from "../interfaces/services/automation";
 import { LockerInDb } from "../schemas/lockers";
 import {
+	EAutomationStatus,
+	EAutomationType,
 	IAutomation,
 	PolicyInDb,
 	PolicyRepoAdapter,
@@ -32,15 +35,19 @@ export default class AutomationService implements IAutomationService {
 
 	callDataExecutor: IExecutorClient;
 
+	offRampRepo: IOffRampRepo;
+
 	constructor(
 		policiesApi: IPoliciesRepo,
 		tokenTxsApi: ITokenTxsRepo,
 		lockersApi: ILockersRepo,
+		offRampRepo: IOffRampRepo,
 		callDataExecutor: IExecutorClient
 	) {
 		this.policiesApi = policiesApi;
 		this.tokenTxsApi = tokenTxsApi;
 		this.lockersApi = lockersApi;
+		this.offRampRepo = offRampRepo;
 		this.callDataExecutor = callDataExecutor;
 	}
 
@@ -74,7 +81,12 @@ export default class AutomationService implements IAutomationService {
 			{ lockerId, chainId },
 			true
 		);
-		if (!policy) return false;
+		if (!policy) {
+			console.log(
+				`No policy found for locker ${lockerId} and chain ${chainId}`
+			);
+			return false;
+		}
 
 		console.log("Checking encrytedSessionKey");
 		// If no policy is found, don't generate automations
@@ -96,7 +108,26 @@ export default class AutomationService implements IAutomationService {
 		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
 			maybeTrigger;
 		const { address: fromAddress } = locker;
-		const { recipientAddress: toAddress, allocation } = automation;
+		// const { recipientAddress: toAddress, allocation } = automation;
+
+		// get recipient address
+		// TODO: standardize generalize method across all automation types in db
+		let toAddress;
+		const { allocation } = automation;
+
+		if (automation.type === EAutomationType.OFF_RAMP) {
+			const offRampAccount = await this.offRampRepo.retrieve({
+				lockerId: locker.id,
+			});
+
+			toAddress = (await this.offRampRepo.getAddressOffRampAddress(
+				offRampAccount!.id,
+				policy.chainId,
+				contractAddress.toLowerCase()
+			)) as `0x${string}`;
+		} else if (automation.type === EAutomationType.FORWARD_TO) {
+			({ recipientAddress: toAddress } = automation);
+		}
 
 		if (!toAddress) return null;
 
@@ -171,7 +202,23 @@ export default class AutomationService implements IAutomationService {
 		const { contractAddress, tokenSymbol, tokenDecimals, chainId, amount } =
 			maybeTrigger;
 		const { address: fromAddress } = locker;
-		const { recipientAddress: toAddress, allocation } = automation;
+		let toAddress;
+		const { allocation } = automation;
+
+		// If offramp, then send ETH to vendor address
+		if (automation.type === EAutomationType.OFF_RAMP) {
+			const offRampAccount = await this.offRampRepo.retrieve({
+				lockerId: locker.id,
+			});
+
+			toAddress = (await this.offRampRepo.getAddressOffRampAddress(
+				offRampAccount!.id,
+				policy.chainId,
+				zeroAddress
+			)) as `0x${string}`;
+		} else if (automation.type === EAutomationType.FORWARD_TO) {
+			({ recipientAddress: toAddress } = automation);
+		}
 
 		if (!toAddress) return null;
 
@@ -198,6 +245,7 @@ export default class AutomationService implements IAutomationService {
 		};
 
 		// submit on-chain
+		// testing hack where we simulate sending a tx in test
 		let txHash = genRanHex(64) as `0x${string}`;
 		if (!isTestEnv()) {
 			logger.debug("Preparing tx", callDataArgs);
@@ -206,8 +254,8 @@ export default class AutomationService implements IAutomationService {
 				callDataArgs,
 				scope: `${scope}-${toAddress}-${maybeTrigger.id}`,
 			})) as `0x${string}`;
-			logger.debug("Transaction sent", txHash);
 		}
+		logger.debug("Transaction sent", txHash);
 
 		// Persist to DB.
 		// This TX will also be picked up by Moralis, but here we can record what triggered this automation.
@@ -289,26 +337,26 @@ export default class AutomationService implements IAutomationService {
 	): Promise<TokenTxInDb | null> {
 		try {
 			// Ensure off
-			if (automation.status !== "ready") return null;
+			if (automation.status !== EAutomationStatus.READY) return null;
 
-			if (automation.type === "savings") return null;
+			if (automation.type === EAutomationType.SAVINGS) return null;
 
 			switch (automation.type) {
-				case "forward_to":
+				case EAutomationType.FORWARD_TO:
 					return await this.spawnOnChainTx(
 						maybeTrigger,
 						automation,
 						policy,
 						locker,
-						"forward_to"
+						EAutomationType.FORWARD_TO
 					);
-				case "off_ramp":
+				case EAutomationType.OFF_RAMP:
 					return await this.spawnOnChainTx(
 						maybeTrigger,
 						automation,
 						policy,
 						locker,
-						"off_ramp"
+						EAutomationType.OFF_RAMP
 					);
 
 				default:
@@ -318,6 +366,7 @@ export default class AutomationService implements IAutomationService {
 		} catch (e: any) {
 			logger.error(
 				`Failed to spawn automation for ${maybeTrigger.id}`,
+				automation,
 				e
 			);
 			return null;
@@ -328,7 +377,7 @@ export default class AutomationService implements IAutomationService {
 	 * Loop through all automations in policy corresponding to the trigger.
 	 * Create an outbound transfer for each automation proportional to split.
 	 * @param maybeTrigger
-	 * @returns
+	 * @returns persisted outbound automations
 	 */
 	public async spawnAutomations(
 		maybeTrigger: TokenTxInDb
@@ -344,28 +393,45 @@ export default class AutomationService implements IAutomationService {
 		// If no existing policy, automations can't be run
 		if (!policy) return [];
 
+		// Retrieve locker itself so we can get it's address
 		const locker = await this.lockersApi.retrieve({ id: lockerId });
+
 		// Should never happen, but just in case
 		if (!locker) return [];
-
-		// Retrieve locker itself so we can get it's address
 
 		const policyApi = policy as PolicyRepoAdapter;
 		if (!policyApi.encryptedSessionKey) return [];
 		const { automations } = policy;
 
-		const spawnedAutomationsPromises = automations.map((automation) =>
-			this.spawnAutomation(maybeTrigger, automation, policyApi, locker)
-		);
+		const tokenTxs = [];
+		// eslint-disable-next-line no-restricted-syntax
+		for (const automation of automations) {
+			logger.debug("Automation", automation);
+			const spawnedAutomation = this.spawnAutomation(
+				maybeTrigger,
+				automation,
+				policyApi,
+				locker
+			);
 
-		const spawnedAutomations = await Promise.all(
-			spawnedAutomationsPromises
-		);
+			// eslint-disable-next-line no-await-in-loop
+			const tokenTx = await spawnedAutomation;
+			if (tokenTx) tokenTxs.push(tokenTx);
+		}
 
-		// Remove automations that failed to spawn
-		return spawnedAutomations.filter(
-			(spawnedAutomation) => spawnedAutomation !== null
-		) as TokenTxInDb[];
+		return tokenTxs;
+		// const spawnedAutomationsPromises = automations.map((automation) =>
+		// 	this.spawnAutomation(maybeTrigger, automation, policyApi, locker)
+		// );
+
+		// const spawnedAutomations = await Promise.all(
+		// 	spawnedAutomationsPromises
+		// );
+
+		// // Remove automations that failed to spawn
+		// return spawnedAutomations.filter(
+		// 	(spawnedAutomation) => spawnedAutomation !== null
+		// ) as TokenTxInDb[];
 	}
 
 	/**

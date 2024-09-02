@@ -6,8 +6,14 @@ export {
 	getAuthClient,
 	getEmailClient,
 	getIndexerClient,
+	getOffRampClient,
 } from "./clients";
 export { logger, stream } from "./logger";
 
 export { ERC20_TRANSFER_ABI };
-export { getLockersRepo, getPoliciesRepo, getTokenTxsRepo } from "./repos";
+export {
+	getLockersRepo,
+	getOffRampRepo,
+	getPoliciesRepo,
+	getTokenTxsRepo,
+} from "./repos";

@@ -14,11 +14,13 @@ import TestCallDataExecutor from "../../utils/TestCallDataExecutor";
 import TestLockerApi from "../../utils/TestLockerApi";
 import TestPolicyApi from "../../utils/TestPolicyApi";
 import TestTokenTxApi from "../../utils/TestTokenTxApi";
+import TestOffRampRepo from "../../utils/TestOffRampRepo";
 
 const testPolicyApi = new TestPolicyApi();
 const testTokenTxApi = new TestTokenTxApi();
 const testCallDataExecutor = new TestCallDataExecutor();
 const testLockerApi = new TestLockerApi();
+const testOffRampRepo = new TestOffRampRepo();
 
 describe("AutomationService", () => {
 	const locker: LockerInDb = {
@@ -55,6 +57,7 @@ describe("AutomationService", () => {
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
@@ -83,6 +86,7 @@ describe("AutomationService", () => {
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
@@ -111,6 +115,7 @@ describe("AutomationService", () => {
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
@@ -139,6 +144,7 @@ describe("AutomationService", () => {
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
@@ -167,6 +173,7 @@ describe("AutomationService", () => {
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 		const didAutomate = await generator.shouldGenerateAutomations(outTx);
@@ -202,6 +209,7 @@ describe("AutomationService", () => {
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 
@@ -259,6 +267,7 @@ describe("AutomationService", () => {
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 
@@ -301,6 +310,7 @@ describe("AutomationService", () => {
 			testPolicyApi,
 			testTokenTxApi,
 			testLockerApi,
+			testOffRampRepo,
 			testCallDataExecutor
 		);
 
