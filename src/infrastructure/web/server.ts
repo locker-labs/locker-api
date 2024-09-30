@@ -17,7 +17,7 @@ import policyRouter from "./endpoints/public/policies";
 import tokenTxsRouter from "./endpoints/public/tokenTxs";
 
 function setupRoutes(app: Express): void {
-	app.use(cors({ origin: true, credentials: true }));
+	app.use(cors({ origin: "*" }));
 
 	// Metrics
 	app.use("/metrics/health", healthRouter);
