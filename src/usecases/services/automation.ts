@@ -452,10 +452,13 @@ export default class AutomationService implements IAutomationService {
 		if (!shouldGenerate) return false;
 
 		// set automationState to started
-		await this.tokenTxsApi.create({
+		const startedTx = {
 			...maybeTrigger,
 			automationsState: ETokenTxAutomationsState.STARTED,
-		});
+		};
+		console.log("maybeTrigger", maybeTrigger);
+		console.log("startedTx", startedTx);
+		await this.tokenTxsApi.create(startedTx);
 
 		await this.spawnAutomations(maybeTrigger);
 
