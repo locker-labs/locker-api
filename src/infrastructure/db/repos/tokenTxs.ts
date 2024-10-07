@@ -47,9 +47,9 @@ export default class TokenTxsRepo implements ITokenTxsRepo {
 					},
 					// Only update if the tx is not confirmed to prevent regressions
 					// We do this to prevent two DB events from firing and potentially triggering multiple automations due to race conditions
-					setWhere: sql.raw(
-						`token_transactions.${tokenTxs.isConfirmed.name} IS FALSE`
-					),
+					// setWhere: sql.raw(
+					// 	`token_transactions.${tokenTxs.isConfirmed.name} IS FALSE`
+					// ),
 				})
 				.returning();
 
