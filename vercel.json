@@ -23,5 +23,10 @@
 			"path": "/metrics/reporting",
 			"schedule": "*/2 * * * *"
 		}
-	]
+	],
+	"functions": {
+		"api/**/*.ts": {
+			"maxDuration": 300
+		}
+	}
 }
