@@ -413,8 +413,11 @@ export default class AutomationService implements IAutomationService {
 		for (const automation of automations) {
 			console.log("Automation", automation);
 			// Don't process automations that transfer nothing
-			// eslint-disable-next-line no-continue
-			if (automation.allocation === 0) continue;
+			if (automation.allocation === 0) {
+				console.log("Skipping automation with 0 allocation");
+				// eslint-disable-next-line no-continue
+				continue;
+			}
 
 			const spawnedAutomation = this.spawnAutomation(
 				maybeTrigger,
@@ -425,6 +428,7 @@ export default class AutomationService implements IAutomationService {
 
 			// eslint-disable-next-line no-await-in-loop
 			const tokenTx = await spawnedAutomation;
+			console.log("Successfully spawned automation", tokenTx);
 			if (tokenTx) tokenTxs.push(tokenTx);
 
 			// Add 3-second delay at the end of each iteration
@@ -432,6 +436,7 @@ export default class AutomationService implements IAutomationService {
 			const sleepFor = process.env.TX_SLEEP_FOR
 				? parseInt(process.env.TX_SLEEP_FOR)
 				: 3000;
+			console.log(`Sleeping for ${sleepFor}ms`);
 			// eslint-disable-next-line no-await-in-loop
 			await new Promise((resolve) => {
 				setTimeout(resolve, sleepFor);
