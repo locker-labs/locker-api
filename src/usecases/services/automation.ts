@@ -409,6 +409,8 @@ export default class AutomationService implements IAutomationService {
 		const { automations } = policy;
 
 		const tokenTxs = [];
+
+		console.log("Automations", automations);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const automation of automations) {
 			console.log("Automation", automation);
@@ -443,6 +445,7 @@ export default class AutomationService implements IAutomationService {
 			});
 		}
 
+		console.log("Finished spawning automations", tokenTxs);
 		return tokenTxs;
 		// const spawnedAutomationsPromises = automations.map((automation) =>
 		// 	this.spawnAutomation(maybeTrigger, automation, policyApi, locker)
