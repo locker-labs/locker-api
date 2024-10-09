@@ -154,6 +154,7 @@ export default class ZerodevClient implements IExecutorClient {
 
 		// Send ETH transfer
 		if (isEthTransfer) {
+			console.log("Going to send ETH transfer", callDataArgs);
 			const { to, value, data } = callDataArgs as {
 				to: Address;
 				value: bigint;
@@ -173,6 +174,7 @@ export default class ZerodevClient implements IExecutorClient {
 
 		// Otherwise is ER20
 		// Send user operation
+		console.log("Going to send ERC20 transfer", callDataArgs);
 		const callData = await sessionKeyAccount.encodeCallData(callDataArgs);
 		const userOpHash = await kernelClient.sendUserOperation({
 			userOperation: {
