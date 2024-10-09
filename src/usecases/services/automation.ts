@@ -426,6 +426,16 @@ export default class AutomationService implements IAutomationService {
 			// eslint-disable-next-line no-await-in-loop
 			const tokenTx = await spawnedAutomation;
 			if (tokenTx) tokenTxs.push(tokenTx);
+
+			// Add 3-second delay at the end of each iteration
+			// Something is wrong with nonces and if multiple userops are sent back-to-back it fails
+			const sleepFor = process.env.TX_SLEEP_FOR
+				? parseInt(process.env.TX_SLEEP_FOR)
+				: 3000;
+			// eslint-disable-next-line no-await-in-loop
+			await new Promise((resolve) => {
+				setTimeout(resolve, sleepFor);
+			});
 		}
 
 		return tokenTxs;
