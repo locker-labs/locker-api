@@ -53,9 +53,9 @@ console.log("fixieUrl: ", fixieUrl);
 // 	.catch((err) => console.error(`error:${err}`));
 
 // const { id } = resp[0];
-const dispatcher = new ProxyAgent({ uri: new URL(fixieUrl).toString() });
 
-const updateWebhookOptions = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const updateWebhookOptions: any = {
 	method: "PUT",
 	headers: {
 		accept: "application/json",
@@ -63,8 +63,13 @@ const updateWebhookOptions = {
 		Authorization: `Bearer ${process.env.BEAM_API_KEY}`,
 	},
 	body: JSON.stringify({ authUsername, authPassword, callbackUrl }),
-	dispatcher,
 };
+
+if (fixieUrl) {
+	updateWebhookOptions.dispatcher = new ProxyAgent({
+		uri: new URL(fixieUrl).toString(),
+	});
+}
 console.log("updateWebhookOptions: ", updateWebhookOptions);
 
 fetch(url, updateWebhookOptions)

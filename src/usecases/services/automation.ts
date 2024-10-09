@@ -144,7 +144,7 @@ export default class AutomationService implements IAutomationService {
 			functionName: "transfer",
 			args: [toAddress, amountOut],
 		};
-		logger.debug("erc20UnencodedData", erc20UnencodedData);
+		console.log("erc20UnencodedData", erc20UnencodedData);
 
 		const erc20Data = encodeFunctionData(erc20UnencodedData);
 
@@ -158,13 +158,18 @@ export default class AutomationService implements IAutomationService {
 		// submit on-chain
 		let txHash = genRanHex(64) as `0x${string}`;
 		if (!isTestEnv()) {
-			logger.debug("Preparing userOp", callDataArgs);
-			txHash = (await this.callDataExecutor.execCallDataWithPolicy({
-				policy,
-				callDataArgs,
-				scope: `${scope}-${contractAddress}-${maybeTrigger.id}`,
-			})) as `0x${string}`;
-			logger.debug("Transaction sent", txHash);
+			try {
+				console.log("Preparing userOp", callDataArgs);
+				txHash = (await this.callDataExecutor.execCallDataWithPolicy({
+					policy,
+					callDataArgs,
+					scope: `${scope}-${contractAddress}-${toAddress}-${maybeTrigger.id}`,
+				})) as `0x${string}`;
+				console.log("Transaction sent", txHash);
+			} catch (e) {
+				console.error("Unable to send userOp", e);
+				return null;
+			}
 		}
 
 		// Persist to DB.
@@ -235,7 +240,7 @@ export default class AutomationService implements IAutomationService {
 			functionName: "transfer",
 			args: [toAddress, amountOut],
 		};
-		logger.debug("erc20UnencodedData", erc20UnencodedData);
+		console.log("erc20UnencodedData", erc20UnencodedData);
 
 		const callDataArgs = {
 			to: toAddress,
@@ -248,14 +253,14 @@ export default class AutomationService implements IAutomationService {
 		// testing hack where we simulate sending a tx in test
 		let txHash = genRanHex(64) as `0x${string}`;
 		if (!isTestEnv()) {
-			logger.debug("Preparing tx", callDataArgs);
+			console.log("Preparing tx", callDataArgs);
 			txHash = (await this.callDataExecutor.execCallDataWithPolicy({
 				policy,
 				callDataArgs,
 				scope: `${scope}-${toAddress}-${maybeTrigger.id}`,
 			})) as `0x${string}`;
 		}
-		logger.debug("Transaction sent", txHash);
+		console.log("Transaction sent", txHash);
 
 		// Persist to DB.
 		// This TX will also be picked up by Moralis, but here we can record what triggered this automation.
@@ -295,11 +300,11 @@ export default class AutomationService implements IAutomationService {
 		// used for the key of the nonce
 		scope: string = "default"
 	): Promise<TokenTxInDb | null> {
-		logger.debug("Spawning on-chain tx");
-		logger.debug(automation);
+		console.log("Spawning on-chain tx");
+		console.log(automation);
 		// console.log(policy);
-		logger.debug(maybeTrigger);
-		logger.debug(locker);
+		console.log(maybeTrigger);
+		console.log(locker);
 
 		// Process ETH transactions
 		if (maybeTrigger.contractAddress === zeroAddress) {
@@ -404,9 +409,18 @@ export default class AutomationService implements IAutomationService {
 		const { automations } = policy;
 
 		const tokenTxs = [];
+
+		console.log("Automations", automations);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const automation of automations) {
-			logger.debug("Automation", automation);
+			console.log("Automation", automation);
+			// Don't process automations that transfer nothing
+			if (automation.allocation === 0) {
+				console.log("Skipping automation with 0 allocation");
+				// eslint-disable-next-line no-continue
+				continue;
+			}
+
 			const spawnedAutomation = this.spawnAutomation(
 				maybeTrigger,
 				automation,
@@ -416,9 +430,25 @@ export default class AutomationService implements IAutomationService {
 
 			// eslint-disable-next-line no-await-in-loop
 			const tokenTx = await spawnedAutomation;
-			if (tokenTx) tokenTxs.push(tokenTx);
+			console.log("Successfully spawned automation", tokenTx);
+			if (tokenTx) {
+				tokenTxs.push(tokenTx);
+				// Add 3-second delay at the end of each iteration
+				// Something is wrong with nonces and if multiple userops are sent back-to-back it fails
+				const sleepFor = process.env.TX_SLEEP_FOR
+					? parseInt(process.env.TX_SLEEP_FOR)
+					: 2000;
+				console.log(`Sleeping for ${sleepFor}ms`);
+				// eslint-disable-next-line no-await-in-loop
+				await new Promise((resolve) => {
+					setTimeout(resolve, sleepFor);
+				});
+			} else {
+				console.log("no automation spawned");
+			}
 		}
 
+		console.log("Finished spawning automations", tokenTxs);
 		return tokenTxs;
 		// const spawnedAutomationsPromises = automations.map((automation) =>
 		// 	this.spawnAutomation(maybeTrigger, automation, policyApi, locker)
@@ -447,7 +477,7 @@ export default class AutomationService implements IAutomationService {
 		const shouldGenerate =
 			await this.shouldGenerateAutomations(maybeTrigger);
 
-		logger.debug("Should generate", shouldGenerate);
+		console.log("Should generate", shouldGenerate);
 
 		if (!shouldGenerate) return false;
 
