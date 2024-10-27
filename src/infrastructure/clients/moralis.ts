@@ -1,6 +1,6 @@
 import { IWebhook } from "@moralisweb3/streams-typings";
 import Moralis from "moralis";
-import { numberToHex, zeroAddress } from "viem";
+import { numberToHex } from "viem";
 import web3 from "web3";
 
 import config from "../../config";
@@ -46,6 +46,52 @@ export default class MoralisClient implements IIndexerClient {
 		}
 	}
 
+	async moralisGetAllBalancesByWallet(
+		lockerAddress: `0x${string}`,
+		chainId: number
+	): Promise<ILockerTokenBalance[]> {
+		try {
+			const chainIdHex = numberToHex(chainId);
+			const moralisBalances =
+				await Moralis.EvmApi.wallets.getWalletTokenBalancesPrice({
+					chain: chainIdHex,
+					address: lockerAddress,
+					excludeSpam: true,
+				});
+
+			const balances = moralisBalances.result.map((moralisBalance) => {
+				const {
+					symbol,
+					tokenAddress,
+					decimals,
+					balance,
+					logo: imgUrl,
+					usdValue: valueUsd,
+					usdValue24hrUsdChange: valueUsdChange,
+				} = moralisBalance;
+
+				return {
+					symbol,
+					address:
+						tokenAddress ||
+						"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+					decimals,
+					chainId,
+					balance: balance.toString(),
+					imgUrl,
+					valueUsd,
+					valueUsdChange: valueUsdChange || 0,
+				} as ILockerTokenBalance;
+			});
+
+			return balances;
+		} catch (e) {
+			logger.error(e);
+		}
+
+		return [];
+	}
+
 	async moralisGetErc20BalanceByWallet(
 		lockerAddress: `0x${string}`,
 		chainId: number
@@ -65,6 +111,7 @@ export default class MoralisClient implements IIndexerClient {
 					token_address: address,
 					decimals,
 					balance,
+					logo: imgUrl,
 				} = moralisBalance;
 
 				return {
@@ -73,6 +120,7 @@ export default class MoralisClient implements IIndexerClient {
 					decimals,
 					chainId,
 					balance,
+					imgUrl,
 				} as ILockerTokenBalance;
 			});
 
@@ -84,56 +132,62 @@ export default class MoralisClient implements IIndexerClient {
 		return [];
 	}
 
-	async moralisGetEthBalanceByWallet(
-		lockerAddress: `0x${string}`,
-		chainId: number
-	): Promise<ILockerTokenBalance[]> {
-		try {
-			const chainIdHex = numberToHex(chainId);
-			const moralisBalance =
-				await Moralis.EvmApi.balance.getNativeBalance({
-					chain: chainIdHex,
-					address: lockerAddress,
-				});
+	// async moralisGetEthBalanceByWallet(
+	// 	lockerAddress: `0x${string}`,
+	// 	chainId: number
+	// ): Promise<ILockerTokenBalance[]> {
+	// 	try {
+	// 		const chainIdHex = numberToHex(chainId);
+	// 		const moralisBalance =
+	// 			await Moralis.EvmApi.balance.getNativeBalance({
+	// 				chain: chainIdHex,
+	// 				address: lockerAddress,
+	// 			});
 
-			const { balance } = moralisBalance.toJSON();
+	// 		const { balance } = moralisBalance.toJSON();
 
-			const lockerTokenBalance = {
-				symbol: SUPPORTED_CHAINS[chainId].native,
-				address: zeroAddress,
-				decimals: 18,
-				chainId,
-				balance,
-			} as ILockerTokenBalance;
+	// 		const lockerTokenBalance = {
+	// 			symbol: SUPPORTED_CHAINS[chainId].native,
+	// 			address: zeroAddress,
+	// 			decimals: 18,
+	// 			chainId,
+	// 			balance,
+	// 			imgUrl,
+	// 		} as ILockerTokenBalance;
 
-			return [lockerTokenBalance];
-		} catch (e) {
-			logger.error(e);
-		}
+	// 		return [lockerTokenBalance];
+	// 	} catch (e) {
+	// 		logger.error(e);
+	// 	}
 
-		return [];
-	}
+	// 	return [];
+	// }
 
 	async getLockerTokenBalances({
 		lockerAddress,
 	}: {
 		lockerAddress: `0x${string}`;
 	}): Promise<ILockerTokenBalance[]> {
-		// For every chainId, get balance of all tokens
-		// https://docs.moralis.io/web3-data-api/evm/reference/wallet-api/get-token-balances-by-wallet
-		const erc20TokenBalancePromises = chainIds.map(async (chainId) =>
-			this.moralisGetErc20BalanceByWallet(lockerAddress, chainId)
-		);
+		// // For every chainId, get balance of all tokens
+		// // https://docs.moralis.io/web3-data-api/evm/reference/wallet-api/get-token-balances-by-wallet
+		// const erc20TokenBalancePromises = chainIds.map(async (chainId) =>
+		// 	this.moralisGetErc20BalanceByWallet(lockerAddress, chainId)
+		// );
 
-		// For every chainId, get balance of all tokens
-		// https://docs.moralis.io/web3-data-api/evm/reference/wallet-api/get-token-balances-by-wallet
-		const ethTokenBalancePromises = chainIds.map(async (chainId) =>
-			this.moralisGetEthBalanceByWallet(lockerAddress, chainId)
+		// // For every chainId, get balance of all tokens
+		// // https://docs.moralis.io/web3-data-api/evm/reference/wallet-api/get-token-balances-by-wallet
+		// const ethTokenBalancePromises = chainIds.map(async (chainId) =>
+		// 	this.moralisGetEthBalanceByWallet(lockerAddress, chainId)
+		// );
+
+		const balancePromises = chainIds.map(async (chainId) =>
+			this.moralisGetAllBalancesByWallet(lockerAddress, chainId)
 		);
 
 		// adapt response to final format
 		const groupedBalances = await Promise.all(
-			erc20TokenBalancePromises.concat(ethTokenBalancePromises)
+			balancePromises
+			// erc20TokenBalancePromises.concat(ethTokenBalancePromises)
 		);
 		return groupedBalances
 			.flat()
