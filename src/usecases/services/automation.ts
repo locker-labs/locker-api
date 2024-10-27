@@ -15,6 +15,7 @@ import { LockerInDb } from "../schemas/lockers";
 import {
 	EAutomationStatus,
 	EAutomationType,
+	EAutomationUserState,
 	IAutomation,
 	PolicyInDb,
 	PolicyRepoAdapter,
@@ -341,10 +342,18 @@ export default class AutomationService implements IAutomationService {
 		locker: LockerInDb
 	): Promise<TokenTxInDb | null> {
 		try {
-			// Ensure off
+			// Ensure automation is ready and active
 			if (automation.status !== EAutomationStatus.READY) return null;
 
-			if (automation.type === EAutomationType.SAVINGS) return null;
+			// For backwards compatibility, assume automations are on if userState is missing
+			if (automation.userState === EAutomationUserState.OFF) return null;
+
+			// only forwarding and offramp can trigger automations
+			if (
+				automation.type !== EAutomationType.OFF_RAMP &&
+				automation.type !== EAutomationType.FORWARD_TO
+			)
+				return null;
 
 			switch (automation.type) {
 				case EAutomationType.FORWARD_TO:
