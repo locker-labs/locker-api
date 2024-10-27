@@ -79,6 +79,9 @@ interface ILockerTokenBalance {
 	decimals: number;
 	chainId: number;
 	balance: string;
+	imgUrl: string;
+	valueUsd: number;
+	valueUsdChange: number;
 }
 
 export {
