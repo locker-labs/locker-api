@@ -1,15 +1,15 @@
--- leaderboard view --
-CREATE VIEW
+CREATE OR REPLACE VIEW
   public.efrogr_user_stats AS
 SELECT
   u.id,
-  MAX(p.score) AS "highScore",
-  SUM(CAST(p."croakUsed" AS NUMERIC)) AS "croakUsed",
+  COALESCE(MAX(p.score), 0) AS "highScore",
+  COALESCE(SUM(CAST(p."croakUsed" AS NUMERIC)), 0) AS "croakUsed",
   MAX(u."croakLeft") AS "croakLeft",
   MAX(u."tgJson" ->> 'username') AS "tgUsername"
 FROM
   efrogr_users u
-  JOIN efrogr_plays p ON p."efrogrUserId" = u.id
+  LEFT JOIN efrogr_plays p ON p."efrogrUserId" = u.id
 GROUP BY
   u.id
-order by MAX(p.score) desc;
+ORDER BY
+  COALESCE(MAX(p.score), 0) DESC;
