@@ -1,0 +1,553 @@
+{
+	"id": "b75ba92e-395d-41b7-b57d-8e32ef3878a1",
+	"prevId": "54328728-61be-47d8-90ac-d1ba1c629e68",
+	"version": "5",
+	"dialect": "pg",
+	"tables": {
+		"deployments": {
+			"name": "deployments",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"locker_id": {
+					"name": "locker_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"deployment_tx_hash": {
+					"name": "deployment_tx_hash",
+					"type": "varchar",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"chain_id": {
+					"name": "chain_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"deployment_tx_hash_chain_id_idx": {
+					"name": "deployment_tx_hash_chain_id_idx",
+					"columns": ["deployment_tx_hash", "chain_id"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"deployments_locker_id_lockers_id_fk": {
+					"name": "deployments_locker_id_lockers_id_fk",
+					"tableFrom": "deployments",
+					"columnsFrom": ["locker_id"],
+					"tableTo": "lockers",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"lockers": {
+			"name": "lockers",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"seed": {
+					"name": "seed",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"provider": {
+					"name": "provider",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"address": {
+					"name": "address",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"owner_address": {
+					"name": "owner_address",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"usd_value": {
+					"name": "usd_value",
+					"type": "double precision",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"lockers_address_unique": {
+					"name": "lockers_address_unique",
+					"columns": ["address"],
+					"nullsNotDistinct": false
+				}
+			}
+		},
+		"offramp_addresses": {
+			"name": "offramp_addresses",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"offramp_account_id": {
+					"name": "offramp_account_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"chain_id": {
+					"name": "chain_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"contract_address": {
+					"name": "contract_address",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"address": {
+					"name": "address",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"addresss_chain_id_idx": {
+					"name": "addresss_chain_id_idx",
+					"columns": ["address", "chain_id", "contract_address"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"offramp_addresses_offramp_account_id_offramp_accounts_id_fk": {
+					"name": "offramp_addresses_offramp_account_id_offramp_accounts_id_fk",
+					"tableFrom": "offramp_addresses",
+					"columnsFrom": ["offramp_account_id"],
+					"tableTo": "offramp_accounts",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"offramp_events": {
+			"name": "offramp_events",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"beam_account_id": {
+					"name": "beam_account_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"payload": {
+					"name": "payload",
+					"type": "jsonb",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"type": {
+					"name": "type",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"offramp_accounts": {
+			"name": "offramp_accounts",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"locker_id": {
+					"name": "locker_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"onboarding_url": {
+					"name": "onboarding_url",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"beam_account_id": {
+					"name": "beam_account_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"status": {
+					"name": "status",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"errors": {
+					"name": "errors",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"offramp_accounts_locker_id_lockers_id_fk": {
+					"name": "offramp_accounts_locker_id_lockers_id_fk",
+					"tableFrom": "offramp_accounts",
+					"columnsFrom": ["locker_id"],
+					"tableTo": "lockers",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"offramp_accounts_beam_account_id_unique": {
+					"name": "offramp_accounts_beam_account_id_unique",
+					"columns": ["beam_account_id"],
+					"nullsNotDistinct": false
+				}
+			}
+		},
+		"policies": {
+			"name": "policies",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"locker_id": {
+					"name": "locker_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"chain_id": {
+					"name": "chain_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"encrypted_session_key": {
+					"name": "encrypted_session_key",
+					"type": "varchar",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"encoded_iv": {
+					"name": "encoded_iv",
+					"type": "varchar",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"automations": {
+					"name": "automations",
+					"type": "jsonb",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"locker_id_chain_id_idx": {
+					"name": "locker_id_chain_id_idx",
+					"columns": ["locker_id", "chain_id"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"policies_locker_id_lockers_id_fk": {
+					"name": "policies_locker_id_lockers_id_fk",
+					"tableFrom": "policies",
+					"columnsFrom": ["locker_id"],
+					"tableTo": "lockers",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"token_transactions": {
+			"name": "token_transactions",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"locker_id": {
+					"name": "locker_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"triggered_by_token_tx_id": {
+					"name": "triggered_by_token_tx_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"chain_id": {
+					"name": "chain_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"locker_direction": {
+					"name": "locker_direction",
+					"type": "varchar(32)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"automations_state": {
+					"name": "automations_state",
+					"type": "varchar(32)",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'not_started'"
+				},
+				"tx_hash": {
+					"name": "tx_hash",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"from_address": {
+					"name": "from_address",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"to_address": {
+					"name": "to_address",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"contract_address": {
+					"name": "contract_address",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"token_symbol": {
+					"name": "token_symbol",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"token_decimals": {
+					"name": "token_decimals",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"is_confirmed": {
+					"name": "is_confirmed",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": false,
+					"default": false
+				},
+				"amount": {
+					"name": "amount",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"usd_value": {
+					"name": "usd_value",
+					"type": "double precision",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"tx_hash_chain_id_idx": {
+					"name": "tx_hash_chain_id_idx",
+					"columns": ["tx_hash", "chain_id"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"token_transactions_locker_id_lockers_id_fk": {
+					"name": "token_transactions_locker_id_lockers_id_fk",
+					"tableFrom": "token_transactions",
+					"columnsFrom": ["locker_id"],
+					"tableTo": "lockers",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		}
+	},
+	"enums": {},
+	"schemas": {},
+	"_meta": {
+		"columns": {},
+		"schemas": {},
+		"tables": {}
+	}
+}
