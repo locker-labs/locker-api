@@ -169,6 +169,13 @@
       "when": 1732157088641,
       "tag": "0023_last_salo",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1732507622427,
+      "tag": "0024_sour_mister_fear",
+      "breakpoints": true
     }
   ]
 }
