@@ -73,8 +73,8 @@ export default class AutomationService implements IAutomationService {
 			return false;
 
 		console.log("Checking confirmed");
-		// Don't automate unconfirmed transactions
-		if (!isConfirmed) return false;
+		// Generate automations as soon as tx lands on-chain
+		if (isConfirmed) return false;
 
 		console.log("Checking policy");
 		// Retrieve the policy for the locker
@@ -126,7 +126,7 @@ export default class AutomationService implements IAutomationService {
 				policy.chainId,
 				contractAddress.toLowerCase()
 			)) as `0x${string}`;
-		} else if (automation.type === EAutomationType.FORWARD_TO) {
+		} else if (automation.type.includes(EAutomationType.FORWARD_TO)) {
 			({ recipientAddress: toAddress } = automation);
 		}
 
@@ -222,7 +222,7 @@ export default class AutomationService implements IAutomationService {
 				policy.chainId,
 				zeroAddress
 			)) as `0x${string}`;
-		} else if (automation.type === EAutomationType.FORWARD_TO) {
+		} else if (automation.type.includes(EAutomationType.FORWARD_TO)) {
 			({ recipientAddress: toAddress } = automation);
 		}
 
@@ -351,11 +351,18 @@ export default class AutomationService implements IAutomationService {
 			// only forwarding and offramp can trigger automations
 			if (
 				automation.type !== EAutomationType.OFF_RAMP &&
-				automation.type !== EAutomationType.FORWARD_TO
+				!automation.type.includes(EAutomationType.FORWARD_TO)
 			)
 				return null;
 
-			switch (automation.type) {
+			// type may be something like forward_to-CFlnLscb
+			const automationType = automation.type.includes(
+				EAutomationType.FORWARD_TO
+			)
+				? EAutomationType.FORWARD_TO
+				: (automation.type as EAutomationType);
+
+			switch (automationType) {
 				case EAutomationType.FORWARD_TO:
 					return await this.spawnOnChainTx(
 						maybeTrigger,
