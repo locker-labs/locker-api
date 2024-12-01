@@ -73,8 +73,8 @@ export default class AutomationService implements IAutomationService {
 			return false;
 
 		console.log("Checking confirmed");
-		// Don't automate unconfirmed transactions
-		if (!isConfirmed) return false;
+		// Generate automations as soon as tx lands on-chain
+		if (isConfirmed) return false;
 
 		console.log("Checking policy");
 		// Retrieve the policy for the locker
