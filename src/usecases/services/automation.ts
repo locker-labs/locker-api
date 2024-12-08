@@ -155,7 +155,8 @@ export default class AutomationService implements IAutomationService {
 			value: BigInt(0),
 			data: erc20Data,
 			callType: "call" as CallType,
-		};
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} as any;
 
 		// submit on-chain
 		let txHash = genRanHex(64) as `0x${string}`;
@@ -249,7 +250,8 @@ export default class AutomationService implements IAutomationService {
 			value: amountOut,
 			data: pad("0x", { size: 4 }),
 			callType: "call" as CallType,
-		};
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} as any;
 
 		// submit on-chain
 		// testing hack where we simulate sending a tx in test

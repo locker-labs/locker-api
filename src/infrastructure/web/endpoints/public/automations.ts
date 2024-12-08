@@ -22,11 +22,6 @@ import {
 	TokenTxRepoAdapter,
 } from "../../../../usecases/schemas/tokenTxs";
 import ZerodevClient from "../../../clients/zerodev";
-// import {
-// 	ETokenTxAutomationsState,
-// 	ETokenTxLockerDirection,
-// 	TokenTxRepoAdapter,
-// } from "../../../../usecases/schemas/tokenTxs";
 
 const automationsRouter = express.Router();
 automationsRouter.use(express.json());
@@ -180,7 +175,8 @@ automationsRouter.get(
 				value: BigInt(0),
 				data: erc20Data,
 				callType: "call" as CallType,
-			};
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			} as any;
 
 			// console.log("callDataArgs", callDataArgs);
 
