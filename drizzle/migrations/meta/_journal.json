@@ -176,6 +176,20 @@
       "when": 1732507622427,
       "tag": "0024_sour_mister_fear",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1733622114445,
+      "tag": "0025_organic_killmonger",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1733625843666,
+      "tag": "0026_hesitant_rattler",
+      "breakpoints": true
     }
   ]
 }

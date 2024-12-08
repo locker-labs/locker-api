@@ -100,7 +100,7 @@ export default class ZerodevClient implements IExecutorClient {
 		scope: string;
 	}): Promise<string> {
 		const entryPoint = ENTRYPOINT_ADDRESS_V07;
-		const { chainId } = policy;
+		const { chainId, encryptedSessionKey, encodedIv } = policy;
 
 		// Create signer from locker agent
 		const sessionKeyRawAccount = privateKeyToAccount(
@@ -115,10 +115,7 @@ export default class ZerodevClient implements IExecutorClient {
 		});
 
 		// Decrypt policy
-		const serializedSessionKey = decrypt(
-			policy.encryptedSessionKey,
-			policy.encodedIv
-		);
+		const serializedSessionKey = decrypt(encryptedSessionKey, encodedIv);
 		// console.log("Using session key");
 		// console.log(serializedSessionKey);
 		const sessionKeyAccount = await deserializePermissionAccount(

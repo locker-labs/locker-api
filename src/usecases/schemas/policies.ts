@@ -15,6 +15,12 @@ export enum EAutomationStatus {
 	FAILED = "failed",
 }
 
+export enum EAutomationBatchType {
+	EACH = "each",
+	HOURLY = "hourly",
+	DAILY = "daily",
+}
+
 // How the user wants to treat the automation
 // If a user activates offramp, then deactivates it.
 // The status will be READY because KYC is already done
@@ -45,6 +51,8 @@ export interface IAutomation {
 	// If field is missing, then app assumes the automation is on.
 	// This is done in order to be backwards compatible
 	userState?: EAutomationUserState;
+	// Defaults to each
+	batchType?: EAutomationBatchType;
 }
 
 interface UpdatePoliciesRepoAdapter {

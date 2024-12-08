@@ -3,6 +3,7 @@ import {
 	boolean,
 	doublePrecision,
 	integer,
+	jsonb,
 	pgTable,
 	serial,
 	text,
@@ -36,6 +37,7 @@ export const tokenTxs = pgTable(
 		isConfirmed: boolean("is_confirmed").default(false),
 		amount: text("amount").notNull(),
 		usdValue: doublePrecision("usd_value"),
+		batchedBy: jsonb("batched_by").default([]), // Adding jsonb column with default empty array
 		createdAt: timestamp("created_at", {
 			mode: "date",
 			precision: 6,

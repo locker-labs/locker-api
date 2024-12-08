@@ -13,6 +13,7 @@ import ITokenTxsRepo from "../interfaces/repos/tokenTxs";
 import IAutomationService from "../interfaces/services/automation";
 import { LockerInDb } from "../schemas/lockers";
 import {
+	EAutomationBatchType,
 	EAutomationStatus,
 	EAutomationType,
 	EAutomationUserState,
@@ -97,7 +98,7 @@ export default class AutomationService implements IAutomationService {
 		return true;
 	}
 
-	async spawnOnChainErc20Tx(
+	public async spawnOnChainErc20Tx(
 		maybeTrigger: TokenTxInDb,
 		automation: IAutomation,
 		policy: PolicyRepoAdapter,
@@ -355,6 +356,13 @@ export default class AutomationService implements IAutomationService {
 			)
 				return null;
 
+			// only process EACH automations but default to EACH if batchType is missing
+			if (
+				automation.batchType &&
+				automation.batchType !== EAutomationBatchType.EACH
+			)
+				return null;
+
 			switch (automation.type) {
 				case EAutomationType.FORWARD_TO:
 					return await this.spawnOnChainTx(
@@ -459,18 +467,6 @@ export default class AutomationService implements IAutomationService {
 
 		console.log("Finished spawning automations", tokenTxs);
 		return tokenTxs;
-		// const spawnedAutomationsPromises = automations.map((automation) =>
-		// 	this.spawnAutomation(maybeTrigger, automation, policyApi, locker)
-		// );
-
-		// const spawnedAutomations = await Promise.all(
-		// 	spawnedAutomationsPromises
-		// );
-
-		// // Remove automations that failed to spawn
-		// return spawnedAutomations.filter(
-		// 	(spawnedAutomation) => spawnedAutomation !== null
-		// ) as TokenTxInDb[];
 	}
 
 	/**
