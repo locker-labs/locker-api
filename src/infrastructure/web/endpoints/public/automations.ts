@@ -42,7 +42,7 @@ async function markTxsAsBatched(
 ) {
 	if (txs.length > 0) {
 		// Extract all transaction IDs that need updating
-		const transactionIdsToUpdate = txs.map((tx) => tx.txId);
+		const transactionIdsToUpdate = [...new Set(txs.map((tx) => tx.txId))];
 
 		console.log(
 			"Updating batched_by for transaction IDs:",
