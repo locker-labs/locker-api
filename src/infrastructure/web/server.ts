@@ -11,6 +11,7 @@ import beamRouter from "./endpoints/integrations/beam";
 import moralisRouter from "./endpoints/integrations/moralis";
 import healthRouter from "./endpoints/metrics/health";
 import reportingRouter from "./endpoints/metrics/reporting";
+import automationsRouter from "./endpoints/public/automations";
 import lockerRouter from "./endpoints/public/lockers";
 import offrampRouter from "./endpoints/public/offramp";
 import policyRouter from "./endpoints/public/policies";
@@ -27,6 +28,7 @@ function setupRoutes(app: Express): void {
 	app.use("/public/tokenTxs", tokenTxsRouter);
 	app.use("/public/policies", policyRouter);
 	app.use("/public/offramp", offrampRouter);
+	app.use("/public/automations", automationsRouter);
 
 	// Db hooks
 	app.use("/metrics/health", healthRouter);

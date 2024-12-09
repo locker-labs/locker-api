@@ -1,6 +1,6 @@
 {
-	"id": "8109dfa9-fa12-42d5-a9a2-ae3d31d79f50",
-	"prevId": "f872bb54-cbb9-4a33-8a1f-485a8b805d03",
+	"id": "2789641b-1915-4517-9c25-16a145643ea0",
+	"prevId": "8109dfa9-fa12-42d5-a9a2-ae3d31d79f50",
 	"version": "5",
 	"dialect": "pg",
 	"tables": {
@@ -58,11 +58,11 @@
 				"deployments_locker_id_lockers_id_fk": {
 					"name": "deployments_locker_id_lockers_id_fk",
 					"tableFrom": "deployments",
-					"columnsFrom": ["locker_id"],
 					"tableTo": "lockers",
+					"columnsFrom": ["locker_id"],
 					"columnsTo": ["id"],
-					"onUpdate": "no action",
-					"onDelete": "no action"
+					"onDelete": "no action",
+					"onUpdate": "no action"
 				}
 			},
 			"compositePrimaryKeys": {},
@@ -135,8 +135,8 @@
 			"uniqueConstraints": {
 				"lockers_address_unique": {
 					"name": "lockers_address_unique",
-					"columns": ["address"],
-					"nullsNotDistinct": false
+					"nullsNotDistinct": false,
+					"columns": ["address"]
 				}
 			}
 		},
@@ -200,11 +200,11 @@
 				"offramp_addresses_offramp_account_id_offramp_accounts_id_fk": {
 					"name": "offramp_addresses_offramp_account_id_offramp_accounts_id_fk",
 					"tableFrom": "offramp_addresses",
-					"columnsFrom": ["offramp_account_id"],
 					"tableTo": "offramp_accounts",
+					"columnsFrom": ["offramp_account_id"],
 					"columnsTo": ["id"],
-					"onUpdate": "no action",
-					"onDelete": "no action"
+					"onDelete": "no action",
+					"onUpdate": "no action"
 				}
 			},
 			"compositePrimaryKeys": {},
@@ -318,19 +318,19 @@
 				"offramp_accounts_locker_id_lockers_id_fk": {
 					"name": "offramp_accounts_locker_id_lockers_id_fk",
 					"tableFrom": "offramp_accounts",
-					"columnsFrom": ["locker_id"],
 					"tableTo": "lockers",
+					"columnsFrom": ["locker_id"],
 					"columnsTo": ["id"],
-					"onUpdate": "no action",
-					"onDelete": "no action"
+					"onDelete": "no action",
+					"onUpdate": "no action"
 				}
 			},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {
 				"offramp_accounts_beam_account_id_unique": {
 					"name": "offramp_accounts_beam_account_id_unique",
-					"columns": ["beam_account_id"],
-					"nullsNotDistinct": false
+					"nullsNotDistinct": false,
+					"columns": ["beam_account_id"]
 				}
 			}
 		},
@@ -400,11 +400,11 @@
 				"policies_locker_id_lockers_id_fk": {
 					"name": "policies_locker_id_lockers_id_fk",
 					"tableFrom": "policies",
-					"columnsFrom": ["locker_id"],
 					"tableTo": "lockers",
+					"columnsFrom": ["locker_id"],
 					"columnsTo": ["id"],
-					"onUpdate": "no action",
-					"onDelete": "no action"
+					"onDelete": "no action",
+					"onUpdate": "no action"
 				}
 			},
 			"compositePrimaryKeys": {},
@@ -506,6 +506,13 @@
 					"primaryKey": false,
 					"notNull": false
 				},
+				"batched_by": {
+					"name": "batched_by",
+					"type": "jsonb",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'[]'::jsonb"
+				},
 				"created_at": {
 					"name": "created_at",
 					"type": "timestamp (6) with time zone",
@@ -532,11 +539,11 @@
 				"token_transactions_locker_id_lockers_id_fk": {
 					"name": "token_transactions_locker_id_lockers_id_fk",
 					"tableFrom": "token_transactions",
-					"columnsFrom": ["locker_id"],
 					"tableTo": "lockers",
+					"columnsFrom": ["locker_id"],
 					"columnsTo": ["id"],
-					"onUpdate": "no action",
-					"onDelete": "no action"
+					"onDelete": "no action",
+					"onUpdate": "no action"
 				}
 			},
 			"compositePrimaryKeys": {},

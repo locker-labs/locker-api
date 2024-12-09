@@ -13,6 +13,7 @@ import ITokenTxsRepo from "../interfaces/repos/tokenTxs";
 import IAutomationService from "../interfaces/services/automation";
 import { LockerInDb } from "../schemas/lockers";
 import {
+	EAutomationBatchType,
 	EAutomationStatus,
 	EAutomationType,
 	EAutomationUserState,
@@ -97,7 +98,7 @@ export default class AutomationService implements IAutomationService {
 		return true;
 	}
 
-	async spawnOnChainErc20Tx(
+	public async spawnOnChainErc20Tx(
 		maybeTrigger: TokenTxInDb,
 		automation: IAutomation,
 		policy: PolicyRepoAdapter,
@@ -154,7 +155,8 @@ export default class AutomationService implements IAutomationService {
 			value: BigInt(0),
 			data: erc20Data,
 			callType: "call" as CallType,
-		};
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} as any;
 
 		// submit on-chain
 		let txHash = genRanHex(64) as `0x${string}`;
@@ -248,7 +250,8 @@ export default class AutomationService implements IAutomationService {
 			value: amountOut,
 			data: pad("0x", { size: 4 }),
 			callType: "call" as CallType,
-		};
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} as any;
 
 		// submit on-chain
 		// testing hack where we simulate sending a tx in test
@@ -352,6 +355,13 @@ export default class AutomationService implements IAutomationService {
 			if (
 				automation.type !== EAutomationType.OFF_RAMP &&
 				automation.type !== EAutomationType.FORWARD_TO
+			)
+				return null;
+
+			// only process EACH automations but default to EACH if batchType is missing
+			if (
+				automation.batchType &&
+				automation.batchType !== EAutomationBatchType.EACH
 			)
 				return null;
 
@@ -459,18 +469,6 @@ export default class AutomationService implements IAutomationService {
 
 		console.log("Finished spawning automations", tokenTxs);
 		return tokenTxs;
-		// const spawnedAutomationsPromises = automations.map((automation) =>
-		// 	this.spawnAutomation(maybeTrigger, automation, policyApi, locker)
-		// );
-
-		// const spawnedAutomations = await Promise.all(
-		// 	spawnedAutomationsPromises
-		// );
-
-		// // Remove automations that failed to spawn
-		// return spawnedAutomations.filter(
-		// 	(spawnedAutomation) => spawnedAutomation !== null
-		// ) as TokenTxInDb[];
 	}
 
 	/**

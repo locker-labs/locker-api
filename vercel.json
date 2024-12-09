@@ -22,6 +22,10 @@
 		{
 			"path": "/metrics/reporting",
 			"schedule": "*/2 * * * *"
+		},
+		{
+			"path": "/public/automations/exec-scheduled/daily",
+			"schedule": "0 * * * *"
 		}
 	],
 	"functions": {

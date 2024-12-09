@@ -1,6 +1,6 @@
 {
-	"id": "8109dfa9-fa12-42d5-a9a2-ae3d31d79f50",
-	"prevId": "f872bb54-cbb9-4a33-8a1f-485a8b805d03",
+	"id": "04667811-4ce9-45ec-9656-34a21d6be353",
+	"prevId": "2789641b-1915-4517-9c25-16a145643ea0",
 	"version": "5",
 	"dialect": "pg",
 	"tables": {
@@ -505,6 +505,13 @@
 					"type": "double precision",
 					"primaryKey": false,
 					"notNull": false
+				},
+				"batched_by": {
+					"name": "batched_by",
+					"type": "jsonb",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'[]'::jsonb"
 				},
 				"created_at": {
 					"name": "created_at",
