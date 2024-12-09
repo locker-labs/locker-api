@@ -20,11 +20,11 @@
 	],
 	"crons": [
 		{
-			"path": "/metrics/reporting",
-			"schedule": "*/2 * * * *"
+			"path": "/public/automations/exec-scheduled/daily",
+			"schedule": "0 0 * * *"
 		},
 		{
-			"path": "/public/automations/exec-scheduled/daily",
+			"path": "/public/automations/exec-scheduled/hourly",
 			"schedule": "0 * * * *"
 		}
 	],
