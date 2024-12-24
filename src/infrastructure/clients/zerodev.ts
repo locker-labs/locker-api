@@ -8,15 +8,16 @@ import {
 	createKernelAccountClient,
 	createZeroDevPaymasterClient,
 	getCustomNonceKeyFromString,
+	getUserOperationGasPrice,
 } from "@zerodev/sdk";
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants";
+import { getEntryPoint, KERNEL_V3_1 } from "@zerodev/sdk/constants";
 import { CallType, KernelEncodeCallDataArgs } from "@zerodev/sdk/types";
-import { bundlerActions, ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import {
 	Address,
 	createPublicClient,
 	Hex,
 	http,
+	pad,
 	type PublicClient,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
@@ -26,6 +27,8 @@ import SUPPORTED_CHAINS from "../../dependencies/chains";
 import IExecutorClient from "../../usecases/interfaces/clients/executor";
 import { PolicyRepoAdapter } from "../../usecases/schemas/policies";
 import { decrypt } from "../../usecases/services/encryption";
+
+const entryPoint = getEntryPoint("0.7");
 
 export default class ZerodevClient implements IExecutorClient {
 	getPublicClient(chainId: number): PublicClient {
@@ -56,7 +59,7 @@ export default class ZerodevClient implements IExecutorClient {
 			eoaAddress,
 			index: BigInt(seed),
 			kernelVersion: KERNEL_V3_1,
-			entryPointAddress: ENTRYPOINT_ADDRESS_V07,
+			entryPoint,
 		});
 
 		return kernelAddress;
@@ -99,7 +102,6 @@ export default class ZerodevClient implements IExecutorClient {
 		callDataArgs: KernelEncodeCallDataArgs;
 		scope: string;
 	}): Promise<string> {
-		const entryPoint = ENTRYPOINT_ADDRESS_V07;
 		const { chainId, encryptedSessionKey, encodedIv } = policy;
 
 		// Create signer from locker agent
@@ -129,30 +131,37 @@ export default class ZerodevClient implements IExecutorClient {
 
 		// Construct user op and paymaster
 		const kernelPaymaster = createZeroDevPaymasterClient({
-			entryPoint,
 			chain,
 			transport: http(paymasterRpcUrl),
 		});
 		const kernelClient = createKernelAccountClient({
-			entryPoint,
 			account: sessionKeyAccount,
 			chain,
 			bundlerTransport: http(bundlerRpcUrl),
-			middleware: {
-				sponsorUserOperation: kernelPaymaster.sponsorUserOperation,
+			client: publicClient,
+			paymaster: {
+				getPaymasterData(userOperation) {
+					return kernelPaymaster.sponsorUserOperation({
+						userOperation,
+					});
+				},
+			},
+			userOperation: {
+				estimateFeesPerGas: async ({ bundlerClient }) =>
+					getUserOperationGasPrice(bundlerClient),
 			},
 		});
 
-		const nonceKey = getCustomNonceKeyFromString(scope, entryPoint);
-		const nonce = await sessionKeyAccount.getNonce(nonceKey);
+		const nonceKey = getCustomNonceKeyFromString(scope, entryPoint.version);
+		const nonce = await kernelClient.account.getNonce({ key: nonceKey });
 		console.log("Nonce", nonce, scope, nonceKey);
 
-		const isEthTransfer = true;
+		const isEthTransfer = callDataArgs.data === pad("0x", { size: 4 });
 
 		// Send ETH transfer
 		if (isEthTransfer) {
 			console.log("Going to send ETH transfer", callDataArgs);
-			const { to, value, data } = callDataArgs as {
+			const { to, value } = callDataArgs as {
 				to: Address;
 				value: bigint;
 				data: Hex;
@@ -161,7 +170,7 @@ export default class ZerodevClient implements IExecutorClient {
 			const txHash = await kernelClient.sendTransaction({
 				to,
 				value,
-				data,
+				// data: "0x",
 				// FIXME `AA25 invalid account nonce` when included
 				// nonce: Number(nonce),
 			});
@@ -172,20 +181,14 @@ export default class ZerodevClient implements IExecutorClient {
 		// Otherwise is ER20
 		// Send user operation
 		console.log("Going to send ERC20 transfer", callDataArgs);
-		const callData = await sessionKeyAccount.encodeCallData(callDataArgs);
+		const callData = await sessionKeyAccount.encodeCalls([callDataArgs]);
 		const userOpHash = await kernelClient.sendUserOperation({
-			userOperation: {
-				callData,
-				nonce,
-			},
+			callData,
+			nonce,
 		});
 
-		// Wait for transaction
-		const bundlerClient = kernelClient.extend(
-			bundlerActions(ENTRYPOINT_ADDRESS_V07)
-		);
 		console.log("Waiting for user operation receipt", userOpHash);
-		const txReceipt = await bundlerClient.waitForUserOperationReceipt({
+		const txReceipt = await kernelClient.waitForUserOperationReceipt({
 			hash: userOpHash,
 		});
 		console.log("User operation receipt", txReceipt);

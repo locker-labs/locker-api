@@ -243,7 +243,7 @@ export default class AutomationService implements IAutomationService {
 			functionName: "transfer",
 			args: [toAddress, amountOut],
 		};
-		console.log("erc20UnencodedData", erc20UnencodedData);
+		console.log("ethUnencodedData", erc20UnencodedData);
 
 		const callDataArgs = {
 			to: toAddress,
@@ -388,6 +388,7 @@ export default class AutomationService implements IAutomationService {
 			}
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (e: any) {
+			console.error(e);
 			logger.error(
 				`Failed to spawn automation for ${maybeTrigger.id}`,
 				automation,
