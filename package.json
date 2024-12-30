@@ -38,7 +38,7 @@
 		"@supabase/supabase-js": "^2.43.5",
 		"@zerodev/ecdsa-validator": "^5.4.1",
 		"@zerodev/permissions": "^5.5.0",
-		"@zerodev/webauthn-key": "5.3.1",
+		"@zerodev/webauthn-key": "5.4.0",
 		"@zerodev/sdk": "^5.4.9",
 		"basic-auth": "^2.0.1",
 		"big.js": "^6.2.1",
