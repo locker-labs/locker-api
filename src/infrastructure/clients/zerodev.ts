@@ -11,15 +11,8 @@ import {
 	getUserOperationGasPrice,
 } from "@zerodev/sdk";
 import { getEntryPoint, KERNEL_V3_1 } from "@zerodev/sdk/constants";
-import { CallType, KernelEncodeCallDataArgs } from "@zerodev/sdk/types";
-import {
-	Address,
-	createPublicClient,
-	Hex,
-	http,
-	pad,
-	type PublicClient,
-} from "viem";
+import { KernelEncodeCallDataArgs } from "@zerodev/sdk/types";
+import { createPublicClient, http, pad, type PublicClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 import config from "../../config";
@@ -112,8 +105,10 @@ export default class ZerodevClient implements IExecutorClient {
 			signer: sessionKeyRawAccount,
 		});
 		const { bundlerRpcUrl, paymasterRpcUrl } = SUPPORTED_CHAINS[chainId];
+		const chain = SUPPORTED_CHAINS[chainId].viemChain;
 		const publicClient = createPublicClient({
 			transport: http(bundlerRpcUrl),
+			chain,
 		});
 
 		// Decrypt policy
@@ -127,7 +122,6 @@ export default class ZerodevClient implements IExecutorClient {
 			serializedSessionKey,
 			sessionKeySigner
 		);
-		const chain = SUPPORTED_CHAINS[chainId].viemChain;
 
 		// Construct user op and paymaster
 		const kernelPaymaster = createZeroDevPaymasterClient({
@@ -161,19 +155,21 @@ export default class ZerodevClient implements IExecutorClient {
 		// Send ETH transfer
 		if (isEthTransfer) {
 			console.log("Going to send ETH transfer", callDataArgs);
-			const { to, value } = callDataArgs as {
-				to: Address;
-				value: bigint;
-				data: Hex;
-				callType: CallType;
-			};
+			const { to, value } = callDataArgs;
+
 			const txHash = await kernelClient.sendTransaction({
-				to,
-				value,
-				// data: "0x",
-				// FIXME `AA25 invalid account nonce` when included
-				// nonce: Number(nonce),
+				calls: [
+					{
+						to,
+						value,
+						data: "0x00000000" as `0x${string}`,
+						// FIXME `AA25 invalid account nonce` when included
+						// nonce: Number(nonce),
+					},
+				],
 			});
+
+			console.log("ETH transfer", txHash);
 
 			return txHash;
 		}

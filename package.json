@@ -39,7 +39,7 @@
 		"@zerodev/ecdsa-validator": "^5.4.1",
 		"@zerodev/permissions": "^5.5.0",
 		"@zerodev/webauthn-key": "5.3.1",
-		"@zerodev/sdk": "^5.4.6",
+		"@zerodev/sdk": "^5.4.9",
 		"basic-auth": "^2.0.1",
 		"big.js": "^6.2.1",
 		"class-transformer": "^0.5.1",
@@ -56,7 +56,7 @@
 		"postgres": "^3.4.4",
 		"resend": "^4.0.1",
 		"undici": "^6.19.8",
-		"viem": "^2.18.8",
+		"viem": "^2.21.57",
 		"web3": "^4.8.0",
 		"winston": "^3.13.0"
 	},
