@@ -162,7 +162,7 @@ export default class ZerodevClient implements IExecutorClient {
 					{
 						to,
 						value,
-						data: "0x00000000" as `0x${string}`,
+						// data: "0x00000000" as `0x${string}`,
 						// FIXME `AA25 invalid account nonce` when included
 						// nonce: Number(nonce),
 					},
