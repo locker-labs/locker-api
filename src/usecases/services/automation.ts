@@ -237,14 +237,6 @@ export default class AutomationService implements IAutomationService {
 
 		const amountOut = BigInt(amountOutStr);
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const erc20UnencodedData: any = {
-			abi: ERC20_TRANSFER_ABI,
-			functionName: "transfer",
-			args: [toAddress, amountOut],
-		};
-		console.log("erc20UnencodedData", erc20UnencodedData);
-
 		const callDataArgs = {
 			to: toAddress,
 			value: amountOut,
@@ -252,6 +244,7 @@ export default class AutomationService implements IAutomationService {
 			callType: "call" as CallType,
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} as any;
+		console.log("callDataArgs", callDataArgs);
 
 		// submit on-chain
 		// testing hack where we simulate sending a tx in test
@@ -388,6 +381,7 @@ export default class AutomationService implements IAutomationService {
 			}
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (e: any) {
+			console.error(e);
 			logger.error(
 				`Failed to spawn automation for ${maybeTrigger.id}`,
 				automation,
