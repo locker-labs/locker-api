@@ -1,5 +1,6 @@
 {
 	"name": "locker-api",
+	"email": "contact@locker.money",
 	"version": "0.1.0",
 	"private": true,
 	"repository": {
